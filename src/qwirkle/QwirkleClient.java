@@ -18,12 +18,19 @@ public class QwirkleClient extends Thread {
 		
 	}
 	
+	private String readResponse() {
+		// TODO: read from input stream.
+	}
+	
 	/**
 	 * Starts to process all incoming traffic. 
 	 */
 	@Override
 	public void run() {
-		
+		while (true) {
+			String response = readResponse();
+			new ServerHandler(response, this).start();
+		}
 	}
 	
 	/**

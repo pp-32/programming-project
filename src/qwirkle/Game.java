@@ -36,6 +36,10 @@ public class Game {
 
 	}
 
+	public void waitForTurn() {
+		// 
+	}
+	
 	/**
 	 * Prints the game situation.
 	 */
