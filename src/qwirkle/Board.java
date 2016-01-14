@@ -28,6 +28,12 @@ public abstract class Board {
 	public abstract void reset();
 	
 	/**
+	 * Gets the current dimensions of the board.
+	 * @return the dimensions.
+	 */
+	public abstract Rectangle getDimensions();
+	
+	/**
 	 * Gets the stone that is located at the given position.
 	 * @param x The x coordinate of the position.
 	 * @param y The y coordinate of the position.

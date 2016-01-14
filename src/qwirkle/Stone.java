@@ -35,5 +35,7 @@ public class Stone {
 		return color;
 	}
 	
-	
+	public String toString() {
+		return shape.toString() + color.toString();
+	}
 }
