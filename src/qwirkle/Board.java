@@ -40,6 +40,15 @@ public abstract class Board {
 	 * @return The stone, or null if the field is empty.
 	 */
 	public abstract Stone getField(int x, int y);
+
+	/**
+	 * Gets the stone that is located at the given position.
+	 * @param location The position.
+	 * @return The stone, or null if the field is empty.
+	 */
+	public Stone getField(Location location) {
+		return getField(location.getX(), location.getY());
+	}
 	
 	/**
 	 * Determines whether a field at the given coordinates is empty or not.
@@ -94,7 +103,53 @@ public abstract class Board {
 	 * @return True if the move is legal, false otherwise.
 	 */
 	public boolean checkMove(Stone stone, int x, int y) {
-		return false; // TODO.
+		if (isEmpty()) {
+			return x == 0 && y == 0;
+		} else if (!isEmptyField(x, y)) {
+			return false;
+		}
+
+		Sequence leftNeighbors = new Sequence(this, new Location(x - 1, y), new Location(-1, 0));
+		Sequence rightNeighbors = new Sequence(this, new Location(x + 1, y), new Location(1, 0));
+		//Sequence topNeighbors = new Sequence(this, new Location(x, y + 1), new Location(0, 1));
+		//Sequence bottomNeighbors = new Sequence(this, new Location(x, y - 1), new Location(0, -1));
+		
+		boolean validMove = false;
+		
+		if (leftNeighbors.getStones().size() != 0 
+			&& rightNeighbors.getStones().size() != 0) {
+			// special case.
+			
+			if (leftNeighbors.getType() == SequenceType.UNKNOWN
+				|| rightNeighbors.getType() == SequenceType.UNKNOWN) {
+				
+			}
+				
+		} else if (leftNeighbors.getStones().size() != 0) {
+			validMove = checkSequence(leftNeighbors, stone);
+		} else if (rightNeighbors.getStones().size() != 0) {
+			validMove = checkSequence(rightNeighbors, stone);
+		}
+		
+		return validMove;
+	}
+	
+	private boolean checkSequence(Sequence neighborSequence, Stone stoneToPlace) {
+		if (neighborSequence.getStones().size() == 0 
+			|| neighborSequence.getStones().contains(stoneToPlace)) { 
+			return false;
+		}
+		
+		switch (neighborSequence.getType()) {
+		case UNKNOWN:
+			return true;
+		case SHAPE:
+			return stoneToPlace.getShape() == neighborSequence.getStones().get(0).getShape();
+		case COLOR:
+			return stoneToPlace.getColor() == neighborSequence.getStones().get(0).getColor();
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -104,4 +159,49 @@ public abstract class Board {
 	 * @param y The y-coordinate of the field to place the stone on.
 	 */
 	public abstract void placeStone(Stone stone, int x, int y);
+
+	private class Sequence {
+		private Board board;
+		private Location location;
+		private Location directionVector;
+		private List<Stone> stones;
+		
+		public Sequence(Board board, Location location, Location directionVector) {
+			this.board = board;
+			this.location = location;
+			this.directionVector = directionVector;
+		}
+		
+		public List<Stone> getStones() {
+			if (stones != null) {
+				return stones;
+			}
+			
+			stones = new ArrayList<Stone>();
+			Stone currentStone;
+			while ((currentStone = board.getField(location)) != null) {
+				stones.add(currentStone);
+				location.add(directionVector);
+			}
+			return stones;
+		}
+		
+		public SequenceType getType() {
+			List<Stone> stones = getStones();
+			if (stones.size() <= 1) {
+				return SequenceType.UNKNOWN;
+			} else if (stones.get(0).getShape() == stones.get(1).getShape()) {
+				return SequenceType.SHAPE;
+			} else {			
+				return SequenceType.COLOR;
+			}
+		}
+	}
+	
+	private enum SequenceType {
+		UNKNOWN,
+		SHAPE,
+		COLOR
+	}
 }
+
