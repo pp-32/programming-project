@@ -105,9 +105,9 @@ public class CheckMoveTest {
 		/*
 		 * Board:
 		 * 
-		 *  1B | 1R | 1O
-		 *  2B |    | 2O
 		 *  3B |  x | 3O
+		 *  2B |    | 2O
+		 *  1B | 1R | 1O
 		 *  
 		 */
 
@@ -116,8 +116,8 @@ public class CheckMoveTest {
 		board.placeStone(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0);
 		board.placeStone(new Stone(StoneShape.CROSS, StoneColor.BLUE), 0, 1);
 		board.placeStone(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1);
-		board.placeStone(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 1);
-		board.placeStone(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 1);
+		board.placeStone(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 2);
+		board.placeStone(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2);
 
 		assertTrue(board.checkMove(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 2));
 	}

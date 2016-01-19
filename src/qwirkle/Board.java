@@ -107,49 +107,20 @@ public abstract class Board {
 			return x == 0 && y == 0;
 		} else if (!isEmptyField(x, y)) {
 			return false;
-		}
-
-		Sequence leftNeighbors = new Sequence(this, new Location(x - 1, y), new Location(-1, 0));
-		Sequence rightNeighbors = new Sequence(this, new Location(x + 1, y), new Location(1, 0));
-		//Sequence topNeighbors = new Sequence(this, new Location(x, y + 1), new Location(0, 1));
-		//Sequence bottomNeighbors = new Sequence(this, new Location(x, y - 1), new Location(0, -1));
-		
-		boolean validMove = false;
-		
-		if (leftNeighbors.getStones().size() != 0 
-			&& rightNeighbors.getStones().size() != 0) {
-			// special case.
-			
-			if (leftNeighbors.getType() == SequenceType.UNKNOWN
-				|| rightNeighbors.getType() == SequenceType.UNKNOWN) {
-				
-			}
-				
-		} else if (leftNeighbors.getStones().size() != 0) {
-			validMove = checkSequence(leftNeighbors, stone);
-		} else if (rightNeighbors.getStones().size() != 0) {
-			validMove = checkSequence(rightNeighbors, stone);
-		}
-		
-		return validMove;
-	}
-	
-	private boolean checkSequence(Sequence neighborSequence, Stone stoneToPlace) {
-		if (neighborSequence.getStones().size() == 0 
-			|| neighborSequence.getStones().contains(stoneToPlace)) { 
+		} else if (isEmptyField(x - 1, y) 
+				&& isEmptyField(x + 1, y)
+				&& isEmptyField(x, y - 1)
+				&& isEmptyField(x, y + 1)) {
 			return false;
 		}
 		
-		switch (neighborSequence.getType()) {
-		case UNKNOWN:
-			return true;
-		case SHAPE:
-			return stoneToPlace.getShape() == neighborSequence.getStones().get(0).getShape();
-		case COLOR:
-			return stoneToPlace.getColor() == neighborSequence.getStones().get(0).getColor();
-		}
+		Board copy = this.deepCopy();
+		copy.placeStone(stone, x, y);
+
+		Sequence horizontal = new Sequence(copy, new Location(x, y), SequenceDirection.HORIZONTAL);
+		Sequence vertical = new Sequence(copy, new Location(x, y), SequenceDirection.VERTICAL);
 		
-		return false;
+		return horizontal.isValid() && vertical.isValid();
 	}
 	
 	/**
@@ -160,16 +131,36 @@ public abstract class Board {
 	 */
 	public abstract void placeStone(Stone stone, int x, int y);
 
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		Rectangle dimensions = getDimensions();
+		builder.append(dimensions.toString() + "\n");		
+		for (int y = dimensions.getTopLeft().getY(); y >= dimensions.getBottomRight().getY(); y--) {
+			builder.append("| ");
+			for (int x = dimensions.getTopLeft().getX(); x <= dimensions.getBottomRight().getX(); x++) {
+				Stone field = getField(x, y);
+				if (field == null) {
+					builder.append("  ");
+				} else {
+					builder.append(field.toString());
+				}
+				builder.append(" | ");
+			}
+			builder.append("\n");
+		}
+		return builder.toString();
+	}
+	
 	private class Sequence {
 		private Board board;
 		private Location location;
-		private Location directionVector;
+		private SequenceDirection direction;
 		private List<Stone> stones;
 		
-		public Sequence(Board board, Location location, Location directionVector) {
+		public Sequence(Board board, Location location, SequenceDirection direction) {
 			this.board = board;
 			this.location = location;
-			this.directionVector = directionVector;
+			this.direction = direction;
 		}
 		
 		public List<Stone> getStones() {
@@ -178,12 +169,30 @@ public abstract class Board {
 			}
 			
 			stones = new ArrayList<Stone>();
-			Stone currentStone;
-			while ((currentStone = board.getField(location)) != null) {
-				stones.add(currentStone);
-				location.add(directionVector);
+			
+			switch (direction) {
+			case HORIZONTAL:
+				collectStones(new Location(-1, 0));
+				stones.add(board.getField(location));
+				collectStones(new Location(1, 0));
+				break;
+			case VERTICAL: 
+				collectStones(new Location(0, 1));
+				stones.add(board.getField(location));
+				collectStones(new Location(0, -1));
+				break;
 			}
 			return stones;
+		}
+		
+		private void collectStones(Location vector) {
+			Location current = location.deepCopy();
+			current.add(vector);
+			Stone currentStone;
+			while ((currentStone = board.getField(current)) != null) {
+				stones.add(currentStone);
+				current.add(vector);
+			}
 		}
 		
 		public SequenceType getType() {
@@ -196,12 +205,50 @@ public abstract class Board {
 				return SequenceType.COLOR;
 			}
 		}
+		
+		public boolean isValid() {
+			if (getStones().size() > 6) {
+				return false;
+			}
+
+			List<Stone> stones = getStones();
+			
+			StoneShape shape = stones.get(0).getShape();
+			StoneColor color = stones.get(0).getColor();
+			
+			for (int i = 0; i < stones.size(); i++) {
+				Stone stone = stones.get(i);
+				
+				// check for duplicate
+				if (stones.indexOf(stone) != stones.lastIndexOf(stone)) {
+					return false;
+				}
+			
+				// check for shape or color, depending on sequence type.
+				if (getType() == SequenceType.SHAPE) {
+					if (stone.getShape() != shape) {
+						return false;
+					}
+				} else if (getType() == SequenceType.COLOR) {
+					if (stone.getColor() != color) {
+						return false;
+					}
+				}
+			}
+			
+			return true;
+		}
 	}
 	
 	private enum SequenceType {
 		UNKNOWN,
 		SHAPE,
 		COLOR
+	}
+	
+	private enum SequenceDirection {
+		HORIZONTAL,
+		VERTICAL
 	}
 }
 

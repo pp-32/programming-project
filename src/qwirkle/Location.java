@@ -59,4 +59,8 @@ public class Location {
 		setY(getY() + directionVector.getY());
 		
 	}
+	
+	public Location deepCopy() {
+		return new Location(getX(), getY());
+	}
 }
