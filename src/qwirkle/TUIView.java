@@ -4,12 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Scanner;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class TUIView implements View {
 
+	private final Lock lock = new ReentrantLock();
+	private final Condition gameStarted = lock.newCondition(); 
+	
 	private QwirkleClient client;
 	private Game game;
+	
 
 	public TUIView(QwirkleClient client) {
 		this.client = client;
@@ -25,6 +33,16 @@ public class TUIView implements View {
 		// Output information
 		System.out.print("Your name is: " + playerName);
 		client.requestJoin(playerName);
+		
+		lock.lock();
+		try {
+			gameStarted.await();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			lock.unlock();
+		}
 		
 		//String playerCount;
 		//System.out.print("");
@@ -101,5 +119,16 @@ public class TUIView implements View {
 	public void buildView() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		
+		if (arg0 == client) {
+			if (arg1 instanceof Game) {
+				this.game = (Game)arg1;
+				gameStarted.signalAll();
+			}
+		}
 	}
 }
