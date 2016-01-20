@@ -51,8 +51,6 @@ public class TUIView implements View {
 		System.out.println(client.getCurrentGame().getBoard().toString());
 		
 		
-		//String playerCount;
-		//System.out.print("");
 
 		try (Scanner scanner = new Scanner(System.in)) {
 			boolean continueLoop = true;
