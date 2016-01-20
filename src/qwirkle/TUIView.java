@@ -33,12 +33,20 @@ public class TUIView implements View {
 			case "place":
 				handlePlaceCommand(commandScanner);
 				break;
+			case "trade":
+				handleTradeCommand(commandScanner);
+				break;
 			case "exit":
 				continueLoop = false;
 				break;
 			}
 		}
 		return continueLoop;
+	}
+
+	private void handleTradeCommand(Scanner commandScanner) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void handlePlaceCommand(Scanner commandScanner) {
