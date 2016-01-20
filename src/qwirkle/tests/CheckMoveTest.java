@@ -144,4 +144,23 @@ public class CheckMoveTest {
 
 		assertTrue(board.checkMove(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 2));
 	}
+	
+	@Test
+	public void testJoinHorizontalAndVertical() {
+		/*
+		 * Board:
+		 * 
+		 *     |    | 3O |
+		 *     |    | 2O |
+		 *  1B | 1R | x  |
+		 */
+
+		board.placeStone(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 0);
+		board.placeStone(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 0);
+
+		board.placeStone(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1);
+		board.placeStone(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2);
+
+		assertTrue(board.checkMove(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0));
+	}
 }

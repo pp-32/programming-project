@@ -1,6 +1,8 @@
 package qwirkle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -14,13 +16,11 @@ public class TUIView implements View {
 	}
 		
 	public void run() {
-		while (true) {
-			try (Scanner scanner = new Scanner(System.in)) {
-				boolean continueLoop = true;
-				while (continueLoop) {
-					System.out.print("Command:");
-					continueLoop = scanner.hasNextLine() && processCommand(scanner.nextLine());
-				}
+		try (Scanner scanner = new Scanner(System.in)) {
+			boolean continueLoop = true;
+			while (continueLoop) {
+				System.out.print("Command:");
+				continueLoop = scanner.hasNextLine() && processCommand(scanner.nextLine());
 			}
 		}
 	}
@@ -42,8 +42,9 @@ public class TUIView implements View {
 	}
 
 	private void handlePlaceCommand(Scanner commandScanner) {
-		Map<Stone, Location> placements = new HashMap<Stone, Location>();
+		List<Move> moves = new ArrayList<Move>();
 		
+		// place <aantal stenen> {<index> <x> <y> ....}
 		int stonesCount = Integer.parseInt(commandScanner.next());
 		
 		for (int i = 0; i < stonesCount; i++) { 
@@ -53,9 +54,13 @@ public class TUIView implements View {
 			Location location = new Location(x, y);
 			
 			// TODO: ask controller for hand and retrieve stones from there.
+			
+			Move move = new Move(null, location);
+			moves.add(move);
 		}
 		
-		client.setMove(placements);
+		client.setMove(moves);
+		System.out.println(moves.size());
 	}
 
 	public void updateView() {

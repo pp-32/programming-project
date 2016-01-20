@@ -6,7 +6,7 @@ public abstract class Player {
 
 	private String name;
 	private int score;
-	private List<Stone> stones;
+	protected List<Stone> stones;
 
 	/**
 	 * Creates a new <code>Player</code> object.

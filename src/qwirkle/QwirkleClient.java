@@ -21,39 +21,42 @@ public class QwirkleClient extends Thread {
 	public static final String USAGE = "Usage: java " + QwirkleClient.class.toString() + " <host> <port>";
 	
 	public static void main(String[] args) {
-		if (args.length != 2) {
-			System.out.println(USAGE);
-			return;
-		}
 		
-		// parse host address.
-		InetAddress host;
-		try {
-			host = InetAddress.getByName(args[1]);
-		} catch (UnknownHostException e) {
-			System.err.println("ERROR: no valid hostname!");
-			return;
-		}
+		new QwirkleClient().run();
 		
-		// parse port.
-		int port;
-		try {
-			port = Integer.parseInt(args[2]);
-		} catch (NumberFormatException e) {
-			System.err.println("ERROR: no valid portnummer!");
-			return;
-		}
-		
-		// create socket.
-		QwirkleClient client;
-		try {
-			client = new QwirkleClient(host, port);
-		} catch (IOException e) {
-			System.err.println("ERROR: Could not create socket. " + e.getMessage());
-			return;
-		}
-		
-		client.start();
+//		if (args.length != 2) {
+//			System.out.println(USAGE);
+//			return;
+//		}
+//		
+//		// parse host address.
+//		InetAddress host;
+//		try {
+//			host = InetAddress.getByName(args[1]);
+//		} catch (UnknownHostException e) {
+//			System.err.println("ERROR: no valid hostname!");
+//			return;
+//		}
+//		
+//		// parse port.
+//		int port;
+//		try {
+//			port = Integer.parseInt(args[2]);
+//		} catch (NumberFormatException e) {
+//			System.err.println("ERROR: no valid portnummer!");
+//			return;
+//		}
+//		
+//		// create socket.
+//		QwirkleClient client;
+//		try {
+//			client = new QwirkleClient(host, port);
+//		} catch (IOException e) {
+//			System.err.println("ERROR: Could not create socket. " + e.getMessage());
+//			return;
+//		}
+//		
+//		client.start();
 	}
 	
 	private Socket socket;
@@ -62,6 +65,11 @@ public class QwirkleClient extends Thread {
 	private Game game;
 	private View view;
 
+	// TODO: remove.
+	public QwirkleClient() {
+		view = new TUIView(this);
+	}
+	
 	public QwirkleClient(InetAddress host, int port) throws IOException {
 		socket = new Socket(host, port);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -83,6 +91,7 @@ public class QwirkleClient extends Thread {
 	 */
 	@Override
 	public void run() {
+		new Thread(view).start();
 		try {
 			while (true) {
 				String response = readResponse();
@@ -114,9 +123,9 @@ public class QwirkleClient extends Thread {
 	 * Requests the server to make a move using the given stones and their placements.
 	 * @param stonePlacements The stones to place.
 	 */
-	public void setMove(Map<Stone, Location> stonePlacements) {
+	public void setMove(List<Move> stonePlacements) {
 		
-		// TODO: Implement body.
+		
 	}
 	
 	/**
