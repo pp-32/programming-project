@@ -24,10 +24,19 @@ public class TUIView implements View {
 		playerName = user_input.nextLine();
 		// Output information
 		System.out.print("Your name is: " + playerName);
+		System.out.println("");
 		client.requestJoin(playerName);
 		
-		//String playerCount;
-		//System.out.print("");
+		// TODO: let the tui know that the join request is accepted
+		
+		int playerCount;
+		System.out.print("Enter the desired amount of players: ");
+		playerCount = Integer.parseInt(user_input.nextLine());
+		System.out.print("The number of players is: " + playerCount);
+		System.out.println("");
+		client.requestGame(playerCount);
+		
+		// TODO: let the tui know that the game request is accepted
 
 		try (Scanner scanner = new Scanner(System.in)) {
 			boolean continueLoop = true;
