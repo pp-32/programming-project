@@ -1,8 +1,14 @@
 package qwirkle;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Represents a client handler that handles traffic between the server and a connected client. 
@@ -12,14 +18,19 @@ import java.util.Map;
 public class ClientHandler extends Thread {
 	
 	private Socket socket;
+	private BufferedReader in;
+	private BufferedWriter out;
 	private String clientName;
 	
 	/**
 	 * Creates a new instance of a client handler, using the given socket. 
 	 * @param socket The socket that is used for read and write operations.
+	 * @throws IOException 
 	 */
-	public ClientHandler(Socket socket) {
+	public ClientHandler(Socket socket) throws IOException {
 		this.socket = socket;
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 	}
 
 	/**
@@ -35,14 +46,41 @@ public class ClientHandler extends Thread {
 	 */
 	@Override
     public void run() {
-		// TODO: implement body.
+		String line;
+		try {
+			while ((line = in.readLine()) != null) {
+				processCommand(line);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
+
+	private void processCommand(String line) {
+		System.out.println(this.getClientName() + ": " + line);
+		try (Scanner scanner = new Scanner(line)) {
+			switch (scanner.next()) {
+			case Protocol.CLIENT_JOINREQUEST:
+				clientName = scanner.next();
+				// TODO: check if name exists or not.
+				acceptJoinRequest();
+				break;
+			case Protocol.CLIENT_GAMEREQUEST:
+				break;
+			}
+		}		
+	}
 
 	/**
 	 * Notifies the client is accepted by the server.
 	 */
 	public void acceptJoinRequest() {
-		// TODO: implement body.
+		try {
+			out.write(Protocol.SERVER_ACCEPTREQUEST + " 0 0 0 0");
+			out.newLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

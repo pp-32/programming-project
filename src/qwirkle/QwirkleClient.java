@@ -22,41 +22,39 @@ public class QwirkleClient extends Thread {
 	
 	public static void main(String[] args) {
 		
-		new QwirkleClient().run();
+		if (args.length != 2) {
+			System.out.println(USAGE);
+			return;
+		}
 		
-//		if (args.length != 2) {
-//			System.out.println(USAGE);
-//			return;
-//		}
-//		
-//		// parse host address.
-//		InetAddress host;
-//		try {
-//			host = InetAddress.getByName(args[1]);
-//		} catch (UnknownHostException e) {
-//			System.err.println("ERROR: no valid hostname!");
-//			return;
-//		}
-//		
-//		// parse port.
-//		int port;
-//		try {
-//			port = Integer.parseInt(args[2]);
-//		} catch (NumberFormatException e) {
-//			System.err.println("ERROR: no valid portnummer!");
-//			return;
-//		}
-//		
-//		// create socket.
-//		QwirkleClient client;
-//		try {
-//			client = new QwirkleClient(host, port);
-//		} catch (IOException e) {
-//			System.err.println("ERROR: Could not create socket. " + e.getMessage());
-//			return;
-//		}
-//		
-//		client.start();
+		// parse host address.
+		InetAddress host;
+		try {
+			host = InetAddress.getByName(args[0]);
+		} catch (UnknownHostException e) {
+			System.err.println("ERROR: no valid hostname!");
+			return;
+		}
+		
+		// parse port.
+		int port;
+		try {
+			port = Integer.parseInt(args[1]);
+		} catch (NumberFormatException e) {
+			System.err.println("ERROR: no valid portnummer!");
+			return;
+		}
+		
+		// create socket.
+		QwirkleClient client;
+		try {
+			client = new QwirkleClient(host, port);
+		} catch (IOException e) {
+			System.err.println("ERROR: Could not create socket. " + e.getMessage());
+			return;
+		}
+		
+		client.run();
 	}
 	
 	private Socket socket;
@@ -108,7 +106,12 @@ public class QwirkleClient extends Thread {
 	 * @param playerName The name of the joining player.
 	 */
 	public void requestJoin(String playerName) {
-		// TODO: Implement body.
+		try {
+			out.write(Protocol.CLIENT_JOINREQUEST + " " + playerName + " 0 0 0 0");
+			out.newLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -116,7 +119,12 @@ public class QwirkleClient extends Thread {
 	 * @param playerCount The number of players. 
 	 */
 	public void requestGame(int playerCount) {
-		// TODO: Implement body.
+		try {
+			out.write(Protocol.CLIENT_GAMEREQUEST + " " + playerCount);
+			out.newLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -124,8 +132,77 @@ public class QwirkleClient extends Thread {
 	 * @param stonePlacements The stones to place.
 	 */
 	public void setMove(List<Move> stonePlacements) {
-		
-		
+
+		try {
+			out.write(Protocol.CLIENT_SETMOVE);
+			out.write(" ");
+			out.write(stonePlacements.size());
+			out.write(" ");
+			
+			for (Move move : stonePlacements) {
+				out.write(shapeToId(move.getStone().getShape()));
+				out.write(" ");
+				out.write(colorToId(move.getStone().getColor()));
+				out.write(" ");
+				out.write(move.getLocation().getX());
+				out.write(" ");
+				out.write(move.getLocation().getY());
+			}
+			
+			out.newLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private int shapeToId(StoneShape shape) {
+		int shapeId = 0;
+		switch (shape) {
+		case CIRCLE:
+			shapeId = Protocol.CIRCLE;
+			break;
+		case CROSS:
+			shapeId = Protocol.CROSS;
+			break;
+		case DIAMOND:
+			shapeId = Protocol.DIAMOND;
+			break;
+		case CLUBS:
+			shapeId = Protocol.CLUBS;
+			break;
+		case RECTANGLE:
+			shapeId = Protocol.RECTANGLE;
+			break;
+		case STAR:
+			shapeId = Protocol.STAR;
+			break;
+		}
+		return shapeId;
+	}
+	
+	private int colorToId(StoneColor color) {
+		int colorId = 0;
+		switch (color) {
+		case BLUE:
+			colorId = Protocol.BLUE;
+			break;
+		case GREEN:
+			colorId = Protocol.GREEN;
+			break;
+		case ORANGE:
+			colorId = Protocol.ORANGE;
+			break;
+		case PURPLE:
+			colorId = Protocol.PURPLE;
+			break;
+		case RED:
+			colorId = Protocol.RED;
+			break;
+		case YELLOW:
+			colorId = Protocol.YELLOW;
+			break;
+		}
+		return colorId;
 	}
 	
 	/**
