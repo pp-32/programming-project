@@ -133,8 +133,7 @@ public abstract class Board {
 
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		Rectangle dimensions = getDimensions();
-		builder.append(dimensions.toString() + "\n");		
+		Rectangle dimensions = getDimensions();		
 		for (int y = dimensions.getTopLeft().getY(); y >= dimensions.getBottomRight().getY(); y--) {
 			builder.append("| ");
 			for (int x = dimensions.getTopLeft().getX(); x <= dimensions.getBottomRight().getX(); x++) {

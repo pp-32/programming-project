@@ -1,6 +1,13 @@
 package qwirkle;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -11,15 +18,64 @@ import java.util.Map;
  */
 public class QwirkleClient extends Thread {
 	
-	private Socket socket;
-
-	public QwirkleClient(Socket socket) {
-		this.socket = socket;
+	public static final String USAGE = "Usage: java " + QwirkleClient.class.toString() + " <host> <port>";
+	
+	public static void main(String[] args) {
+		if (args.length != 2) {
+			System.out.println(USAGE);
+			return;
+		}
 		
+		// parse host address.
+		InetAddress host;
+		try {
+			host = InetAddress.getByName(args[1]);
+		} catch (UnknownHostException e) {
+			System.err.println("ERROR: no valid hostname!");
+			return;
+		}
+		
+		// parse port.
+		int port;
+		try {
+			port = Integer.parseInt(args[2]);
+		} catch (NumberFormatException e) {
+			System.err.println("ERROR: no valid portnummer!");
+			return;
+		}
+		
+		// create socket.
+		QwirkleClient client;
+		try {
+			client = new QwirkleClient(host, port);
+		} catch (IOException e) {
+			System.err.println("ERROR: Could not create socket. " + e.getMessage());
+			return;
+		}
+		
+		client.start();
 	}
 	
-	private String readResponse() {
-		// TODO: read from input stream.
+	private Socket socket;
+	private BufferedReader in;
+	private BufferedWriter out;
+	private Game game;
+	private View view;
+
+	public QwirkleClient(InetAddress host, int port) throws IOException {
+		socket = new Socket(host, port);
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+		view = new TUIView(this);
+	}
+	
+	/**
+	 * Waits for the server to respond. 
+	 * @return the response of the server.
+	 * @throws IOException 
+	 */
+	private String readResponse() throws IOException {
+		return in.readLine();
 	}
 	
 	/**
@@ -27,9 +83,14 @@ public class QwirkleClient extends Thread {
 	 */
 	@Override
 	public void run() {
-		while (true) {
-			String response = readResponse();
-			new ServerHandler(response, this).start();
+		try {
+			while (true) {
+				String response = readResponse();
+				new ServerHandler(response, this).start();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -54,6 +115,7 @@ public class QwirkleClient extends Thread {
 	 * @param stonePlacements The stones to place.
 	 */
 	public void setMove(Map<Stone, Location> stonePlacements) {
+		
 		// TODO: Implement body.
 	}
 	
@@ -65,4 +127,14 @@ public class QwirkleClient extends Thread {
 		// TODO: Implement body.
 	}
 
+	/**
+	 * Closes the connection with the server.
+	 */
+	public void shutDown() {
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

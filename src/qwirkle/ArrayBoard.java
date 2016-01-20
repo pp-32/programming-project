@@ -15,7 +15,7 @@ public class ArrayBoard extends Board {
 	public Board deepCopy() { 
 		ArrayBoard copy = new ArrayBoard();
 		for (int i = 0; i < BOARD_DIMENSION; i++) {
-			System.arraycopy(field[i], 0, copy.field[i], 0, BOARD_DIMENSION);
+			System.arraycopy(this.field[i], 0, copy.field[i], 0, BOARD_DIMENSION);
 		}
 		return copy;
 	}
@@ -64,22 +64,7 @@ public class ArrayBoard extends Board {
 		board.placeStone(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 1);
 		board.placeStone(new Stone(StoneShape.STAR, StoneColor.BLUE), 0, -1);
 		
-		
-		Rectangle dimensions = board.getDimensions();
-		System.out.println(dimensions.toString());
-		for (int y = dimensions.getTopLeft().getY(); y >= dimensions.getBottomRight().getY(); y--) {
-			System.out.print("| ");
-			for (int x = dimensions.getTopLeft().getX(); x <= dimensions.getBottomRight().getX(); x++) {
-				Stone field = board.getField(x, y);
-				if (field == null) {
-					System.out.print("  ");
-				} else {
-					System.out.print(field.toString());
-				}
-				System.out.print(" | ");
-			}
-			System.out.println();
-		}
+		System.out.println(board.toString());
 	}
 
 

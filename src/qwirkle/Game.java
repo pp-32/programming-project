@@ -1,8 +1,9 @@
 package qwirkle;
 
 import java.util.List;
+import java.util.Observable;
 
-public class Game {
+public class Game extends Observable {
 
 	// -- Instance variables -----------------------------------------
 
@@ -25,7 +26,7 @@ public class Game {
 	 * Creates a new <code>Game</code> object.
 	 */
 	public Game() {
-		board = new Board();
+		board = new ArrayBoard();
 	}
 
 	/**

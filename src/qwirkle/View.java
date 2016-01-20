@@ -1,18 +1,14 @@
 package qwirkle;
 
-public class View {
-	
+public interface View extends Runnable {
+		
 	/**
 	 * Updates the TUI.	
 	 */
-	public void updateView() {
-		
-	}
+	public void updateView();
 	
 	/**
 	 * Builds the TUI.
 	 */
-	public void buildView() {
-		
-	}
+	public void buildView();
 }
