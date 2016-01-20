@@ -12,8 +12,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TUIView implements View {
 
-	private final Lock lock = new ReentrantLock();
-	private final Condition gameStarted = lock.newCondition(); 
 	
 	private QwirkleClient client;
 	private Game game;
@@ -45,16 +43,13 @@ public class TUIView implements View {
 		client.requestGame(playerCount);
 		
 		// TODO: let the tui know that the game request is accepted
+		System.out.println("Waiting for game...");
+		 
+		
+		System.out.println("Game joined!");
 
-		lock.lock();
-		try {
-			gameStarted.await();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			lock.unlock();
-		}
+		System.out.println(client.getCurrentGame().getBoard().toString());
+		
 		
 		//String playerCount;
 		//System.out.print("");
@@ -138,8 +133,6 @@ public class TUIView implements View {
 		
 		if (arg0 == client) {
 			if (arg1 instanceof Game) {
-				this.game = (Game)arg1;
-				gameStarted.signalAll();
 			}
 		}
 	}

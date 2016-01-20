@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -66,6 +67,10 @@ public class ClientHandler extends Thread {
 				acceptJoinRequest();
 				break;
 			case Protocol.CLIENT_GAMEREQUEST:
+				List<String> playerNames = new ArrayList<String>();
+				playerNames.add("Jerre");
+				playerNames.add("kaas");
+				startGame(playerNames);
 				break;
 			}
 		}		
@@ -89,7 +94,18 @@ public class ClientHandler extends Thread {
 	 * @param names The names of the players the client will be playing against.
 	 */
 	public void startGame(List<String> names) {
-		// TODO: implement body.
+		try {
+			out.write(Protocol.SERVER_STARTGAME);
+			for (String name : names) {
+				out.write(" ");
+				out.write(name);
+			}
+			
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

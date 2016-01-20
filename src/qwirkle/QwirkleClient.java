@@ -77,6 +77,11 @@ public class QwirkleClient extends Observable {
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		view = new TUIView(this);
+		addObserver(view);
+	}
+	
+	public Game getCurrentGame() {
+		return game;
 	}
 	
 	/**
@@ -91,12 +96,12 @@ public class QwirkleClient extends Observable {
 	/**
 	 * Starts to process all incoming traffic. 
 	 */
-	@Override
 	public void run() {
 		new Thread(view).start();
 		try {
 			while (true) {
 				String response = readResponse();
+				System.out.println(response);
 				processResponse(response);
 			}
 		} catch (IOException e) {
@@ -113,7 +118,6 @@ public class QwirkleClient extends Observable {
 				break;
 			case Protocol.SERVER_STARTGAME:
 				handleStartGameCommand(scanner);
-				notifyObservers(game);
 				break;			
 			}
 		}
@@ -130,7 +134,7 @@ public class QwirkleClient extends Observable {
 			}
 		}
 		
-		game = new Game(players);
+		this.game = new Game(players);
 	}
 	
 	
@@ -154,13 +158,15 @@ public class QwirkleClient extends Observable {
 	 * @param playerCount The number of players. 
 	 */
 	public void requestGame(int playerCount) {
-		try {
-			out.write(Protocol.CLIENT_GAMEREQUEST + " " + playerCount);
-			out.newLine();
-			out.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		handleStartGameCommand(new Scanner("Jerre kaas"));
+		
+//		try {
+//			out.write(Protocol.CLIENT_GAMEREQUEST + " " + playerCount);
+//			out.newLine();
+//			out.flush();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	/**

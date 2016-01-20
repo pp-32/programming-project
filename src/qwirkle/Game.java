@@ -1,5 +1,6 @@
 package qwirkle;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
@@ -27,7 +28,21 @@ public class Game extends Observable {
 	 */
 	public Game(List<Player> players) {
 		board = new ArrayBoard();
+		this.players = new ArrayList<Player>();
 		this.players.addAll(players);
+	}
+	
+	public Board getBoard() {
+		return board;
+	}
+	
+	public HumanPlayer getHumanPlayer() {
+		for (Player p : players) {
+			if (p instanceof HumanPlayer) {
+				return (HumanPlayer)p;
+			}
+		}
+		return null;
 	}
 
 	/**

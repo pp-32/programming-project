@@ -13,4 +13,5 @@ public interface View extends Runnable, Observer {
 	 * Builds the TUI.
 	 */
 	public void buildView();
+	
 }
