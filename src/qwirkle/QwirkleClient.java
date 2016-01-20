@@ -8,15 +8,18 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Scanner;
 
 /**
  * Represents a client that is connected to the server.
  * @author Jerre
  *
  */
-public class QwirkleClient extends Thread {
+public class QwirkleClient extends Observable {
 	
 	public static final String USAGE = "Usage: java " + QwirkleClient.class.toString() + " <host> <port>";
 	
@@ -62,6 +65,7 @@ public class QwirkleClient extends Thread {
 	private BufferedWriter out;
 	private Game game;
 	private View view;
+	private String clientName;
 
 	// TODO: remove.
 	public QwirkleClient() {
@@ -93,7 +97,7 @@ public class QwirkleClient extends Thread {
 		try {
 			while (true) {
 				String response = readResponse();
-				new ServerHandler(response, this).start();
+				processResponse(response);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -101,14 +105,45 @@ public class QwirkleClient extends Thread {
 		}
 	}
 	
+	private void processResponse(String response) {
+		try (Scanner scanner = new Scanner(response)) {
+			switch(scanner.next()) {
+			case Protocol.SERVER_ACCEPTREQUEST:
+				// TODO accept
+				break;
+			case Protocol.SERVER_STARTGAME:
+				handleStartGameCommand(scanner);
+				notifyObservers(game);
+				break;			
+			}
+		}
+	}
+	
+	private void handleStartGameCommand(Scanner scanner) {
+		List<Player> players = new ArrayList<Player>();
+		while (scanner.hasNext()) {
+			String name = scanner.next();
+			if (name.equals(clientName)) {
+				players.add(new HumanPlayer(name));
+			} else { 
+				players.add(new Player(name)); 
+			}
+		}
+		
+		game = new Game(players);
+	}
+	
+	
 	/**
 	 * Requests to join the server.
 	 * @param playerName The name of the joining player.
 	 */
 	public void requestJoin(String playerName) {
+		this.clientName = playerName;
 		try {
 			out.write(Protocol.CLIENT_JOINREQUEST + " " + playerName + " 0 0 0 0");
 			out.newLine();
+			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -122,6 +157,7 @@ public class QwirkleClient extends Thread {
 		try {
 			out.write(Protocol.CLIENT_GAMEREQUEST + " " + playerCount);
 			out.newLine();
+			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -150,6 +186,7 @@ public class QwirkleClient extends Thread {
 			}
 			
 			out.newLine();
+			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

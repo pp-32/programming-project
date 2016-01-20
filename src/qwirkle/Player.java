@@ -2,7 +2,7 @@ package qwirkle;
 
 import java.util.List;
 
-public abstract class Player {
+public class Player {
 
 	private String name;
 	private int score;

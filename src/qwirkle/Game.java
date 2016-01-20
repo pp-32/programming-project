@@ -25,8 +25,9 @@ public class Game extends Observable {
 	/**
 	 * Creates a new <code>Game</code> object.
 	 */
-	public Game() {
+	public Game(List<Player> players) {
 		board = new ArrayBoard();
+		this.players.addAll(players);
 	}
 
 	/**

@@ -1,6 +1,8 @@
 package qwirkle;
 
-public interface View extends Runnable {
+import java.util.Observer;
+
+public interface View extends Runnable, Observer {
 		
 	/**
 	 * Updates the TUI.	

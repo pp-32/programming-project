@@ -57,7 +57,7 @@ public class ClientHandler extends Thread {
     }
 
 	private void processCommand(String line) {
-		System.out.println(this.getClientName() + ": " + line);
+		System.out.println(line);
 		try (Scanner scanner = new Scanner(line)) {
 			switch (scanner.next()) {
 			case Protocol.CLIENT_JOINREQUEST:
@@ -78,6 +78,7 @@ public class ClientHandler extends Thread {
 		try {
 			out.write(Protocol.SERVER_ACCEPTREQUEST + " 0 0 0 0");
 			out.newLine();
+			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
