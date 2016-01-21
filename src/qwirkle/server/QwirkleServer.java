@@ -59,6 +59,11 @@ public class QwirkleServer extends Thread implements Observer {
 	private List<GameRequest> pendingRequests;
 	private List<Game> currentGames;
 	
+	/**
+	 * Creates a new Qwirkle server using the given port.
+	 * @param port The port.
+	 * @throws IOException Occurs when the socket could not be created on the given port.
+	 */
 	public QwirkleServer(int port) throws IOException {
 		this.connectedClients = new ArrayList<ClientHandler>();
 		this.pendingRequests = new ArrayList<GameRequest>();
@@ -69,7 +74,7 @@ public class QwirkleServer extends Thread implements Observer {
 	
 	/**
 	 * Gets the port the server socket is using.
-	 * @return
+	 * @return the port.
 	 */
 	public int getPort() {
 		return port;
@@ -131,7 +136,7 @@ public class QwirkleServer extends Thread implements Observer {
 	 */
 	public ClientHandler getClientByName(String name) {
 		for (ClientHandler handler : connectedClients) {
-			if (handler.getClientName().equals(name)) {
+			if (name.equals(handler.getClientName())) {
 				return handler;
 			}
 		}

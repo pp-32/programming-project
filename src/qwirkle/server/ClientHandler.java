@@ -111,9 +111,14 @@ public class ClientHandler extends Thread {
 		try (Scanner scanner = new Scanner(line)) {
 			switch (scanner.next()) {
 			case Protocol.CLIENT_JOINREQUEST:
-				clientName = scanner.next();
-				// TODO: check if name exists or not.
-				acceptJoinRequest();
+				String clientName = scanner.next();
+				if (server.getClientByName(clientName) == null) {
+					this.clientName = clientName; 
+					acceptJoinRequest();
+				} else {
+					sendInvalidCommandError("Username " + clientName + " already exists!");
+				}
+				
 				break;
 			case Protocol.CLIENT_GAMEREQUEST:
 				handleGameRequestCommand(scanner);
@@ -161,6 +166,7 @@ public class ClientHandler extends Thread {
 	 * Notifies the client is accepted by the server.
 	 */
 	public void acceptJoinRequest() {
+		
 		try {
 			out.write(Protocol.SERVER_ACCEPTREQUEST + " 0 0 0 0");
 			out.newLine();
@@ -290,7 +296,15 @@ public class ClientHandler extends Thread {
 	 * @param reason The reason of the error that occured
 	 */
 	public void sendInvalidCommandError(String reason) {
-		// TODO: implement body.
+		try {
+			out.write(Protocol.SERVER_INVALIDCOMMAND);
+			out.write(" ");
+			out.write(reason);
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
