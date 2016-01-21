@@ -12,9 +12,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TUIView implements View {
 
+	private Lock lock = new ReentrantLock();
+	private Condition gameStarted = lock.newCondition();
 	
 	private QwirkleClient client;
-	private Game game;
 	
 
 	public TUIView(QwirkleClient client) {
@@ -45,10 +46,19 @@ public class TUIView implements View {
 		// TODO: let the tui know that the game request is accepted
 		System.out.println("Waiting for game...");
 		 
+		lock.lock();
+		try {
+			gameStarted.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			lock.unlock();
+		}
 		
 		System.out.println("Game joined!");
 
 		System.out.println(client.getCurrentGame().getBoard().toString());
+		printStones(client.getCurrentGame().getHumanPlayer().getStones());
 		
 		
 		//String playerCount;
@@ -90,9 +100,10 @@ public class TUIView implements View {
 
 		for (int i = 0; i < stonesCount; i++) {
 			int stoneIndex = Integer.parseInt(commandScanner.next());
+			stones.add(client.getCurrentGame().getHumanPlayer().getStones().get(stoneIndex));
 		}
 
-		// TODO: ask controller for hand and retrieve stones from there.
+		client.doTrade(stones);
 
 	}
 
@@ -108,14 +119,11 @@ public class TUIView implements View {
 			int y = Integer.parseInt(commandScanner.next());
 			Location location = new Location(x, y);
 
-			// TODO: ask controller for hand and retrieve stones from there.
-
-			Move move = new Move(null, location);
+			Move move = new Move(client.getCurrentGame().getHumanPlayer().getStones().get(stoneIndex), location);
 			moves.add(move);
 		}
 
 		client.setMove(moves);
-		System.out.println(moves.size());
 	}
 
 	public void updateView() {
@@ -127,13 +135,41 @@ public class TUIView implements View {
 		// TODO Auto-generated method stub
 
 	}
-
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		
-		if (arg0 == client) {
-			if (arg1 instanceof Game) {
+	
+	private void printStones(List<Stone> stones) {
+		for (int i = 0; i < stones.size(); i++) {
+			Stone s = stones.get(i);
+			System.out.print(s.toString());
+			if (i < stones.size() - 1) {
+				System.out.print(" ");
 			}
 		}
+		System.out.println();
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {		
+		if (arg1 instanceof Game) {
+			lock.lock();
+			try {
+				gameStarted.signalAll();
+			} finally {
+				lock.unlock();
+			}
+		} else if (arg0 instanceof Board) {
+			System.out.println(((Board)arg0).toString());
+		} else if (arg0 instanceof HumanPlayer) {
+			switch ((String)arg1) {
+			case "stones":
+				printStones(((HumanPlayer)arg0).getStones());
+				break;
+			}
+		}
+	}
+
+	@Override
+	public void showError(String reason) {
+		System.out.println(reason);
+		
 	}
 }

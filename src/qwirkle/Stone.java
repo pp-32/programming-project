@@ -1,5 +1,7 @@
 package qwirkle;
 
+import java.util.Scanner;
+
 /**
  * Represents a stone in the Qwirkle game.
  * 
@@ -99,5 +101,97 @@ public class Stone {
 	
 	public int hashCode() {
 		return getShape().hashCode() ^ getColor().hashCode();
+	}
+	
+	public static Stone fromScanner(Scanner scanner) {
+		return new Stone(idToShape(scanner.nextInt()), idToColor(scanner.nextInt()));
+	}
+	
+	public static String shapeToString(StoneShape shape) {
+		int shapeId = 0;
+		switch (shape) {
+		case CIRCLE:
+			shapeId = Protocol.CIRCLE;
+			break;
+		case CROSS:
+			shapeId = Protocol.CROSS;
+			break;
+		case DIAMOND:
+			shapeId = Protocol.DIAMOND;
+			break;
+		case CLUBS:
+			shapeId = Protocol.CLUBS;
+			break;
+		case RECTANGLE:
+			shapeId = Protocol.RECTANGLE;
+			break;
+		case STAR:
+			shapeId = Protocol.STAR;
+			break;
+		}
+		return Integer.toString(shapeId);
+	}
+	
+	public static StoneShape idToShape(int id) {
+		switch (id) {
+		case Protocol.CIRCLE:
+			return StoneShape.CIRCLE;
+		case Protocol.CROSS:
+			return StoneShape.CROSS;
+		case Protocol.DIAMOND:
+			return StoneShape.DIAMOND;
+		case Protocol.CLUBS:
+			return StoneShape.CLUBS;
+		case Protocol.RECTANGLE:
+			return StoneShape.RECTANGLE;
+		case Protocol.STAR:
+			return StoneShape.STAR;
+		}
+		// TODO: change to exception?
+		return StoneShape.CIRCLE;
+	}
+	
+	public static String colorToString(StoneColor color) {
+		int colorId = 0;
+		switch (color) {
+		case BLUE:
+			colorId = Protocol.BLUE;
+			break;
+		case GREEN:
+			colorId = Protocol.GREEN;
+			break;
+		case ORANGE:
+			colorId = Protocol.ORANGE;
+			break;
+		case PURPLE:
+			colorId = Protocol.PURPLE;
+			break;
+		case RED:
+			colorId = Protocol.RED;
+			break;
+		case YELLOW:
+			colorId = Protocol.YELLOW;
+			break;
+		}
+		return Integer.toString(colorId);
+	}
+	
+	public static StoneColor idToColor(int id) {
+		switch (id) {
+		case Protocol.BLUE:
+			return StoneColor.BLUE;
+		case Protocol.GREEN:
+			return StoneColor.GREEN;
+		case Protocol.ORANGE:
+			return StoneColor.ORANGE;
+		case Protocol.PURPLE:
+			return StoneColor.PURPLE;
+		case Protocol.RED:
+			return StoneColor.RED;
+		case Protocol.YELLOW:
+			return StoneColor.YELLOW;
+		}
+		// TODO: change to exception?
+		return StoneColor.RED;
 	}
 }

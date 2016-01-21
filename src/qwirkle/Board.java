@@ -2,18 +2,44 @@ package qwirkle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 /**
  * Represents a board in the Qwirkle game.
  * @author Jerre
  *
  */
-public abstract class Board {
+public abstract class Board extends Observable {
+
+	private StoneShape[] shapes = new StoneShape[] {
+			StoneShape.CIRCLE,
+			StoneShape.CLUBS,
+			StoneShape.CROSS,
+			StoneShape.DIAMOND,
+			StoneShape.RECTANGLE,
+			StoneShape.STAR,
+	};
+	private StoneColor[] colors = new StoneColor[] {
+			StoneColor.RED,
+			StoneColor.BLUE,
+			StoneColor.GREEN,
+			StoneColor.ORANGE,
+			StoneColor.PURPLE,
+			StoneColor.YELLOW
+	};
 	
 	private List<Stone> stones; 
 	
 	public Board() {
 		stones = new ArrayList<Stone>();
+		
+		for (int i = 0; i < 3; i++) {
+			for (int k = 0; k < 6; k++) {
+				for (int l = 0; l < 6; l++) {
+					stones.add(new Stone(shapes[k], colors[l]));
+				}
+			}
+		}
 	}
 	
 	/**
@@ -94,6 +120,21 @@ public abstract class Board {
 		stones.add(stone);
 	}
 	
+	public boolean checkMoves(List<Move> moves) {
+
+		Board copy = deepCopy();
+		
+		for (Move m : moves) {
+			if (copy.checkMove(m.getStone(), m.getLocation().getX(), m.getLocation().getY())) {
+				copy.placeStone(m.getStone(), m.getLocation().getX(), m.getLocation().getY());
+			} else {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * Determines whether a placement of a specific stone at the given location
 	 * is a legal move or not.
@@ -131,9 +172,18 @@ public abstract class Board {
 	 */
 	public abstract void placeStone(Stone stone, int x, int y);
 
+	public void placeStones(List<Move> moves) {
+		for (Move m : moves) {
+			placeStone(m.getStone(), m.getLocation().getX(), m.getLocation().getY());
+		}
+		setChanged();
+		notifyObservers(this);
+	}
+	
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		Rectangle dimensions = getDimensions();		
+		Rectangle dimensions = getDimensions().deepCopy();		
+		dimensions.inflate(1);
 		for (int y = dimensions.getTopLeft().getY(); y >= dimensions.getBottomRight().getY(); y--) {
 			builder.append("| ");
 			for (int x = dimensions.getTopLeft().getX(); x <= dimensions.getBottomRight().getX(); x++) {

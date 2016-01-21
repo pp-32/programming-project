@@ -119,10 +119,48 @@ public class QwirkleClient extends Observable {
 			case Protocol.SERVER_STARTGAME:
 				handleStartGameCommand(scanner);
 				break;			
+			case Protocol.SERVER_GIVESTONES:
+				handleGiveStonesCommand(scanner);
+				break;
+			case Protocol.SERVER_NOTIFYMOVE:
+				handleNotifyMoveCommand(scanner);
+				break;
 			}
 		}
 	}
 	
+	private void handleNotifyMoveCommand(Scanner scanner) {
+		List<Move> moves = new ArrayList<Move>();
+		
+		String name = scanner.next();
+		int score = scanner.nextInt();
+		int amount = scanner.nextInt();
+		
+		for (int i = 0; i < amount; i++) {
+			moves.add(Move.fromScanner(scanner));
+		}
+		
+		game.getBoard().placeStones(moves);
+		
+		for (Player p : game.getPlayers()) {
+			if (p.getName().equals(name)) {
+				p.setScore(p.getScore() + score);
+				break;
+			}
+		}
+	}
+
+	private void handleGiveStonesCommand(Scanner scanner) {
+		List<Stone> stones = new ArrayList<Stone>();
+		int amount = scanner.nextInt();
+		
+		for (int i = 0; i < amount; i++) {
+			stones.add(Stone.fromScanner(scanner));
+		}
+		
+		game.getHumanPlayer().giveStones(stones);
+	}
+
 	private void handleStartGameCommand(Scanner scanner) {
 		List<Player> players = new ArrayList<Player>();
 		while (scanner.hasNext()) {
@@ -134,9 +172,12 @@ public class QwirkleClient extends Observable {
 			}
 		}
 		
-		this.game = new Game(players);
+		game = new Game(players);
+		game.getBoard().addObserver(view);
+		game.getHumanPlayer().addObserver(view);
+		setChanged();
+		notifyObservers(game);
 	}
-	
 	
 	/**
 	 * Requests to join the server.
@@ -158,15 +199,13 @@ public class QwirkleClient extends Observable {
 	 * @param playerCount The number of players. 
 	 */
 	public void requestGame(int playerCount) {
-		handleStartGameCommand(new Scanner("Jerre kaas"));
-		
-//		try {
-//			out.write(Protocol.CLIENT_GAMEREQUEST + " " + playerCount);
-//			out.newLine();
-//			out.flush();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			out.write(Protocol.CLIENT_GAMEREQUEST + " " + playerCount);
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -174,21 +213,29 @@ public class QwirkleClient extends Observable {
 	 * @param stonePlacements The stones to place.
 	 */
 	public void setMove(List<Move> stonePlacements) {
-
+	
+		if (game.getBoard().checkMoves(stonePlacements)) {
+			game.getHumanPlayer().placeStones(game.getBoard(), stonePlacements);
+			
+		} else {
+			view.showError("Invalid move!");
+			return;
+		}
+		
 		try {
 			out.write(Protocol.CLIENT_SETMOVE);
 			out.write(" ");
-			out.write(stonePlacements.size());
-			out.write(" ");
+			out.write(Integer.toString(stonePlacements.size()));
 			
 			for (Move move : stonePlacements) {
-				out.write(shapeToId(move.getStone().getShape()));
 				out.write(" ");
-				out.write(colorToId(move.getStone().getColor()));
+				out.write(Stone.shapeToString(move.getStone().getShape()));
 				out.write(" ");
-				out.write(move.getLocation().getX());
+				out.write(Stone.colorToString(move.getStone().getColor()));
 				out.write(" ");
-				out.write(move.getLocation().getY());
+				out.write(Integer.toString(move.getLocation().getX()));
+				out.write(" ");
+				out.write(Integer.toString(move.getLocation().getY()));
 			}
 			
 			out.newLine();
@@ -197,63 +244,31 @@ public class QwirkleClient extends Observable {
 			e.printStackTrace();
 		}
 	}
-	
-	private int shapeToId(StoneShape shape) {
-		int shapeId = 0;
-		switch (shape) {
-		case CIRCLE:
-			shapeId = Protocol.CIRCLE;
-			break;
-		case CROSS:
-			shapeId = Protocol.CROSS;
-			break;
-		case DIAMOND:
-			shapeId = Protocol.DIAMOND;
-			break;
-		case CLUBS:
-			shapeId = Protocol.CLUBS;
-			break;
-		case RECTANGLE:
-			shapeId = Protocol.RECTANGLE;
-			break;
-		case STAR:
-			shapeId = Protocol.STAR;
-			break;
-		}
-		return shapeId;
-	}
-	
-	private int colorToId(StoneColor color) {
-		int colorId = 0;
-		switch (color) {
-		case BLUE:
-			colorId = Protocol.BLUE;
-			break;
-		case GREEN:
-			colorId = Protocol.GREEN;
-			break;
-		case ORANGE:
-			colorId = Protocol.ORANGE;
-			break;
-		case PURPLE:
-			colorId = Protocol.PURPLE;
-			break;
-		case RED:
-			colorId = Protocol.RED;
-			break;
-		case YELLOW:
-			colorId = Protocol.YELLOW;
-			break;
-		}
-		return colorId;
-	}
-	
+		
 	/**
 	 * Requests the server to trade the given stones.
 	 * @param stones The stones to trade.
 	 */
 	public void doTrade(List<Stone> stones) {
-		// TODO: Implement body.
+		game.getHumanPlayer().stones.removeAll(stones);
+		
+		try {
+			out.write(Protocol.CLIENT_DOTRADE);
+			out.write(" ");
+			out.write(Integer.toString(stones.size()));
+			
+			for (Stone s: stones) {
+				out.write(" ");
+				out.write(Stone.shapeToString(s.getShape()));
+				out.write(" ");
+				out.write(Stone.colorToString(s.getColor()));
+			}
+			
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

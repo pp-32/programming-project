@@ -1,4 +1,4 @@
-package qwirkle;
+package qwirkle.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,6 +11,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import qwirkle.Board;
+import qwirkle.Game;
+import qwirkle.HumanPlayer;
+import qwirkle.Location;
+import qwirkle.Move;
+import qwirkle.Player;
+import qwirkle.Protocol;
+import qwirkle.Stone;
+
 /**
  * Represents a client handler that handles traffic between the server and a connected client. 
  * @author Jerre
@@ -22,13 +31,17 @@ public class ClientHandler extends Thread {
 	private BufferedReader in;
 	private BufferedWriter out;
 	private String clientName;
+	private Game currentGame;
+	private HumanPlayer currentPlayer;
+	private QwirkleServer server;
 	
 	/**
 	 * Creates a new instance of a client handler, using the given socket. 
 	 * @param socket The socket that is used for read and write operations.
 	 * @throws IOException 
 	 */
-	public ClientHandler(Socket socket) throws IOException {
+	public ClientHandler(QwirkleServer server, Socket socket) throws IOException {
+		this.server = server;
 		this.socket = socket;
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -67,13 +80,45 @@ public class ClientHandler extends Thread {
 				acceptJoinRequest();
 				break;
 			case Protocol.CLIENT_GAMEREQUEST:
-				List<String> playerNames = new ArrayList<String>();
-				playerNames.add("Jerre");
-				playerNames.add("kaas");
-				startGame(playerNames);
+				handleGameRequestCommand(scanner);
+				break;
+			case Protocol.CLIENT_SETMOVE:
+				handleSetMoveCommand(scanner);
+				break;
+			case Protocol.CLIENT_DOTRADE:
+				handleDoTradeCommand(scanner);
 				break;
 			}
 		}		
+	}
+
+	private void handleDoTradeCommand(Scanner scanner) {
+		List<Stone> stones = new ArrayList<Stone>();
+		int amount = scanner.nextInt();
+
+		Board board = currentGame.getBoard();
+		for (int i = 0; i < amount; i++) {
+			stones.add(board.pickStone());
+			board.placeStoneInBag(Stone.fromScanner(scanner));
+		}
+		
+		giveStones(stones);
+	}
+
+	private void handleSetMoveCommand(Scanner scanner) {
+		List<Move> moves = new ArrayList<Move>();
+		int amount = scanner.nextInt();
+		
+		for (int i = 0; i < amount; i++) {
+			moves.add(Move.fromScanner(scanner));
+		}
+	
+		server.broadcastMove(getCurrentGame(), this, moves);
+	}
+
+	private void handleGameRequestCommand(Scanner scanner) {
+		int desiredPlayers = scanner.nextInt();
+		server.requestGame(this, desiredPlayers);
 	}
 
 	/**
@@ -113,7 +158,26 @@ public class ClientHandler extends Thread {
 	 * @param stones The stones to give.
 	 */
 	public void giveStones(List<Stone> stones) {
-		// TODO: implement body.
+		
+		currentPlayer.getStones().addAll(stones);
+		
+		try {
+			out.write(Protocol.SERVER_GIVESTONES);
+			out.write(" ");
+			out.write(Integer.toString(stones.size()));
+			
+			for (Stone s : stones) {
+				out.write(" ");
+				out.write(Stone.shapeToString(s.getShape()));
+				out.write(" ");
+				out.write(Stone.colorToString(s.getColor()));
+			}
+			
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -129,8 +193,33 @@ public class ClientHandler extends Thread {
 	 * @param score The score the player has earned using the move. 
 	 * @param stonePlacements The placements of the stones.
 	 */
-	public void notifyMove(String name, int score, Map<Stone, Location> stonePlacements) {
-		// TODO: implement body.
+	public void notifyMove(String name, int score, List<Move> stonePlacements) {
+
+		try {
+			out.write(Protocol.SERVER_NOTIFYMOVE);
+			out.write(" ");
+			out.write(name);
+			out.write(" ");
+			out.write(Integer.toString(score));
+			out.write(" ");
+			out.write(Integer.toString(stonePlacements.size()));
+			
+			for (Move move : stonePlacements) {
+				out.write(" ");
+				out.write(Stone.shapeToString(move.getStone().getShape()));
+				out.write(" ");
+				out.write(Stone.colorToString(move.getStone().getColor()));
+				out.write(" ");
+				out.write(Integer.toString(move.getLocation().getX()));
+				out.write(" ");
+				out.write(Integer.toString(move.getLocation().getY()));
+			}
+			
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -164,5 +253,21 @@ public class ClientHandler extends Thread {
 	 */
 	public void notifyConnectionLost(String name) {
 		// TODO: implement body.
+	}
+
+	public Game getCurrentGame() {
+		return currentGame;
+	}
+
+	public void setCurrentGame(Game currentGame) {
+		this.currentGame = currentGame;
+	}
+
+	public HumanPlayer getCurrentPlayer() {
+		return currentPlayer;
+	}
+
+	public void setCurrentPlayer(HumanPlayer  currentPlayer) {
+		this.currentPlayer = currentPlayer;
 	}
 }

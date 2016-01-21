@@ -14,4 +14,5 @@ public interface View extends Runnable, Observer {
 	 */
 	public void buildView();
 	
+	public void showError(String reason);
 }

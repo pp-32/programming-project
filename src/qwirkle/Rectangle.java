@@ -66,4 +66,15 @@ public class Rectangle {
 	public String toString() {
 		return topLeft.toString() + " => " + bottomRight.toString();
 	}
+
+	public void inflate(int i) {
+		topLeft.setX(topLeft.getX() - i);
+		topLeft.setY(topLeft.getY() + i);
+		bottomRight.setX(bottomRight.getX() + i);
+		bottomRight.setY(bottomRight.getY() - i);
+	}
+	
+	public Rectangle deepCopy() {
+		return new Rectangle(topLeft.deepCopy(), bottomRight.deepCopy());
+	}
 }

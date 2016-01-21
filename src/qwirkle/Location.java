@@ -1,5 +1,7 @@
 package qwirkle;
 
+import java.util.Scanner;
+
 /**
  * Represents a location on the Qwirkle board.
  * @author Jerre
@@ -62,5 +64,9 @@ public class Location {
 	
 	public Location deepCopy() {
 		return new Location(getX(), getY());
+	}
+
+	public static Location fromScanner(Scanner scanner) {
+		return new Location(scanner.nextInt(), scanner.nextInt());
 	}
 }

@@ -103,4 +103,8 @@ public class Game extends Observable {
 		return false;
 	}
 
+	public List<Player> getPlayers() {
+		return players;
+	}
+
 }

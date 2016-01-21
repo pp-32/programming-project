@@ -1,5 +1,7 @@
 package qwirkle;
 
+import java.util.Scanner;
+
 /** 
  * Represents a stone placement in the Qwirkle game.
  * @author Jerre
@@ -34,5 +36,9 @@ public class Move {
 	 */
 	public Location getLocation() {
 		return location;
+	}
+	
+	public static Move fromScanner(Scanner scanner) {
+		return new Move(Stone.fromScanner(scanner), Location.fromScanner(scanner));
 	}
 }
