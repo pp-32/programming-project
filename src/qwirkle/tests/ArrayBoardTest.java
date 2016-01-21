@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import junit.framework.Assert;
 import qwirkle.ArrayBoard;
+import qwirkle.Move;
 import qwirkle.Stone;
 import qwirkle.StoneColor;
 import qwirkle.StoneShape;
@@ -29,7 +30,7 @@ public class ArrayBoardTest {
 	@Before
 	public void setUp() throws Exception {
 		board = new ArrayBoard();
-		board.placeStone(stone, 0, 0);
+		board.placeStone(new Move(stone, 0, 0));
 	}
 
 	@Test
@@ -40,14 +41,14 @@ public class ArrayBoardTest {
 	@Test
 	public void placeStoneBefore() {
 		assertEquals(0, board.getDimensions().getTopLeft().getX());
-		board.placeStone(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 0);
+		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 0));
 		assertEquals(-1, board.getDimensions().getTopLeft().getX());
 	}
 
 	@Test
 	public void placeStoneAfter() {
 		assertEquals(0, board.getDimensions().getBottomRight().getX());
-		board.placeStone(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 1, 0);
+		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 1, 0));
 		assertEquals(1, board.getDimensions().getBottomRight().getX());
 	}
 	
@@ -55,7 +56,7 @@ public class ArrayBoardTest {
 	public void placeStoneAbove() {
 		assertEquals(0, board.getDimensions().getTopLeft().getX());
 		assertEquals(0, board.getDimensions().getTopLeft().getY());
-		board.placeStone(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 1);
+		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 1));
 		assertEquals(0, board.getDimensions().getTopLeft().getX());
 		assertEquals(1, board.getDimensions().getTopLeft().getY());
 	}
@@ -64,7 +65,7 @@ public class ArrayBoardTest {
 	public void placeStoneBelow() {
 		assertEquals(0, board.getDimensions().getBottomRight().getX());
 		assertEquals(0, board.getDimensions().getBottomRight().getY());
-		board.placeStone(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, -1);
+		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, -1));
 		assertEquals(0, board.getDimensions().getBottomRight().getX());
 		assertEquals(-1, board.getDimensions().getBottomRight().getY());
 	}

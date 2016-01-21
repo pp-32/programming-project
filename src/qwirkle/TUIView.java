@@ -60,8 +60,6 @@ public class TUIView implements View {
 		System.out.println(client.getCurrentGame().getBoard().toString());
 		printStones(client.getCurrentGame().getHumanPlayer().getStones());
 		
-		
-
 		try (Scanner scanner = new Scanner(System.in)) {
 			boolean continueLoop = true;
 			while (continueLoop) {

@@ -101,7 +101,7 @@ public class QwirkleClient extends Observable {
 		try {
 			while (true) {
 				String response = readResponse();
-				System.out.println(response);
+				System.out.println("[server]: " + response);
 				processResponse(response);
 			}
 		} catch (IOException e) {

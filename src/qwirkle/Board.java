@@ -101,6 +101,15 @@ public abstract class Board extends Observable {
 	public boolean canPickStone() {
 		return stones.size() > 0;
 	}
+
+	/**
+	 * Determines whether the given amount of stones can be picked up from the pile.
+	 * @param amount the amount of stones to pick.
+	 * @return True if the pile is not empty, false otherwise.
+	 */
+	public boolean canPickStones(int amount) {
+		return stones.size() >= amount;
+	}
 	
 	/**
 	 * Grabs a stone from the pile.
@@ -113,6 +122,19 @@ public abstract class Board extends Observable {
 	}
 	
 	/**
+	 * Grabs a given amount of stones from the pile.
+	 * @param amount The amount of stones to grab.
+	 * @return The stones that were grabbed.
+	 */
+	public List<Stone> pickStones(int amount) { 
+		List<Stone> stones = new ArrayList<Stone>();
+		for (int i = 0; i < amount; i++) {
+			stones.add(pickStone());
+		}
+		return stones;
+	}
+	
+	/**
 	 * Places a stone in the bag.
 	 * @param stone the stone.
 	 */
@@ -120,13 +142,18 @@ public abstract class Board extends Observable {
 		stones.add(stone);
 	}
 	
+	/**
+	 * Determines whether a list of moves combine to a legal move.
+	 * @param moves The moves to check.
+	 * @return True if the moves are legal, false otherwise.
+	 */
 	public boolean checkMoves(List<Move> moves) {
 
 		Board copy = deepCopy();
 		
 		for (Move m : moves) {
-			if (copy.checkMove(m.getStone(), m.getLocation().getX(), m.getLocation().getY())) {
-				copy.placeStone(m.getStone(), m.getLocation().getX(), m.getLocation().getY());
+			if (copy.checkMove(m)) {
+				copy.placeStone(m);
 			} else {
 				return false;
 			}
@@ -138,12 +165,13 @@ public abstract class Board extends Observable {
 	/**
 	 * Determines whether a placement of a specific stone at the given location
 	 * is a legal move or not.
-	 * @param stone The stone to place.
-	 * @param x The x-coordinate of the field to place the stone on.
-	 * @param y The y-coordinate of the field to place the stone on.
+	 * @param move The move to check.
 	 * @return True if the move is legal, false otherwise.
 	 */
-	public boolean checkMove(Stone stone, int x, int y) {
+	public boolean checkMove(Move move) {
+		int x = move.getLocation().getX();
+		int y = move.getLocation().getY();
+		
 		if (isEmpty()) {
 			return x == 0 && y == 0;
 		} else if (!isEmptyField(x, y)) {
@@ -156,7 +184,7 @@ public abstract class Board extends Observable {
 		}
 		
 		Board copy = this.deepCopy();
-		copy.placeStone(stone, x, y);
+		copy.placeStone(move);
 
 		Sequence horizontal = new Sequence(copy, new Location(x, y), SequenceDirection.HORIZONTAL);
 		Sequence vertical = new Sequence(copy, new Location(x, y), SequenceDirection.VERTICAL);
@@ -165,16 +193,18 @@ public abstract class Board extends Observable {
 	}
 	
 	/**
-	 * Places a stone at the given location.
-	 * @param stone The stone to place.
-	 * @param x The x-coordinate of the field to place the stone on.
-	 * @param y The y-coordinate of the field to place the stone on.
+	 * Performs a move to the board.
+	 * @param move The move to apply.
 	 */
-	public abstract void placeStone(Stone stone, int x, int y);
+	public abstract void placeStone(Move move);
 
+	/**
+     * Performs a list of moves.
+     * @param moves The moves to apply.
+     */
 	public void placeStones(List<Move> moves) {
 		for (Move m : moves) {
-			placeStone(m.getStone(), m.getLocation().getX(), m.getLocation().getY());
+			placeStone(m);
 		}
 		setChanged();
 		notifyObservers(this);

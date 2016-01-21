@@ -13,6 +13,7 @@ import java.util.Observer;
 import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.Move;
+import qwirkle.Stone;
 
 /**
  * Represents a server running the Qwirkle game.
@@ -66,6 +67,10 @@ public class QwirkleServer extends Thread implements Observer {
 		this.socket = new ServerSocket(port);
 	}
 	
+	/**
+	 * Gets the port the server socket is using.
+	 * @return
+	 */
 	public int getPort() {
 		return port;
 	}
@@ -88,6 +93,11 @@ public class QwirkleServer extends Thread implements Observer {
 		}
 	}
 
+	/**
+	 * Sends a request for a game with a given amount of players.   
+	 * @param clientHandler The client requesting the game.
+	 * @param desiredPlayers The amount of players in the game.
+	 */
 	public void requestGame(ClientHandler clientHandler, int desiredPlayers) {
 		
 		GameRequest request = null;
@@ -114,15 +124,27 @@ public class QwirkleServer extends Thread implements Observer {
 		}
 	}
 
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		if (arg0 instanceof Board) {
-			System.out.println(((Board)arg0).toString());
+	/**
+	 * Gets a connected client by its name.
+	 * @param name the name of the client.
+	 * @return The client, or null if no client exists with the specified name.
+	 */
+	public ClientHandler getClientByName(String name) {
+		for (ClientHandler handler : connectedClients) {
+			if (handler.getClientName().equals(name)) {
+				return handler;
+			}
 		}
-		
+		return null;
 	}
-
-	public void broadcastMove(Game game, ClientHandler sender, List<Move> moves) {
+	
+	/**
+	 * Broadcasts to everyone in the game the client has made a move. 
+	 * @param sender The client that made the move.
+	 * @param moves The moves the client made.
+	 */
+	public void broadcastMove(ClientHandler sender, List<Move> moves) {
+		Game game = sender.getCurrentGame();
 		game.getBoard().placeStones(moves);
 		for (ClientHandler client : connectedClients) {
 			if (client.getCurrentGame() == game) {
@@ -130,6 +152,28 @@ public class QwirkleServer extends Thread implements Observer {
 				// TODO: calculate score
 				client.notifyMove(sender.getClientName(), score, moves);
 			}
+		}
+	}
+
+	/**
+	 * Broadcasts to everyone in the game the client has made a trade.
+	 * @param sender The client that made the trade.
+	 * @param amount The amount of stones that were traded.
+	 */
+	public void broadcastTrade(ClientHandler sender, int amount) {
+		Game game = sender.getCurrentGame();
+		for (ClientHandler client : connectedClients) {
+			if (client.getCurrentGame() == game) {
+				client.notifyTrade(sender.getClientName(), amount);
+			}
+		}
+		
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		if (arg0 instanceof Board) {
+			System.out.println(((Board)arg0).toString());
 		}
 		
 	}

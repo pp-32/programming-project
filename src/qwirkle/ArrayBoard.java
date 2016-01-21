@@ -37,8 +37,11 @@ public class ArrayBoard extends Board {
 	}
 
 	@Override
-	public void placeStone(Stone stone, int x, int y) {
-		field[x + BOARD_DIMENSION / 2][y + BOARD_DIMENSION / 2] = stone;
+	public void placeStone(Move move) {
+		int x = move.getLocation().getX();
+		int y = move.getLocation().getY();
+		
+		field[x + BOARD_DIMENSION / 2][y + BOARD_DIMENSION / 2] = move.getStone();
 
 		// update dimensions when needed:
 		if (x < dimensions.getTopLeft().getX()) {

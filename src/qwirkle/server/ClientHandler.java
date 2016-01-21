@@ -46,7 +46,7 @@ public class ClientHandler extends Thread {
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 	}
-
+	
 	/**
 	 * Gets the name of the client.
 	 * @return the name.
@@ -56,6 +56,38 @@ public class ClientHandler extends Thread {
 	}
 	
 	/**
+	 * Gets the game the client is currently playing.
+	 * @return the game.
+	 */
+	public Game getCurrentGame() {
+		return currentGame;
+	}
+
+	/**
+	 * Sets the game the client is currently playing.
+	 * @param currentGame the game.
+	 */
+	public void setCurrentGame(Game currentGame) {
+		this.currentGame = currentGame;
+	}
+
+	/**
+	 * Gets the current player the client is currently using.
+	 * @return the player.
+	 */
+	public HumanPlayer getCurrentPlayer() {
+		return currentPlayer;
+	}
+
+	/**
+	 * Sets the current player the client is currently using.
+	 * @param currentPlayer
+	 */
+	public void setCurrentPlayer(HumanPlayer  currentPlayer) {
+		this.currentPlayer = currentPlayer;
+	}
+
+	/**
 	 * Starts to process all incoming traffic. 
 	 */
 	@Override
@@ -63,6 +95,7 @@ public class ClientHandler extends Thread {
 		String line;
 		try {
 			while ((line = in.readLine()) != null) {
+				System.out.println("[" + getClientName() + " (" + socket.getInetAddress().toString() + ")]: " + line);
 				processCommand(line);
 			}
 		} catch (IOException e) {
@@ -70,8 +103,11 @@ public class ClientHandler extends Thread {
 		}
     }
 
+	/**
+	 * Processes a single response from the server. 
+	 * @param line The command of the server.
+	 */
 	private void processCommand(String line) {
-		System.out.println(line);
 		try (Scanner scanner = new Scanner(line)) {
 			switch (scanner.next()) {
 			case Protocol.CLIENT_JOINREQUEST:
@@ -89,20 +125,12 @@ public class ClientHandler extends Thread {
 				handleDoTradeCommand(scanner);
 				break;
 			}
-		}		
+		}
 	}
 
-	private void handleDoTradeCommand(Scanner scanner) {
-		List<Stone> stones = new ArrayList<Stone>();
-		int amount = scanner.nextInt();
-
-		Board board = currentGame.getBoard();
-		for (int i = 0; i < amount; i++) {
-			stones.add(board.pickStone());
-			board.placeStoneInBag(Stone.fromScanner(scanner));
-		}
-		
-		giveStones(stones);
+	private void handleGameRequestCommand(Scanner scanner) {
+		int desiredPlayers = scanner.nextInt();
+		server.requestGame(this, desiredPlayers);
 	}
 
 	private void handleSetMoveCommand(Scanner scanner) {
@@ -113,12 +141,20 @@ public class ClientHandler extends Thread {
 			moves.add(Move.fromScanner(scanner));
 		}
 	
-		server.broadcastMove(getCurrentGame(), this, moves);
+		giveStones(currentGame.getBoard().pickStones(amount));
+		server.broadcastMove(this, moves);
 	}
 
-	private void handleGameRequestCommand(Scanner scanner) {
-		int desiredPlayers = scanner.nextInt();
-		server.requestGame(this, desiredPlayers);
+	private void handleDoTradeCommand(Scanner scanner) {
+		int amount = scanner.nextInt();
+
+		Board board = currentGame.getBoard();
+		for (int i = 0; i < amount; i++) {
+			board.placeStoneInBag(Stone.fromScanner(scanner));
+		}
+		
+		giveStones(currentGame.getBoard().pickStones(amount));
+		server.broadcastTrade(this, amount);
 	}
 
 	/**
@@ -228,7 +264,17 @@ public class ClientHandler extends Thread {
 	 * @param stoneCount The amount of stones that were traded.
 	 */
 	public void notifyTrade(String name, int stoneCount) {
-		// TODO: implement body.
+		try {
+			out.write(Protocol.SERVER_NOTIFYTRADE);
+			out.write(" ");
+			out.write(name);
+			out.write(" ");
+			out.write(Integer.toString(stoneCount));
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -253,21 +299,5 @@ public class ClientHandler extends Thread {
 	 */
 	public void notifyConnectionLost(String name) {
 		// TODO: implement body.
-	}
-
-	public Game getCurrentGame() {
-		return currentGame;
-	}
-
-	public void setCurrentGame(Game currentGame) {
-		this.currentGame = currentGame;
-	}
-
-	public HumanPlayer getCurrentPlayer() {
-		return currentPlayer;
-	}
-
-	public void setCurrentPlayer(HumanPlayer  currentPlayer) {
-		this.currentPlayer = currentPlayer;
 	}
 }

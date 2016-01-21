@@ -14,12 +14,21 @@ public class Move {
 	/**
 	 * Creates a new move.
 	 * @param stone The stone to place. 
+	 * @param x The x-location of the stone to place.
+	 * @param y The y-location of the stone to place.
+	 */
+	public Move(Stone stone, int x, int y) {
+		this(stone, new Location(x, y));
+	}
+	
+	/**
+	 * Creates a new move.
+	 * @param stone The stone to place. 
 	 * @param location The location of the stone to place.
 	 */
 	public Move(Stone stone, Location location) {
 		this.stone = stone;
 		this.location = location;
-	
 	}
 
 	/**
