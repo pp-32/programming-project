@@ -61,8 +61,6 @@ public class TUIView implements View {
 		printStones(client.getCurrentGame().getHumanPlayer().getStones());
 		
 		
-		//String playerCount;
-		//System.out.print("");
 
 		try (Scanner scanner = new Scanner(System.in)) {
 			boolean continueLoop = true;
