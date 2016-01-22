@@ -59,7 +59,15 @@ public class Location {
 	public void add(Location directionVector) {
 		setX(getX() + directionVector.getX());
 		setY(getY() + directionVector.getY());
-		
+	}
+
+	/**
+	 * Subtracts a vector from the location.
+	 * @param directionVector the vector to subtract.
+	 */
+	public void subtract(Location directionVector) {
+		setX(getX() - directionVector.getX());
+		setY(getY() - directionVector.getY());
 	}
 	
 	public Location deepCopy() {

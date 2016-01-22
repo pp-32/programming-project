@@ -174,6 +174,7 @@ public class ClientHandler extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+			shutdown();
 		}
 	}
 
@@ -193,6 +194,7 @@ public class ClientHandler extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+			shutdown();
 		}
 	}
 
@@ -220,6 +222,7 @@ public class ClientHandler extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+			shutdown();
 		}
 	}
 	
@@ -233,6 +236,7 @@ public class ClientHandler extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+			shutdown();
 		}
 	}
 	
@@ -268,6 +272,7 @@ public class ClientHandler extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+			shutdown();
 		}
 	}
 	
@@ -287,6 +292,7 @@ public class ClientHandler extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+			shutdown();
 		}
 	}
 	
@@ -304,6 +310,7 @@ public class ClientHandler extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+			shutdown();
 		}
 	}
 	
@@ -320,6 +327,7 @@ public class ClientHandler extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+			shutdown();
 		}
 	}
 	
@@ -336,6 +344,7 @@ public class ClientHandler extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
+			shutdown();
 		}
 	}
 	

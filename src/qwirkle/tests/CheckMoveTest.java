@@ -122,6 +122,7 @@ public class CheckMoveTest {
 		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2));
 
 		assertTrue(board.checkMove(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 2)));
+		assertFalse(board.checkMove(new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 2)));
 	}
 	
 	@Test
@@ -145,6 +146,7 @@ public class CheckMoveTest {
 		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.PURPLE), 2, 2));
 
 		assertTrue(board.checkMove(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 2)));
+		assertFalse(board.checkMove(new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 2)));
 	}
 	
 	@Test
@@ -164,5 +166,6 @@ public class CheckMoveTest {
 		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2));
 
 		assertTrue(board.checkMove(new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0)));
+		assertFalse(board.checkMove(new Move(new Stone(StoneShape.CLUBS, StoneColor.ORANGE), 2, 0)));
 	}
 }

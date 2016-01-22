@@ -209,6 +209,43 @@ public abstract class Board extends Observable {
 		setChanged();
 		notifyObservers(this);
 	}
+
+	public int calculateScore(List<Move> moves) {
+		SequenceDirection direction;
+		if (moves.size() == 1) {
+			direction = SequenceDirection.UNKNOWN;
+		} else {
+			Location delta = moves.get(0).getLocation().deepCopy();
+			delta.subtract(moves.get(1).getLocation());
+			direction = Sequence.getDirectionFromVector(delta);
+		}
+		
+		Sequence horizontal = new Sequence(this, moves.get(0).getLocation(), SequenceDirection.HORIZONTAL);
+		Sequence vertical = new Sequence(this, moves.get(0).getLocation(), SequenceDirection.VERTICAL);
+		
+		int score = 0;
+		switch (direction) {
+		case HORIZONTAL:
+			score = horizontal.getStones().size();
+			for (Move m : moves) {
+				Sequence subhorizontal = new Sequence(this, m.getLocation(), SequenceDirection.HORIZONTAL);
+				score += subhorizontal.getStones().size();					
+			}
+			break;
+		case VERTICAL:
+			score = vertical.getStones().size();
+			for (Move m : moves) {
+				Sequence subvertical = new Sequence(this, m.getLocation(), SequenceDirection.VERTICAL);
+				score += subvertical.getStones().size();					
+			}
+			break;
+		case UNKNOWN:
+			score = horizontal.getStones().size() + vertical.getStones().size() - 1;
+			break;
+		}
+		
+		return score;
+	}
 	
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -228,106 +265,6 @@ public abstract class Board extends Observable {
 			builder.append("\n");
 		}
 		return builder.toString();
-	}
-	
-	private class Sequence {
-		private Board board;
-		private Location location;
-		private SequenceDirection direction;
-		private List<Stone> stones;
-		
-		public Sequence(Board board, Location location, SequenceDirection direction) {
-			this.board = board;
-			this.location = location;
-			this.direction = direction;
-		}
-		
-		public List<Stone> getStones() {
-			if (stones != null) {
-				return stones;
-			}
-			
-			stones = new ArrayList<Stone>();
-			
-			switch (direction) {
-			case HORIZONTAL:
-				collectStones(new Location(-1, 0));
-				stones.add(board.getField(location));
-				collectStones(new Location(1, 0));
-				break;
-			case VERTICAL: 
-				collectStones(new Location(0, 1));
-				stones.add(board.getField(location));
-				collectStones(new Location(0, -1));
-				break;
-			}
-			return stones;
-		}
-		
-		private void collectStones(Location vector) {
-			Location current = location.deepCopy();
-			current.add(vector);
-			Stone currentStone;
-			while ((currentStone = board.getField(current)) != null) {
-				stones.add(currentStone);
-				current.add(vector);
-			}
-		}
-		
-		public SequenceType getType() {
-			List<Stone> stones = getStones();
-			if (stones.size() <= 1) {
-				return SequenceType.UNKNOWN;
-			} else if (stones.get(0).getShape() == stones.get(1).getShape()) {
-				return SequenceType.SHAPE;
-			} else {			
-				return SequenceType.COLOR;
-			}
-		}
-		
-		public boolean isValid() {
-			if (getStones().size() > 6) {
-				return false;
-			}
-
-			List<Stone> stones = getStones();
-			
-			StoneShape shape = stones.get(0).getShape();
-			StoneColor color = stones.get(0).getColor();
-			
-			for (int i = 0; i < stones.size(); i++) {
-				Stone stone = stones.get(i);
-				
-				// check for duplicate
-				if (stones.indexOf(stone) != stones.lastIndexOf(stone)) {
-					return false;
-				}
-			
-				// check for shape or color, depending on sequence type.
-				if (getType() == SequenceType.SHAPE) {
-					if (stone.getShape() != shape) {
-						return false;
-					}
-				} else if (getType() == SequenceType.COLOR) {
-					if (stone.getColor() != color) {
-						return false;
-					}
-				}
-			}
-			
-			return true;
-		}
-	}
-	
-	private enum SequenceType {
-		UNKNOWN,
-		SHAPE,
-		COLOR
-	}
-	
-	private enum SequenceDirection {
-		HORIZONTAL,
-		VERTICAL
 	}
 }
 

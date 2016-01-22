@@ -17,7 +17,7 @@ public class HumanPlayer extends Player {
 			this.stones.remove(m.getStone());
 		}
 		
-		// board.placeStones(moves);
+		board.placeStones(moves);
 		setChanged();
 		notifyObservers("stones");
 	}
