@@ -103,8 +103,10 @@ public class TUIView implements View {
 
 	}
 
-	private void handlePlaceCommand(Scanner commandScanner) {
+	private void handlePlaceCommand() {
 		List<Move> moves = new ArrayList<Move>();
+		
+		Scanner commandScanner = new Scanner(System.in);
 
 		// place <aantal stenen> {<index> <x> <y> ....}
 		System.out.print("How many stones do you want to place? ");
