@@ -63,7 +63,7 @@ public class TUIView implements View {
 		try (Scanner scanner = new Scanner(System.in)) {
 			boolean continueLoop = true;
 			while (continueLoop) {
-				System.out.print("Command:");
+				System.out.print("Would you like to place or trade a stone? ");
 				continueLoop = scanner.hasNextLine() && processCommand(scanner.nextLine());
 			}
 		}
@@ -73,7 +73,7 @@ public class TUIView implements View {
 
 		boolean continueLoop = true;
 		try (Scanner commandScanner = new Scanner(command)) {
-			switch (commandScanner.next()) {
+			switch (commandScanner.nextLine()) {
 			case "place":
 				handlePlaceCommand();
 				break;
@@ -113,12 +113,15 @@ public class TUIView implements View {
 		int stonesCount = Integer.parseInt(commandScanner.nextLine());
 
 		for (int i = 0; i < stonesCount; i++) {
+			System.out.print("Which stone do you want to place? ");
 			int stoneIndex = Integer.parseInt(commandScanner.nextLine());
-			System.out.print("Enter the desired x-location for stone " + stoneIndex);
+			System.out.print("Enter the desired x-location for stone " + stoneIndex + " ");
 			int x = Integer.parseInt(commandScanner.nextLine());
-			System.out.print("Enter the desired y-location for stone " + stoneIndex);
+			System.out.print("Enter the desired y-location for stone " + stoneIndex + " ");
 			int y = Integer.parseInt(commandScanner.nextLine());
 			Location location = new Location(x, y);
+			System.out.print("You placed a stone on (" + x + ", " + y + ")");
+			System.out.println("");
 
 			Move move = new Move(client.getCurrentGame().getHumanPlayer().getStones().get(stoneIndex), location);
 			moves.add(move);
