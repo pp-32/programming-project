@@ -56,19 +56,4 @@ public class ArrayBoard extends Board {
 			dimensions.getBottomRight().setY(y);
 		}
 	}
-	
-	
-	public static void main(String[] args) {
-		Board board = new ArrayBoard();
-		board.placeStone(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0);
-		board.placeStone(new Stone(StoneShape.DIAMOND, StoneColor.RED), 2, 0);
-		board.placeStone(new Stone(StoneShape.DIAMOND, StoneColor.YELLOW), 1, 0);
-		board.placeStone(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), -1, 0);
-		board.placeStone(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 1);
-		board.placeStone(new Stone(StoneShape.STAR, StoneColor.BLUE), 0, -1);
-		
-		System.out.println(board.toString());
-	}
-
-
 }

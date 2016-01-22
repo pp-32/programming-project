@@ -100,6 +100,7 @@ public class ClientHandler extends Thread {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			//server.broadcastConnectionLost()
 		}
     }
 
@@ -226,7 +227,13 @@ public class ClientHandler extends Thread {
 	 * Requests the client to make a move.
 	 */
 	public void requestMove() {
-		// TODO: implement body.
+		try {
+			out.write(Protocol.SERVER_MOVEREQUEST);
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -288,7 +295,16 @@ public class ClientHandler extends Thread {
 	 * @param players The list of players in the game. 
 	 */
 	public void notifyGameOver(List<Player> players) {
-		// TODO: implement body.
+		try {
+			out.write(Protocol.SERVER_GAMEOVER);
+
+			//TODO: send scores.
+			
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -312,6 +328,14 @@ public class ClientHandler extends Thread {
 	 * @param name The name of the player that disconnected.
 	 */
 	public void notifyConnectionLost(String name) {
-		// TODO: implement body.
+		try {
+			out.write(Protocol.SERVER_CONNECTIONLOST);
+			out.write(" ");
+			out.write(name);
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -75,7 +75,7 @@ public class TUIView implements View {
 		try (Scanner commandScanner = new Scanner(command)) {
 			switch (commandScanner.next()) {
 			case "place":
-				handlePlaceCommand(commandScanner);
+				handlePlaceCommand();
 				break;
 			case "trade":
 				handleTradeCommand(commandScanner);
