@@ -107,12 +107,15 @@ public class TUIView implements View {
 		List<Move> moves = new ArrayList<Move>();
 
 		// place <aantal stenen> {<index> <x> <y> ....}
-		int stonesCount = Integer.parseInt(commandScanner.next());
+		System.out.print("How many stones do you want to place? ");
+		int stonesCount = Integer.parseInt(commandScanner.nextLine());
 
 		for (int i = 0; i < stonesCount; i++) {
-			int stoneIndex = Integer.parseInt(commandScanner.next());
-			int x = Integer.parseInt(commandScanner.next());
-			int y = Integer.parseInt(commandScanner.next());
+			int stoneIndex = Integer.parseInt(commandScanner.nextLine());
+			System.out.print("Enter the desired x-location for stone " + stoneIndex);
+			int x = Integer.parseInt(commandScanner.nextLine());
+			System.out.print("Enter the desired y-location for stone " + stoneIndex);
+			int y = Integer.parseInt(commandScanner.nextLine());
 			Location location = new Location(x, y);
 
 			Move move = new Move(client.getCurrentGame().getHumanPlayer().getStones().get(stoneIndex), location);
