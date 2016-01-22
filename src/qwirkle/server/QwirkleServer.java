@@ -175,6 +175,16 @@ public class QwirkleServer extends Thread implements Observer {
 		
 	}
 
+	public void broadcastConnectionLost(ClientHandler sender) {
+		connectedClients.remove(sender);
+		Game game = sender.getCurrentGame();
+		for (ClientHandler client : connectedClients) {
+			if (client.getCurrentGame() == game) {
+				client.notifyConnectionLost(sender.getClientName());
+			}
+		}
+	}
+
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Board) {
@@ -182,5 +192,4 @@ public class QwirkleServer extends Thread implements Observer {
 		}
 		
 	}
-
 }

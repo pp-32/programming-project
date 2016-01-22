@@ -100,7 +100,7 @@ public class ClientHandler extends Thread {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			//server.broadcastConnectionLost()
+			shutdown();
 		}
     }
 
@@ -334,6 +334,15 @@ public class ClientHandler extends Thread {
 			out.write(name);
 			out.newLine();
 			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void shutdown() {
+		server.broadcastConnectionLost(this);
+		try {
+			socket.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
