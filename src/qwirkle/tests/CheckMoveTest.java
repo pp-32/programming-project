@@ -191,6 +191,70 @@ public class CheckMoveTest {
 	}
 
 	@Test
+	public void testJoinOrthogonalSequences() {
+		
+		/*
+		 * Board
+		 * 
+		 *     |  x |    |
+		 *  1B | 1R | 1O |
+		 *     |  x |    |
+		 *     | 3R | 3O | 3G
+		 *     |  x |    |
+		 */
+		
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 1, 0),
+
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 0, -2),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 1, -2),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 2, -2),	
+		};
+		board.placeStones(Arrays.asList(setup));
+		
+		Move[] moves = {
+			new Move(new Stone(StoneShape.STAR, StoneColor.RED), 0, 1),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.RED), 0, -1),
+			new Move(new Stone(StoneShape.RECTANGLE, StoneColor.RED), 0, -3),
+		};
+		assertTrue(board.checkMoves(Arrays.asList(moves)));
+	}
+	
+	@Test
+	public void testJoinOrthogonalSequences2() {
+		
+		/*
+		 * Board
+		 * 
+		 *    | 1B |   |    |
+		 *  x | 1R | x | 3R | x
+		 *    | 1O |   | 3O |
+		 *    |    |   | 3G |
+		 *     
+		 */
+		
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 1),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 0, -1),
+
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 2, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, -1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 2, -2),	
+		};
+		board.placeStones(Arrays.asList(setup));
+		
+		Move[] moves = {
+			new Move(new Stone(StoneShape.STAR, StoneColor.RED), -1, 0),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.RED), 1, 0),
+			new Move(new Stone(StoneShape.RECTANGLE, StoneColor.RED), 3, 0),
+		};
+		assertEquals(5 + 3 + 3, board.calculateScore(Arrays.asList(moves)));
+	}
+	
+	@Test
 	public void testPerpendicularSequences() {
 		/*
 		 * Board
