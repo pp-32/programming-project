@@ -10,31 +10,49 @@ public class Sequence {
 	private Board board;
 	private Location location;
 	private SequenceDirection direction;
-	private List<Stone> stones;
-	
+	private List<Move> moves;
+	 
 	public Sequence(Board board, Location location, SequenceDirection direction) {
 		this.board = board;
 		this.location = location;
 		this.direction = direction;
 		
-		stones = new ArrayList<Stone>();
+		moves = new ArrayList<Move>();
 		
 		switch (direction) {
 		case HORIZONTAL:
 			collectStones(new Location(-1, 0));
-			stones.add(board.getField(location));
+			moves.add(new Move(board.getField(location), location));
 			collectStones(new Location(1, 0));
 			break;
 		case VERTICAL: 
 			collectStones(new Location(0, 1));
-			stones.add(board.getField(location));
+			moves.add(new Move(board.getField(location), location));
 			collectStones(new Location(0, -1));
 			break;
 		}
 	}
 	
-	public List<Stone> getStones() {
-		return stones;		
+	public List<Move> getMoves() {
+		return moves;		
+	}
+
+	public SequenceDirection getDirection() {
+		return direction;
+	}
+	
+	public int getLength() {
+		return moves.size();
+	}
+	
+	public SequenceType getType() {
+		if (getLength() <= 1) {
+			return SequenceType.UNKNOWN;
+		} else if (moves.get(0).getStone().getShape() == moves.get(1).getStone().getShape()) {
+			return SequenceType.SHAPE;
+		} else {			
+			return SequenceType.COLOR;
+		}
 	}
 	
 	private void collectStones(Location vector) {
@@ -42,35 +60,44 @@ public class Sequence {
 		current.add(vector);
 		Stone currentStone;
 		while ((currentStone = board.getField(current)) != null) {
-			stones.add(currentStone);
+			moves.add(new Move(currentStone, current.deepCopy()));
 			current.add(vector);
 		}
 	}
 	
-	public SequenceType getType() {
-		if (stones.size() <= 1) {
-			return SequenceType.UNKNOWN;
-		} else if (stones.get(0).getShape() == stones.get(1).getShape()) {
-			return SequenceType.SHAPE;
-		} else {			
-			return SequenceType.COLOR;
+	public int calculateScore() {
+		int score = getLength();
+		SequenceDirection orthogonal = getDirection() == SequenceDirection.HORIZONTAL 
+				? SequenceDirection.VERTICAL 
+				: SequenceDirection.HORIZONTAL;
+		
+		for (Move m : getMoves()) {
+			Sequence subsequence = new Sequence(board, m.getLocation(), orthogonal);
+			int length = subsequence.getLength();
+			if (length > 1) {
+				score += length;
+			}
 		}
+		
+		return score;
 	}
 	
 	public boolean isValid() {
-		if (getStones().size() > 6) {
+		if (getLength() > 6) {
 			return false;
 		}
 		
-		StoneShape shape = stones.get(0).getShape();
-		StoneColor color = stones.get(0).getColor();
+		StoneShape shape = moves.get(0).getStone().getShape();
+		StoneColor color = moves.get(0).getStone().getColor();
 		
-		for (int i = 0; i < stones.size(); i++) {
-			Stone stone = stones.get(i);
+		for (int i = 0; i < moves.size(); i++) {
+			Stone stone = moves.get(i).getStone();
 			
 			// check for duplicate
-			if (stones.indexOf(stone) != stones.lastIndexOf(stone)) {
-				return false;
+			for (int j = i + 1; j < moves.size(); j++) {
+				if (moves.get(j).getStone().equals(stone)) {
+					return false;
+				}
 			}
 		
 			// check for shape or color, depending on sequence type.
@@ -90,11 +117,12 @@ public class Sequence {
 	
 	public static SequenceDirection getDirectionFromVector(Location vector) {
 		if (vector.getX() != 0 && vector.getY() == 0) {
-			return SequenceDirection.VERTICAL;
-		} else if (vector.getX() == 0 && vector.getY() != 0) {
 			return SequenceDirection.HORIZONTAL;
+		} else if (vector.getX() == 0 && vector.getY() != 0) {
+			return SequenceDirection.VERTICAL;
 		} else {
 			return SequenceDirection.UNKNOWN;
 		}
 	}
+
 }

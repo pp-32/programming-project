@@ -2,6 +2,8 @@ package qwirkle.tests;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,8 +68,13 @@ public class CheckMoveTest {
 		 *     | 3B | 3R | x      
 		 *     |    |    | 
 		 */
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0));
+		
+		Move[] setup = {
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0)
+		};
+		board.placeStones(Arrays.asList(setup));
+		
 		Stone third = new Stone(StoneShape.DIAMOND, StoneColor.GREEN);
 		Stone fourth = new Stone(StoneShape.CIRCLE, StoneColor.GREEN);
 		assertTrue(board.checkMove(new Move(third, 2, 0)));
@@ -81,8 +88,11 @@ public class CheckMoveTest {
 		 *     | 3B | 3R | x      
 		 *     |    |    | 
 		 */
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0));
+		Move[] setup = {
+				new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0),
+				new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0)
+			};
+		board.placeStones(Arrays.asList(setup));
 		assertFalse(board.checkMove(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 2, 0)));
 	}
 	
@@ -93,12 +103,16 @@ public class CheckMoveTest {
 		 *  | 3B | 3R | 3G | 3O | 3Y | 3P | x      
 		 *     
 		 */
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 2, 0));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 3, 0));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.YELLOW), 4, 0));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.PURPLE), 5, 0));
+		
+		Move[] setup = {
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 2, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 3, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.YELLOW), 4, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.PURPLE), 5, 0),
+		};
+		board.placeStones(Arrays.asList(setup));
 		assertFalse(board.checkMove(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 6, 0)));
 	}
 
@@ -113,14 +127,16 @@ public class CheckMoveTest {
 		 *  
 		 */
 
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CROSS, StoneColor.BLUE), 0, 1));
-		board.placeStone(new Move(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 2));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2));
-
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0),
+			new Move(new Stone(StoneShape.CROSS, StoneColor.BLUE), 0, 1),
+			new Move(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 2),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2),
+		};
+		board.placeStones(Arrays.asList(setup));
 		assertTrue(board.checkMove(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 2)));
 		assertFalse(board.checkMove(new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 2)));
 	}
@@ -136,15 +152,17 @@ public class CheckMoveTest {
 		 *  
 		 */
 
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CROSS, StoneColor.BLUE), 0, 1));
-		board.placeStone(new Move(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 1));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 1));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.PURPLE), 2, 2));
-
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0),
+			new Move(new Stone(StoneShape.CROSS, StoneColor.BLUE), 0, 1),
+			new Move(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.PURPLE), 2, 2),
+		};
+		board.placeStones(Arrays.asList(setup));
 		assertTrue(board.checkMove(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 2)));
 		assertFalse(board.checkMove(new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 2)));
 	}
@@ -159,13 +177,39 @@ public class CheckMoveTest {
 		 *  1B | 1R | x  |
 		 */
 
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 0));
-
-		board.placeStone(new Move(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2));
-
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 0),
+	
+			new Move(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2),
+		};
+		board.placeStones(Arrays.asList(setup));
+		
 		assertTrue(board.checkMove(new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0)));
 		assertFalse(board.checkMove(new Move(new Stone(StoneShape.CLUBS, StoneColor.ORANGE), 2, 0)));
+	}
+
+	@Test
+	public void testPerpendicularSequences() {
+		/*
+		 * Board
+		 *    |  x | 1G |
+		 *    |  x | 2G |
+		 *    |    | 3G | 
+		 */
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.GREEN), 0, 1),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.GREEN), 0, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 0, -1),
+		};
+		board.placeStones(Arrays.asList(setup));
+		
+		Move[] moves = {
+				new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 1),
+				new Move(new Stone(StoneShape.CLUBS, StoneColor.BLUE), -1, 0),
+		};
+		
+		assertTrue(board.checkMoves(Arrays.asList(moves)));
 	}
 }

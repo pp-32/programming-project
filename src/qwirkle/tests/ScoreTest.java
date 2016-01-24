@@ -3,6 +3,7 @@ package qwirkle.tests;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -51,17 +52,22 @@ public class ScoreTest {
 	}
 
 	@Test
-	public void testMultipleShapeOnRight() {
+	public void testMultipleOnRight() {
 		/* Board:
 		 *     |    |    |
 		 *     | 3B | 3R |  x
 		 *     |    |    |
 		 */
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0));;
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0));
+		
+
+		Move[] setup = { 
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0)
+		};
+		board.placeStones(Arrays.asList(setup));
 		
 		List<Move> moves = new ArrayList<Move>();
-		moves.add(new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 1, 0));
+		moves.add(new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 2, 0));
 		assertEquals(3, board.calculateScore(moves));
 	}
 
@@ -76,17 +82,106 @@ public class ScoreTest {
 		 *  
 		 */
 
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0));
-		board.placeStone(new Move(new Stone(StoneShape.CROSS, StoneColor.BLUE), 0, 1));
-		board.placeStone(new Move(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 2));
-		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2));
-
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0),
+			new Move(new Stone(StoneShape.CROSS, StoneColor.BLUE), 0, 1),
+			new Move(new Stone(StoneShape.CROSS, StoneColor.ORANGE), 2, 1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 2),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, 2),	
+		};
+		board.placeStones(Arrays.asList(setup));
+		
 		List<Move> moves = new ArrayList<Move>();
 		moves.add(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 2));
 		assertEquals(3, board.calculateScore(moves));
 	}
+	
+	@Test
+	public void testJoinOrthogonalSequences() {
+		
+		/*
+		 * Board
+		 * 
+		 *     |  x |    |
+		 *  1B | 1R | 1O |
+		 *     |  x |    |
+		 *     | 3R | 3O | 3G
+		 *     |  x |    |
+		 */
+		
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 1),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 0, 1),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 1, 1),
 
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 0, -1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 1, -1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 2, -1),	
+		};
+		board.placeStones(Arrays.asList(setup));
+		
+		Move[] moves = {
+			new Move(new Stone(StoneShape.STAR, StoneColor.RED), 0, 2),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.RED), 0, 0),
+			new Move(new Stone(StoneShape.RECTANGLE, StoneColor.RED), 0, -2),
+		};
+		assertEquals(5 + 3 + 3, board.calculateScore(Arrays.asList(moves)));
+	}
+
+	@Test
+	public void testJoinOrthogonalSequences2() {
+		
+		/*
+		 * Board
+		 * 
+		 *    | 1B |   |    |
+		 *  x | 1R | x | 3R | x
+		 *    | 1O |   | 3O |
+		 *    |    |   | 3G |
+		 *     
+		 */
+		
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 1),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), -1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), -1, -1),
+
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 1, -1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 1, -2),	
+		};
+		board.placeStones(Arrays.asList(setup));
+		
+		Move[] moves = {
+			new Move(new Stone(StoneShape.STAR, StoneColor.RED), -2, 0),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.RED), 0, 0),
+			new Move(new Stone(StoneShape.RECTANGLE, StoneColor.RED), 2, 0),
+		};
+		assertEquals(5 + 3 + 3, board.calculateScore(Arrays.asList(moves)));
+	}
+	
+	@Test
+	public void testPerpendicularSequences() {
+		/*
+		 * Board
+		 *    |  x | 1G |
+		 *    |  x | 2G |
+		 *    |    | 3G | 
+		 */
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.GREEN), 0, 1),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.GREEN), 0, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 0, -1),
+		};
+		board.placeStones(Arrays.asList(setup));
+		
+		Move[] moves = {
+				new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 1),
+				new Move(new Stone(StoneShape.CLUBS, StoneColor.BLUE), -1, 0),
+		};
+		
+		assertEquals(2 + 2 + 2, board.calculateScore(Arrays.asList(moves)));
+	}
 }

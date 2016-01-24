@@ -47,6 +47,10 @@ public class Move {
 		return location;
 	}
 	
+	public String toString() {
+		return getStone().toString() + " -> " + getLocation();
+	}
+	
 	public static Move fromScanner(Scanner scanner) {
 		return new Move(Stone.fromScanner(scanner), Location.fromScanner(scanner));
 	}

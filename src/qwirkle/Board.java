@@ -220,27 +220,25 @@ public abstract class Board extends Observable {
 			direction = Sequence.getDirectionFromVector(delta);
 		}
 		
-		Sequence horizontal = new Sequence(this, moves.get(0).getLocation(), SequenceDirection.HORIZONTAL);
-		Sequence vertical = new Sequence(this, moves.get(0).getLocation(), SequenceDirection.VERTICAL);
+		Board copy = this.deepCopy();
+		copy.placeStones(moves);		
+		Sequence horizontal = new Sequence(copy, moves.get(0).getLocation(), SequenceDirection.HORIZONTAL);
+		Sequence vertical = new Sequence(copy, moves.get(0).getLocation(), SequenceDirection.VERTICAL);
 		
 		int score = 0;
 		switch (direction) {
 		case HORIZONTAL:
-			score = horizontal.getStones().size();
-			for (Move m : moves) {
-				Sequence subhorizontal = new Sequence(this, m.getLocation(), SequenceDirection.HORIZONTAL);
-				score += subhorizontal.getStones().size();					
-			}
+			score = horizontal.calculateScore();
 			break;
 		case VERTICAL:
-			score = vertical.getStones().size();
-			for (Move m : moves) {
-				Sequence subvertical = new Sequence(this, m.getLocation(), SequenceDirection.VERTICAL);
-				score += subvertical.getStones().size();					
-			}
+			score = vertical.calculateScore();
 			break;
 		case UNKNOWN:
-			score = horizontal.getStones().size() + vertical.getStones().size() - 1;
+			if (horizontal.getLength() > 0 ) {
+				score += horizontal.getLength(); 
+			} else {
+				score += vertical.getLength();
+			}
 			break;
 		}
 		
