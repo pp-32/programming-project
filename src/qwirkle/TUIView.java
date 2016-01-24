@@ -52,6 +52,7 @@ public class TUIView implements View {
 					client.requestGame(playerCount);
 					validInput = true;
 				} else {
+					System.out.println("You didn't enter a valid amount of players. Please try again.");
 					validInput = false;
 				}
 			} catch (NumberFormatException e1) {
@@ -79,7 +80,7 @@ public class TUIView implements View {
 		try (Scanner scanner = new Scanner(System.in)) {
 			boolean continueLoop = true;
 			while (continueLoop) {
-				// TODO: try catch block
+				// TODO Try/catch Block
 				System.out.print("Place, trade or exit? ");
 				continueLoop = scanner.hasNextLine() && processCommand(scanner.nextLine());
 			}
@@ -107,7 +108,8 @@ public class TUIView implements View {
 
 	private void handleTradeCommand(Scanner commandScanner) {
 		List<Stone> stones = new ArrayList<Stone>();
-
+		
+		// TODO exceptions
 		// trade <aantal stenen>
 		int stonesCount = Integer.parseInt(commandScanner.next());
 
@@ -126,15 +128,19 @@ public class TUIView implements View {
 		Scanner commandScanner = new Scanner(System.in);
 
 		// place <aantal stenen> {<index> <x> <y> ....}
+		// TODO Try/catch Block & stonesCount <= 6
 		System.out.print("How many stones do you want to place? ");
 		int stonesCount = Integer.parseInt(commandScanner.nextLine());
 
 		for (int i = 0; i < stonesCount; i++) {
 			System.out.print("Which stone do you want to place? ");
+			// TODO Try/catch Block & stoneIndex <= 5 
 			int stoneIndex = Integer.parseInt(commandScanner.nextLine());
 			System.out.print("Enter the desired x-location for stone " + stoneIndex + " ");
+			// TODO Try/catch Block & x first stone has to be 0
 			int x = Integer.parseInt(commandScanner.nextLine());
 			System.out.print("Enter the desired y-location for stone " + stoneIndex + " ");
+			// TODO Try/catch Block & y first stone has to be 0
 			int y = Integer.parseInt(commandScanner.nextLine());
 			Location location = new Location(x, y);
 			System.out.print("You placed a stone on (" + x + ", " + y + ")");
