@@ -21,16 +21,16 @@ public class Sequence {
 		
 		// TODO: add unknown case (exception ?)
 		switch (direction) {
-		case HORIZONTAL:
-			collectStones(new Location(-1, 0));
-			moves.add(new Move(board.getField(location), location));
-			collectStones(new Location(1, 0));
-			break;
-		case VERTICAL: 
-			collectStones(new Location(0, 1));
-			moves.add(new Move(board.getField(location), location));
-			collectStones(new Location(0, -1));
-			break;
+			case HORIZONTAL:
+				collectStones(new Location(-1, 0));
+				moves.add(new Move(board.getField(location), location));
+				collectStones(new Location(1, 0));
+				break;
+			case VERTICAL: 
+				collectStones(new Location(0, 1));
+				moves.add(new Move(board.getField(location), location));
+				collectStones(new Location(0, -1));
+				break;
 		}
 	}
 	

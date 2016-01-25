@@ -111,25 +111,25 @@ public class ClientHandler extends Thread {
 	private void processCommand(String line) {
 		try (Scanner scanner = new Scanner(line)) {
 			switch (scanner.next()) {
-			case Protocol.CLIENT_JOINREQUEST:
-				String clientName = scanner.next();
-				if (server.getClientByName(clientName) == null) {
-					this.clientName = clientName; 
-					acceptJoinRequest();
-				} else {
-					sendInvalidCommandError("Username " + clientName + " already exists!");
-				}
-				
-				break;
-			case Protocol.CLIENT_GAMEREQUEST:
-				handleGameRequestCommand(scanner);
-				break;
-			case Protocol.CLIENT_SETMOVE:
-				handleSetMoveCommand(scanner);
-				break;
-			case Protocol.CLIENT_DOTRADE:
-				handleDoTradeCommand(scanner);
-				break;
+				case Protocol.CLIENT_JOINREQUEST:
+					String name = scanner.next();
+					if (server.getClientByName(name) == null) {
+						this.clientName = name; 
+						acceptJoinRequest();
+					} else {
+						sendInvalidCommandError("Username " + name + " already exists!");
+					}
+					
+					break;
+				case Protocol.CLIENT_GAMEREQUEST:
+					handleGameRequestCommand(scanner);
+					break;
+				case Protocol.CLIENT_SETMOVE:
+					handleSetMoveCommand(scanner);
+					break;
+				case Protocol.CLIENT_DOTRADE:
+					handleDoTradeCommand(scanner);
+					break;
 			}
 		}
 	}

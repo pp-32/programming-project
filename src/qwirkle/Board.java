@@ -12,20 +12,20 @@ import java.util.Observable;
 public abstract class Board extends Observable {
 
 	private StoneShape[] shapes = new StoneShape[] {
-			StoneShape.CIRCLE,
-			StoneShape.CLUBS,
-			StoneShape.CROSS,
-			StoneShape.DIAMOND,
-			StoneShape.RECTANGLE,
-			StoneShape.STAR,
+		StoneShape.CIRCLE,
+		StoneShape.CLUBS,
+		StoneShape.CROSS,
+		StoneShape.DIAMOND,
+		StoneShape.RECTANGLE,
+		StoneShape.STAR,
 	};
 	private StoneColor[] colors = new StoneColor[] {
-			StoneColor.RED,
-			StoneColor.BLUE,
-			StoneColor.GREEN,
-			StoneColor.ORANGE,
-			StoneColor.PURPLE,
-			StoneColor.YELLOW
+		StoneColor.RED,
+		StoneColor.BLUE,
+		StoneColor.GREEN,
+		StoneColor.ORANGE,
+		StoneColor.PURPLE,
+		StoneColor.YELLOW
 	};
 	
 	private List<Stone> stones; 
@@ -116,7 +116,7 @@ public abstract class Board extends Observable {
 	 * @return The Stone that was picked up.
 	 */
 	public Stone pickStone() { 
-		Stone stone = stones.get((int)(Math.random() * stones.size()));
+		Stone stone = stones.get((int) (Math.random() * stones.size()));
 		stones.remove(stone);
 		return stone;
 	}
@@ -127,11 +127,11 @@ public abstract class Board extends Observable {
 	 * @return The stones that were grabbed.
 	 */
 	public List<Stone> pickStones(int amount) { 
-		List<Stone> stones = new ArrayList<Stone>();
+		List<Stone> pickedStones = new ArrayList<Stone>();
 		for (int i = 0; i < amount; i++) {
-			stones.add(pickStone());
+			pickedStones.add(pickStone());
 		}
-		return stones;
+		return pickedStones;
 	}
 	
 	/**
@@ -177,9 +177,9 @@ public abstract class Board extends Observable {
 		} else if (!isEmptyField(x, y)) {
 			return false;
 		} else if (isEmptyField(x - 1, y) 
-				&& isEmptyField(x + 1, y)
-				&& isEmptyField(x, y - 1)
-				&& isEmptyField(x, y + 1)) {
+				   && isEmptyField(x + 1, y)
+				   && isEmptyField(x, y - 1)
+			       && isEmptyField(x, y + 1)) {
 			return false;
 		}
 		
@@ -217,8 +217,12 @@ public abstract class Board extends Observable {
 		
 		Board copy = this.deepCopy();
 		copy.placeStones(moves);	
-		Sequence horizontal = new Sequence(copy, moves.get(0).getLocation(), SequenceDirection.HORIZONTAL);
-		Sequence vertical = new Sequence(copy, moves.get(0).getLocation(), SequenceDirection.VERTICAL);
+		Sequence horizontal = new Sequence(copy, 
+						moves.get(0).getLocation(), 
+						SequenceDirection.HORIZONTAL);
+		Sequence vertical = new Sequence(copy, 
+						moves.get(0).getLocation(), 
+						SequenceDirection.VERTICAL);
 		
 		// Determine direction of moves.
 		SequenceDirection direction = SequenceDirection.HORIZONTAL;
@@ -231,14 +235,18 @@ public abstract class Board extends Observable {
 		// Determine orthogonal direction.
 		SequenceDirection orthogonal = SequenceDirection.UNKNOWN;
 		switch (direction) {
-		case HORIZONTAL:
-			score += horizontal.getLength();
-			orthogonal = SequenceDirection.VERTICAL;
-			break;
-		case VERTICAL:
-			score += vertical.getLength();
-			orthogonal = SequenceDirection.HORIZONTAL;
-			break;
+			case HORIZONTAL:
+				if (horizontal.getLength() > 1) {
+					score += horizontal.getLength();
+				}
+				orthogonal = SequenceDirection.VERTICAL;
+				break;
+			case VERTICAL:
+				if (vertical.getLength() > 1) {
+					score += vertical.getLength();
+				}
+				orthogonal = SequenceDirection.HORIZONTAL;
+				break;
 		}
 
 		// Check for qwirkle bonus.
@@ -260,6 +268,11 @@ public abstract class Board extends Observable {
 			}
 		}
 		
+		// if no subsequences found, just return the length of the sequence.
+		if (score == 0) {
+			return moves.size();
+		}
+		
 		return score;
 	}
 	
@@ -267,9 +280,12 @@ public abstract class Board extends Observable {
 		StringBuilder builder = new StringBuilder();
 		Rectangle dimensions = getDimensions().deepCopy();		
 		dimensions.inflate(1);
-		for (int y = dimensions.getTopLeft().getY(); y >= dimensions.getBottomRight().getY(); y--) {
+		Location topLeft = dimensions.getTopLeft();
+		Location bottomRight = dimensions.getBottomRight();
+		
+		for (int y = topLeft.getY(); y >= bottomRight.getY(); y--) {
 			builder.append("| ");
-			for (int x = dimensions.getTopLeft().getX(); x <= dimensions.getBottomRight().getX(); x++) {
+			for (int x = topLeft.getX(); x <= bottomRight.getX(); x++) {
 				Stone field = getField(x, y);
 				if (field == null) {
 					builder.append("  ");

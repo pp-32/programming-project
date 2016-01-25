@@ -46,45 +46,45 @@ public class Stone {
 	public String toString() {
 		String shapeString = null;
 		switch (shape) {
-		case CIRCLE:
-			shapeString = "1";
-			break;
-		case CROSS:
-			shapeString = "2";
-			break;
-		case DIAMOND:
-			shapeString = "3";
-			break;
-		case CLUBS:
-			shapeString = "4";
-			break;
-		case RECTANGLE:
-			shapeString = "5";
-			break;
-		case STAR:
-			shapeString = "6";
-			break;
+			case CIRCLE:
+				shapeString = "1";
+				break;
+			case CROSS:
+				shapeString = "2";
+				break;
+			case DIAMOND:
+				shapeString = "3";
+				break;
+			case CLUBS:
+				shapeString = "4";
+				break;
+			case RECTANGLE:
+				shapeString = "5";
+				break;
+			case STAR:
+				shapeString = "6";
+				break;
 		}
 		String colorString = null;
 		switch (color) {
-		case BLUE:
-			colorString = "B";
-			break;
-		case GREEN:
-			colorString = "G";
-			break;
-		case ORANGE:
-			colorString = "O";
-			break;
-		case PURPLE:
-			colorString = "P";
-			break;
-		case RED:
-			colorString = "R";
-			break;
-		case YELLOW:
-			colorString = "Y";
-			break;
+			case BLUE:
+				colorString = "B";
+				break;
+			case GREEN:
+				colorString = "G";
+				break;
+			case ORANGE:
+				colorString = "O";
+				break;
+			case PURPLE:
+				colorString = "P";
+				break;
+			case RED:
+				colorString = "R";
+				break;
+			case YELLOW:
+				colorString = "Y";
+				break;
 		}
 
 		return shapeString + colorString;
@@ -94,7 +94,7 @@ public class Stone {
 		if (!(obj instanceof Stone)) {
 			return false;
 		}
-		Stone stone = (Stone)obj;
+		Stone stone = (Stone) obj;
 		return stone.getShape() == this.getShape() 
 			&& stone.getColor() == this.getColor();	
 	}
@@ -110,42 +110,42 @@ public class Stone {
 	public static String shapeToString(StoneShape shape) {
 		int shapeId = 0;
 		switch (shape) {
-		case CIRCLE:
-			shapeId = Protocol.CIRCLE;
-			break;
-		case CROSS:
-			shapeId = Protocol.CROSS;
-			break;
-		case DIAMOND:
-			shapeId = Protocol.DIAMOND;
-			break;
-		case CLUBS:
-			shapeId = Protocol.CLUBS;
-			break;
-		case RECTANGLE:
-			shapeId = Protocol.RECTANGLE;
-			break;
-		case STAR:
-			shapeId = Protocol.STAR;
-			break;
+			case CIRCLE:
+				shapeId = Protocol.CIRCLE;
+				break;
+			case CROSS:
+				shapeId = Protocol.CROSS;
+				break;
+			case DIAMOND:
+				shapeId = Protocol.DIAMOND;
+				break;
+			case CLUBS:
+				shapeId = Protocol.CLUBS;
+				break;
+			case RECTANGLE:
+				shapeId = Protocol.RECTANGLE;
+				break;
+			case STAR:
+				shapeId = Protocol.STAR;
+				break;
 		}
 		return Integer.toString(shapeId);
 	}
 	
 	public static StoneShape idToShape(int id) {
 		switch (id) {
-		case Protocol.CIRCLE:
-			return StoneShape.CIRCLE;
-		case Protocol.CROSS:
-			return StoneShape.CROSS;
-		case Protocol.DIAMOND:
-			return StoneShape.DIAMOND;
-		case Protocol.CLUBS:
-			return StoneShape.CLUBS;
-		case Protocol.RECTANGLE:
-			return StoneShape.RECTANGLE;
-		case Protocol.STAR:
-			return StoneShape.STAR;
+			case Protocol.CIRCLE:
+				return StoneShape.CIRCLE;
+			case Protocol.CROSS:
+				return StoneShape.CROSS;
+			case Protocol.DIAMOND:
+				return StoneShape.DIAMOND;
+			case Protocol.CLUBS:
+				return StoneShape.CLUBS;
+			case Protocol.RECTANGLE:
+				return StoneShape.RECTANGLE;
+			case Protocol.STAR:
+				return StoneShape.STAR;
 		}
 		// TODO: change to exception?
 		return StoneShape.CIRCLE;
@@ -154,42 +154,42 @@ public class Stone {
 	public static String colorToString(StoneColor color) {
 		int colorId = 0;
 		switch (color) {
-		case BLUE:
-			colorId = Protocol.BLUE;
-			break;
-		case GREEN:
-			colorId = Protocol.GREEN;
-			break;
-		case ORANGE:
-			colorId = Protocol.ORANGE;
-			break;
-		case PURPLE:
-			colorId = Protocol.PURPLE;
-			break;
-		case RED:
-			colorId = Protocol.RED;
-			break;
-		case YELLOW:
-			colorId = Protocol.YELLOW;
-			break;
+			case BLUE:
+				colorId = Protocol.BLUE;
+				break;
+			case GREEN:
+				colorId = Protocol.GREEN;
+				break;
+			case ORANGE:
+				colorId = Protocol.ORANGE;
+				break;
+			case PURPLE:
+				colorId = Protocol.PURPLE;
+				break;
+			case RED:
+				colorId = Protocol.RED;
+				break;
+			case YELLOW:
+				colorId = Protocol.YELLOW;
+				break;
 		}
 		return Integer.toString(colorId);
 	}
 	
 	public static StoneColor idToColor(int id) {
 		switch (id) {
-		case Protocol.BLUE:
-			return StoneColor.BLUE;
-		case Protocol.GREEN:
-			return StoneColor.GREEN;
-		case Protocol.ORANGE:
-			return StoneColor.ORANGE;
-		case Protocol.PURPLE:
-			return StoneColor.PURPLE;
-		case Protocol.RED:
-			return StoneColor.RED;
-		case Protocol.YELLOW:
-			return StoneColor.YELLOW;
+			case Protocol.BLUE:
+				return StoneColor.BLUE;
+			case Protocol.GREEN:
+				return StoneColor.GREEN;
+			case Protocol.ORANGE:
+				return StoneColor.ORANGE;
+			case Protocol.PURPLE:
+				return StoneColor.PURPLE;
+			case Protocol.RED:
+				return StoneColor.RED;
+			case Protocol.YELLOW:
+				return StoneColor.YELLOW;
 		}
 		// TODO: change to exception?
 		return StoneColor.RED;

@@ -38,6 +38,20 @@ public class ScoreTest {
 	}
 
 	@Test
+	public void testSingleOnTop() {
+		/* Board:
+		 *     |  x |   
+		 *     | 3B |   
+		 *     |    |  
+		 */
+		board.placeStone(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0));
+		
+		List<Move> moves = new ArrayList<Move>();
+		moves.add(new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 0, 1));
+		assertEquals(2, board.calculateScore(moves));
+	}
+
+	@Test
 	public void testSingleOnRight() {
 		/* Board:
 		 *     |    |   
@@ -143,13 +157,13 @@ public class ScoreTest {
 		 *     
 		 */
 		Move[] setup = {
-				new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 1),
-				new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 0, 0),
-				new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 0, -1),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 0, 1),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 0, -1),
 
-				new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 2, 0),
-				new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, -1),
-				new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 2, -2),	
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 2, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.ORANGE), 2, -1),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.GREEN), 2, -2),	
 		};
 		board.placeStones(Arrays.asList(setup));
 		
@@ -177,8 +191,8 @@ public class ScoreTest {
 		board.placeStones(Arrays.asList(setup));
 		
 		Move[] moves = {
-				new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 1),
-				new Move(new Stone(StoneShape.CLUBS, StoneColor.BLUE), -1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 1),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.BLUE), -1, 0),
 		};
 		
 		assertEquals(2 + 2 + 2, board.calculateScore(Arrays.asList(moves)));

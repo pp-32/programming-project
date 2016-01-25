@@ -39,7 +39,7 @@ public class Game extends Observable {
 	public HumanPlayer getHumanPlayer() {
 		for (Player p : players) {
 			if (p instanceof HumanPlayer) {
-				return (HumanPlayer)p;
+				return (HumanPlayer) p;
 			}
 		}
 		return null;

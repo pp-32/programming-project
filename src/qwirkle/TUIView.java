@@ -22,14 +22,14 @@ public class TUIView implements View {
 	}
 
 	public void run() {
-		Scanner user_input = new Scanner(System.in);
+		Scanner userInput = new Scanner(System.in);
 
 		boolean inputValid = false;
 
 		System.out.print("Enter your name: ");
 		while (!inputValid) {
 			try {
-				String playerName = user_input.nextLine();
+				String playerName = userInput.nextLine();
 				System.out.print("Your name is: " + playerName);
 				System.out.println("");
 				client.requestJoin(playerName);
@@ -45,7 +45,7 @@ public class TUIView implements View {
 		boolean inputValid2 = false;
 		while (!inputValid2) {
 			try {
-				int playerCount = Integer.parseInt(user_input.nextLine());
+				int playerCount = Integer.parseInt(userInput.nextLine());
 				if (playerCount <= 4) {
 					System.out.print("The number of players is: " + playerCount);
 					System.out.println("");
@@ -89,18 +89,18 @@ public class TUIView implements View {
 		boolean continueLoop = true;
 		try (Scanner commandScanner = new Scanner(command)) {
 			switch (commandScanner.nextLine()) {
-			case "place":
-				handlePlaceCommand();
-				break;
-			case "trade":
-				handleTradeCommand(commandScanner);
-				break;
-			case "exit":
-				continueLoop = false;
-				break;
-			default:
-				System.out.println("You didn't enter a valid command. Please try again.");
-				break;
+				case "place":
+					handlePlaceCommand();
+					break;
+				case "trade":
+					handleTradeCommand(commandScanner);
+					break;
+				case "exit":
+					continueLoop = false;
+					break;
+				default:
+					System.out.println("You didn't enter a valid command. Please try again.");
+					break;
 			}
 		}
 		return continueLoop;
@@ -196,24 +196,24 @@ public class TUIView implements View {
 		
 		lock.lock();
 		try {
-			switch ((String)arg1) {
-			case "gamestarted":
-				gameStarted.signalAll();
-				break;
-			case "placedstone":
-				System.out.println(((Board) arg0).toString());
-				break;
-			case "turnstarted":
-				System.out.println("Your turn has started!");
-				break;
-			case "stones":
-				HumanPlayer hp = (HumanPlayer)arg0;
-				printStones(hp.getStones());
-				break;
-			case "score":
-				Player p = ((Player)arg0);
-				System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
-				break;
+			switch ((String) arg1) {
+				case "gamestarted":
+					gameStarted.signalAll();
+					break;
+				case "placedstone":
+					System.out.println(((Board) arg0).toString());
+					break;
+				case "turnstarted":
+					System.out.println("Your turn has started!");
+					break;
+				case "stones":
+					HumanPlayer hp = (HumanPlayer) arg0;
+					printStones(hp.getStones());
+					break;
+				case "score":
+					Player p = (Player) arg0;
+					System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
+					break;
 			}
 		} finally {
 			lock.unlock();

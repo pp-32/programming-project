@@ -21,7 +21,8 @@ import java.util.Scanner;
  */
 public class QwirkleClient extends Observable {
 	
-	public static final String USAGE = "Usage: java " + QwirkleClient.class.toString() + " <host> <port>";
+	public static final String USAGE = "Usage: java " + QwirkleClient.class.toString() 
+								+ " <host> <port>";
 	
 	public static void main(String[] args) {
 		
@@ -117,22 +118,22 @@ public class QwirkleClient extends Observable {
 	
 	private void processResponse(String response) {
 		try (Scanner scanner = new Scanner(response)) {
-			switch(scanner.next()) {
-			case Protocol.SERVER_ACCEPTREQUEST:
-				// TODO accept
-				break;
-			case Protocol.SERVER_STARTGAME:
-				handleStartGameCommand(scanner);
-				break;			
-			case Protocol.SERVER_GIVESTONES:
-				handleGiveStonesCommand(scanner);
-				break;
-			case Protocol.SERVER_NOTIFYMOVE:
-				handleNotifyMoveCommand(scanner);
-				break;
-			case Protocol.SERVER_MOVEREQUEST:
-				handleMoveRequest(scanner);
-				break;
+			switch (scanner.next()) {
+				case Protocol.SERVER_ACCEPTREQUEST:
+					// TODO accept
+					break;
+				case Protocol.SERVER_STARTGAME:
+					handleStartGameCommand(scanner);
+					break;			
+				case Protocol.SERVER_GIVESTONES:
+					handleGiveStonesCommand(scanner);
+					break;
+				case Protocol.SERVER_NOTIFYMOVE:
+					handleNotifyMoveCommand(scanner);
+					break;
+				case Protocol.SERVER_MOVEREQUEST:
+					handleMoveRequest(scanner);
+					break;
 			}
 		}
 	}

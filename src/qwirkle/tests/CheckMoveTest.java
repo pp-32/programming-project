@@ -89,9 +89,9 @@ public class CheckMoveTest {
 		 *     |    |    | 
 		 */
 		Move[] setup = {
-				new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0),
-				new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0)
-			};
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 0, 0),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0)
+		};
 		board.placeStones(Arrays.asList(setup));
 		assertFalse(board.checkMove(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 2, 0)));
 	}
@@ -270,8 +270,8 @@ public class CheckMoveTest {
 		board.placeStones(Arrays.asList(setup));
 		
 		Move[] moves = {
-				new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 1),
-				new Move(new Stone(StoneShape.CLUBS, StoneColor.BLUE), -1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), -1, 1),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.BLUE), -1, 0),
 		};
 		
 		assertTrue(board.checkMoves(Arrays.asList(moves)));
