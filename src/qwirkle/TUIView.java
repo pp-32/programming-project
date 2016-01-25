@@ -14,6 +14,7 @@ public class TUIView implements View {
 
 	private Lock lock = new ReentrantLock();
 	private Condition gameStarted = lock.newCondition();
+	private Condition turnStarted = lock.newCondition();
 
 	private QwirkleClient client;
 
@@ -65,16 +66,13 @@ public class TUIView implements View {
 		lock.lock();
 		try {
 			gameStarted.await();
+			System.out.println("Game joined!");
+			System.out.println(client.getCurrentGame().getBoard().toString());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} finally {
 			lock.unlock();
 		}
-
-		System.out.println("Game joined!");
-
-		System.out.println(client.getCurrentGame().getBoard().toString());
-		printStones(client.getCurrentGame().getHumanPlayer().getStones());
 
 		try (Scanner scanner = new Scanner(System.in)) {
 			boolean continueLoop = true;
@@ -170,32 +168,32 @@ public class TUIView implements View {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		if (arg1 instanceof Game) {
-			lock.lock();
-			try {
-				gameStarted.signalAll();
-			} finally {
-				lock.unlock();
+		lock.lock();
+		try {
+			if (arg1 instanceof Game) {
+					gameStarted.signalAll();
+			} else if (arg0 instanceof Board) {
+				System.out.println(((Board) arg0).toString());
+			} else if (arg0 instanceof HumanPlayer) {
+				HumanPlayer p = ((HumanPlayer) arg0);
+				switch ((String) arg1) {
+				case "stones":
+					printStones(p.getStones());
+					break;
+				case "score":
+					System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
+					break;
+				}
+			} else if (arg0 instanceof Player) {
+				Player p = ((Player)arg0);
+				switch ((String) arg1) {
+				case "score":
+					System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
+					break;
+				}
 			}
-		} else if (arg0 instanceof Board) {
-			System.out.println(((Board) arg0).toString());
-		} else if (arg0 instanceof HumanPlayer) {
-			HumanPlayer p = ((HumanPlayer) arg0);
-			switch ((String) arg1) {
-			case "stones":
-				printStones(p.getStones());
-				break;
-			case "score":
-				System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
-				break;
-			}
-		} else if (arg0 instanceof Player) {
-			Player p = ((Player)arg0);
-			switch ((String) arg1) {
-			case "score":
-				System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
-				break;
-			}
+		} finally {
+			lock.unlock();
 		}
 	}
 
