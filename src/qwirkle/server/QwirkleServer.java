@@ -49,7 +49,11 @@ public class QwirkleServer extends Thread implements Observer {
 			return;
 		}
 		
-		server.run();
+		try {
+			server.run();
+		} finally {
+			server.close();
+		}
 	}
 	
 	private ServerSocket socket;
@@ -157,8 +161,6 @@ public class QwirkleServer extends Thread implements Observer {
 				client.notifyMove(sender.getClientName(), score, moves);
 			}
 		}
-		game.nextPlayer();
-		getClientByName(game.getCurrentPlayer().getName()).requestMove();
 	}
 
 	/**
@@ -173,8 +175,6 @@ public class QwirkleServer extends Thread implements Observer {
 				client.notifyTrade(sender.getClientName(), amount);
 			}
 		}
-		game.nextPlayer();
-		getClientByName(game.getCurrentPlayer().getName()).requestMove();
 	}
 
 	public void broadcastConnectionLost(ClientHandler sender) {
@@ -193,5 +193,9 @@ public class QwirkleServer extends Thread implements Observer {
 			System.out.println(((Board) arg0).toString());
 		}
 		
+	}
+	
+	public void close() {
+		serverSocket.close();
 	}
 }

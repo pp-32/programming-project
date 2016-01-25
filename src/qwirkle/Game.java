@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-public class Game extends Observable {
+public class Game extends Observable implements Runnable{
 
 	// -- Instance variables -----------------------------------------
 
@@ -35,31 +35,28 @@ public class Game extends Observable {
 	public Board getBoard() {
 		return board;
 	}
-	
-	public HumanPlayer getHumanPlayer() {
-		for (Player p : players) {
-			if (p instanceof HumanPlayer) {
-				return (HumanPlayer) p;
-			}
+
+	/**
+	 * Runs the basic loop of the game.
+	 */
+	public void run() {
+		while (!gameOver()) {
+			getCurrentPlayer().makeMove(board);
+			nextPlayer();
 		}
-		return null;
-	}
-
-	/**
-	 * Starts the Qwirkle game. Asks after each ended game if the user wants to
-	 * continue. Continues until the user does not want to play anymore.
-	 */
-//	public void start() {
-//
-//	}
-
-	/**
-	 * 
-	 */
-	public void nextPlayer() {
-		current = (current + 1) % players.size(); 
 	}
 	
+	/**
+	 * Instructs the game to hand over the turn to the next player.
+	 */
+	private void nextPlayer() {
+		current = (current + 1) % players.size();
+	}
+	
+	/**
+	 * Gets the current player that is making a move.
+	 * @return the player.
+	 */
 	public Player getCurrentPlayer() {
 		return players.get(current);
 	}

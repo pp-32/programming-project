@@ -1,5 +1,10 @@
 package qwirkle;
 
+/**
+ * Provides an implementation of Board using a 2D array as back-end.
+ * @author Jerre
+ *
+ */
 public class ArrayBoard extends Board {
 
 	private static final int BOARD_DIMENSION = 100;

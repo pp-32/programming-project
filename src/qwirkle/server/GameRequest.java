@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import qwirkle.Game;
-import qwirkle.HumanPlayer;
 import qwirkle.Player;
 import qwirkle.Stone;
+import qwirkle.client.HumanPlayer;
 
 /**
  * Represents a request for a Qwirkle game. 
@@ -58,10 +58,10 @@ public class GameRequest {
 	 * @return The game.
 	 */
 	public Game createAndStartGame() {
-		Map<String, HumanPlayer> players = new HashMap<String, HumanPlayer>();
+		Map<String, ClientPlayer> players = new HashMap<String, ClientPlayer>();
 		
 		for (ClientHandler client : clients) {
-			players.put(client.getClientName(), new HumanPlayer(client.getClientName()));
+			players.put(client.getClientName(), new ClientPlayer(client));
 		}
 		
 		Game game = new Game(new ArrayList<Player>(players.values()));
@@ -78,7 +78,9 @@ public class GameRequest {
 			client.giveStones(stones);
 		}
 
-		clients.get(0).requestMove();
+		//clients.get(0).requestMove();
+		
+		new Thread(game).start();
 		
 		return game;
 	}

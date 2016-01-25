@@ -1,14 +1,16 @@
 package qwirkle;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 
-public class Player extends Observable {
+/**
+ * Represents a player in the Qwirkle game.
+ * @author Jerre
+ *
+ */
+public abstract class Player extends Observable {
 
 	private String name;
 	private int score;
-	protected List<Stone> stones;
 
 	/**
 	 * Creates a new <code>Player</code> object.
@@ -18,7 +20,6 @@ public class Player extends Observable {
 
 	public Player(String theName) {
 		this.name = theName;
-		this.stones = new ArrayList<Stone>();
 	}
 
 	/**
@@ -31,39 +32,33 @@ public class Player extends Observable {
 	}
 
 	/**
-	 * Adds a stone to a line with stones that all have the same property (shape or color).
+	 * Gets the current score the player has achieved during the game.
+	 * @return The score.
 	 */
-	public void placeStone() {
-
-	}
-
-	/**
-	 * Picks a stone from the bag.
-	 */
-	public void pickStone() {
-
-	}
-
-	/**
-	 * Swaps a stone for a different stone.
-	 */
-	public void discardStone() {
-
-	}
-
 	public int getScore() {
 		return score;
 	}
 
+	/**
+	 * Updates the current score to a new value the player has achieved during the game.
+	 * @param score
+	 */
 	public void setScore(int score) {
 		this.score = score;
 		setChanged();
 		notifyObservers("score");
-	}
-
-	/*
-	public void makeMove() {
-
-	}*/
+	} 
+	
+	/**
+	 * Gets the amount of stones the player has.
+	 * @return The amount of stones.
+	 */
+	public abstract int getHandSize();
+	
+	/**
+	 * Instructs the player to make a move.
+	 * @param board The board the player should make a move on.
+	 */
+	public abstract void makeMove(Board board);
 
 }

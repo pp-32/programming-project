@@ -1,4 +1,4 @@
-package qwirkle;
+package qwirkle.client;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,9 +10,18 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Scanner;
+
+import qwirkle.Game;
+import qwirkle.Move;
+import qwirkle.OpenHandPlayer;
+import qwirkle.Player;
+import qwirkle.Protocol;
+import qwirkle.RemotePlayer;
+import qwirkle.Stone;
+import qwirkle.TUIView;
+import qwirkle.View;
 
 /**
  * Represents a client that is connected to the server.
@@ -67,6 +76,7 @@ public class QwirkleClient extends Observable {
 	private Game game;
 	private View view;
 	private String clientName;
+	private OpenHandPlayer player;
 	private boolean myTurn;
 	
 	// TODO: remove.
@@ -131,6 +141,9 @@ public class QwirkleClient extends Observable {
 				case Protocol.SERVER_NOTIFYMOVE:
 					handleNotifyMoveCommand(scanner);
 					break;
+				case Protocol.SERVER_NOTIFYTRADE:
+					// TODO;
+					break;
 				case Protocol.SERVER_MOVEREQUEST:
 					handleMoveRequest(scanner);
 					break;
@@ -148,12 +161,11 @@ public class QwirkleClient extends Observable {
 		for (int i = 0; i < amount; i++) {
 			moves.add(Move.fromScanner(scanner));
 		}
-		
-		game.getBoard().placeStones(moves);
-		
+				
 		for (Player p : game.getPlayers()) {
 			if (p.getName().equals(name)) {
-				p.setScore(p.getScore() + score);
+				RemotePlayer remotePlayer = (RemotePlayer) p;
+				remotePlayer.notifyPlacedStones(game.getBoard(), moves, score);
 				break;
 			}
 		}
@@ -167,7 +179,7 @@ public class QwirkleClient extends Observable {
 			stones.add(Stone.fromScanner(scanner));
 		}
 		
-		game.getHumanPlayer().giveStones(stones);
+		player.giveStones(stones);
 	}
 
 	private void handleStartGameCommand(Scanner scanner) {
@@ -175,15 +187,16 @@ public class QwirkleClient extends Observable {
 		while (scanner.hasNext()) {
 			String name = scanner.next();
 			if (name.equals(clientName)) {
-				players.add(new HumanPlayer(name));
+				// TODO: add computer player.
+				player = new HumanPlayer(name);
+				players.add(player);
 			} else { 
-				players.add(new Player(name)); 
+				players.add(new RemotePlayer(name)); 
 			}
 		}
 		
 		game = new Game(players);
 		game.getBoard().addObserver(view);
-		game.getHumanPlayer().addObserver(view);
 		
 		for (Player p : game.getPlayers()) {
 			p.addObserver(view);
@@ -235,7 +248,7 @@ public class QwirkleClient extends Observable {
 	public void setMove(List<Move> stonePlacements) {
 	
 		if (game.getBoard().checkMoves(stonePlacements)) {
-			game.getHumanPlayer().placeStones(game.getBoard(), stonePlacements);
+			player.placeStones(game.getBoard(), stonePlacements);
 			myTurn = false;
 			
 		} else {
@@ -271,7 +284,7 @@ public class QwirkleClient extends Observable {
 	 * @param stones The stones to trade.
 	 */
 	public void doTrade(List<Stone> stones) {
-		game.getHumanPlayer().stones.removeAll(stones);
+		player.getStones().removeAll(stones);
 		myTurn = false;
 		
 		try {
@@ -302,5 +315,9 @@ public class QwirkleClient extends Observable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public OpenHandPlayer getPlayer() {
+		return player;
 	}
 }

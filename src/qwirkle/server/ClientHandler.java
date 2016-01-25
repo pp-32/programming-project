@@ -10,15 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import qwirkle.Board;
 import qwirkle.Game;
-import qwirkle.HumanPlayer;
 import qwirkle.Location;
 import qwirkle.Move;
 import qwirkle.Player;
 import qwirkle.Protocol;
 import qwirkle.Stone;
+import qwirkle.client.HumanPlayer;
 
 /**
  * Represents a client handler that handles traffic between the server and a connected client. 
@@ -27,12 +30,15 @@ import qwirkle.Stone;
  */
 public class ClientHandler extends Thread {
 	
+	private Lock makeMoveLock = new ReentrantLock();
+	private Condition moveMade = makeMoveLock.newCondition();
+	
 	private Socket socket;
 	private BufferedReader in;
 	private BufferedWriter out;
 	private String clientName;
 	private Game currentGame;
-	private HumanPlayer currentPlayer;
+	private ClientPlayer currentPlayer;
 	private QwirkleServer server;
 	
 	/**
@@ -75,7 +81,7 @@ public class ClientHandler extends Thread {
 	 * Gets the current player the client is currently using.
 	 * @return the player.
 	 */
-	public HumanPlayer getCurrentPlayer() {
+	public ClientPlayer getCurrentPlayer() {
 		return currentPlayer;
 	}
 
@@ -83,7 +89,7 @@ public class ClientHandler extends Thread {
 	 * Sets the current player the client is currently using.
 	 * @param currentPlayer
 	 */
-	public void setCurrentPlayer(HumanPlayer  currentPlayer) {
+	public void setCurrentPlayer(ClientPlayer  currentPlayer) {
 		this.currentPlayer = currentPlayer;
 	}
 
@@ -95,7 +101,10 @@ public class ClientHandler extends Thread {
 		String line;
 		try {
 			while ((line = in.readLine()) != null) {
-				System.out.println("[" + getClientName() + " (" + socket.getInetAddress().toString() + ")]: " + line);
+				System.out.println(String.format("[%s (%s)]: %s", 
+								getClientName(), 
+								socket.getInetAddress(),
+								line));
 				processCommand(line);
 			}
 		} catch (IOException e) {
@@ -146,7 +155,8 @@ public class ClientHandler extends Thread {
 		for (int i = 0; i < amount; i++) {
 			moves.add(Move.fromScanner(scanner));
 		}
-	
+
+		this.moveMade();
 		giveStones(currentGame.getBoard().pickStones(amount));
 		server.broadcastMove(this, moves);
 	}
@@ -158,7 +168,8 @@ public class ClientHandler extends Thread {
 		for (int i = 0; i < amount; i++) {
 			board.placeStoneInBag(Stone.fromScanner(scanner));
 		}
-		
+
+		this.moveMade();
 		giveStones(currentGame.getBoard().pickStones(amount));
 		server.broadcastTrade(this, amount);
 	}
@@ -238,6 +249,24 @@ public class ClientHandler extends Thread {
 			e.printStackTrace();
 			shutdown();
 		}
+	}
+	
+	public void moveMade() {
+		makeMoveLock.lock();
+		try {
+			moveMade.signalAll();
+		} finally {
+			makeMoveLock.unlock();
+		}
+	}
+	
+	public void waitForMove() throws InterruptedException {
+		makeMoveLock.lock();
+		try {
+			moveMade.await();
+		} finally {
+			makeMoveLock.unlock();
+		}		
 	}
 	
 	/**

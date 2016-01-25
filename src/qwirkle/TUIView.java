@@ -10,6 +10,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import qwirkle.client.HumanPlayer;
+import qwirkle.client.QwirkleClient;
+
 public class TUIView implements View {
 
 	private Lock lock = new ReentrantLock();
@@ -121,7 +124,7 @@ public class TUIView implements View {
 		for (int i = 0; i < stonesCount; i++) {
 			System.out.print("Enter the index of the stone you want to trade. ");
 			int stoneIndex = readNextInt(0, 5);
-			stones.add(client.getCurrentGame().getHumanPlayer().getStones().get(stoneIndex));
+			stones.add(client.getPlayer().getStones().get(stoneIndex));
 		}
 
 		client.doTrade(stones);
@@ -153,7 +156,7 @@ public class TUIView implements View {
 			System.out.print("You placed a stone on (" + x + ", " + y + ")");
 			System.out.println("");
 
-			Move move = new Move(client.getCurrentGame().getHumanPlayer().getStones().get(stoneIndex), location);
+			Move move = new Move(client.getPlayer().getStones().get(stoneIndex), location);
 			moves.add(move);
 		}
 
@@ -213,6 +216,8 @@ public class TUIView implements View {
 				case "score":
 					Player p = (Player) arg0;
 					System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
+					break;
+				case "turnEnded":
 					break;
 			}
 		} finally {
