@@ -70,10 +70,29 @@ public class Location {
 		setY(getY() - directionVector.getY());
 	}
 	
+	/**
+	 * Creates a deep copy of the location.
+	 * @return
+	 */
 	public Location deepCopy() {
 		return new Location(getX(), getY());
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Location)) {
+			return false;
+		}
+		
+		Location other = (Location) obj;
+		return this.getX() == other.getX() && this.getY() == other.getY();
+	}
+	
+	@Override
+	public int hashCode() {
+		return getX() ^ getY();
+	}
+	
 	public static Location fromScanner(Scanner scanner) {
 		return new Location(scanner.nextInt(), scanner.nextInt());
 	}

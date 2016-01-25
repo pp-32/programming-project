@@ -1,11 +1,7 @@
 package qwirkle.server;
 
-import java.util.List;
-
 import qwirkle.Board;
 import qwirkle.OpenHandPlayer;
-import qwirkle.Player;
-import qwirkle.Stone;
 
 public class ClientPlayer extends OpenHandPlayer {
 

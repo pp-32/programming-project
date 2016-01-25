@@ -20,7 +20,6 @@ import qwirkle.Player;
 import qwirkle.Protocol;
 import qwirkle.RemotePlayer;
 import qwirkle.Stone;
-import qwirkle.TUIView;
 import qwirkle.View;
 
 /**
@@ -117,6 +116,7 @@ public class QwirkleClient extends Observable {
 		try {
 			while (true) {
 				String response = readResponse();
+				// TODO: remove next println:
 				System.out.println("[server]: " + response);
 				processResponse(response);
 			}
@@ -147,8 +147,15 @@ public class QwirkleClient extends Observable {
 				case Protocol.SERVER_MOVEREQUEST:
 					handleMoveRequest(scanner);
 					break;
+				case Protocol.SERVER_CHAT:
+					handleChatCommand(scanner);
+					break;
 			}
 		}
+	}
+
+	private void handleChatCommand(Scanner scanner) {
+		//
 	}
 
 	private void handleNotifyMoveCommand(Scanner scanner) {
@@ -299,6 +306,18 @@ public class QwirkleClient extends Observable {
 				out.write(Stone.colorToString(s.getColor()));
 			}
 			
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendChatMessage(String message) {
+		try {
+			out.write(Protocol.CLIENT_CHAT);
+			out.write(" ");
+			out.write(message);
 			out.newLine();
 			out.flush();
 		} catch (IOException e) {

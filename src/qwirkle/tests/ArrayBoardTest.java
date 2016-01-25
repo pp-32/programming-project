@@ -7,8 +7,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import junit.framework.Assert;
 import qwirkle.ArrayBoard;
 import qwirkle.Move;
 import qwirkle.Stone;

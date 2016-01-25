@@ -1,17 +1,19 @@
-package qwirkle;
+package qwirkle.client;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Scanner;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import qwirkle.client.HumanPlayer;
-import qwirkle.client.QwirkleClient;
+import qwirkle.Board;
+import qwirkle.Location;
+import qwirkle.Move;
+import qwirkle.Player;
+import qwirkle.Stone;
+import qwirkle.View;
 
 public class TUIView implements View {
 
@@ -98,6 +100,9 @@ public class TUIView implements View {
 				case "trade":
 					handleTradeCommand(commandScanner);
 					break;
+				case "chat":
+					handleChatCommand(commandScanner);
+					break;
 				case "exit":
 					continueLoop = false;
 					break;
@@ -107,6 +112,13 @@ public class TUIView implements View {
 			}
 		}
 		return continueLoop;
+	}
+
+	private void handleChatCommand(Scanner commandScanner) {
+		System.out.print("Enter your message: ");
+		try (Scanner messageScanner = new Scanner(System.in)) {
+			client.sendChatMessage(messageScanner.nextLine());
+		}
 	}
 
 	private void handleTradeCommand(Scanner commandScanner) {

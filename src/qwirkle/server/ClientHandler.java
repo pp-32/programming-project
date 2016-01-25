@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -16,12 +15,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import qwirkle.Board;
 import qwirkle.Game;
-import qwirkle.Location;
 import qwirkle.Move;
 import qwirkle.Player;
 import qwirkle.Protocol;
 import qwirkle.Stone;
-import qwirkle.client.HumanPlayer;
 
 /**
  * Represents a client handler that handles traffic between the server and a connected client. 
@@ -40,6 +37,7 @@ public class ClientHandler extends Thread {
 	private Game currentGame;
 	private ClientPlayer currentPlayer;
 	private QwirkleServer server;
+	private boolean supportsChatMessages;
 	
 	/**
 	 * Creates a new instance of a client handler, using the given socket. 
@@ -59,6 +57,10 @@ public class ClientHandler extends Thread {
 	 */
 	public String getClientName() {
 		return clientName;
+	}
+	
+	public boolean getSupportsChatMessages() {
+		return supportsChatMessages;
 	}
 	
 	/**
@@ -121,6 +123,8 @@ public class ClientHandler extends Thread {
 		try (Scanner scanner = new Scanner(line)) {
 			switch (scanner.next()) {
 				case Protocol.CLIENT_JOINREQUEST:
+					// TODO: set supportsChatMessages.
+					
 					String name = scanner.next();
 					if (server.getClientByName(name) == null) {
 						this.clientName = name; 
@@ -139,8 +143,16 @@ public class ClientHandler extends Thread {
 				case Protocol.CLIENT_DOTRADE:
 					handleDoTradeCommand(scanner);
 					break;
+				case Protocol.CLIENT_CHAT:
+					handleChatCommand(scanner);
+					break;
 			}
 		}
+	}
+
+	private void handleChatCommand(Scanner scanner) {
+		// TODO: more elegant way of skipping the space.
+		server.broadcastChatMessage(this, scanner.nextLine().substring(1));		
 	}
 
 	private void handleGameRequestCommand(Scanner scanner) {
@@ -375,6 +387,26 @@ public class ClientHandler extends Thread {
 			e.printStackTrace();
 			shutdown();
 		}
+	}
+
+	/**
+	 * Notifies the client a player has sent a message.
+	 * @param sender The sender of the message.
+	 * @param message The message that was sent.
+	 */
+	public void notifyChatMessage(ClientHandler sender, String message) {
+		try {
+			out.write(Protocol.SERVER_CHAT);
+			out.write(" ");
+			out.write(sender.getClientName());
+			out.write(" ");
+			out.write(message);
+			out.newLine();
+			out.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+			shutdown();
+		}		
 	}
 	
 	public void shutdown() {

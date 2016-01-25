@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import qwirkle.ArrayBoard;
 import qwirkle.Board;
+import qwirkle.Location;
 import qwirkle.Move;
 import qwirkle.Stone;
 import qwirkle.StoneColor;
@@ -93,7 +94,9 @@ public class CheckMoveTest {
 			new Move(new Stone(StoneShape.DIAMOND, StoneColor.RED), 1, 0)
 		};
 		board.placeStones(Arrays.asList(setup));
-		assertFalse(board.checkMove(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 2, 0)));
+		assertFalse(board.checkMove(new Move(
+						new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 
+						new Location(2, 0))));
 	}
 	
 	@Test
@@ -113,7 +116,9 @@ public class CheckMoveTest {
 			new Move(new Stone(StoneShape.DIAMOND, StoneColor.PURPLE), 5, 0),
 		};
 		board.placeStones(Arrays.asList(setup));
-		assertFalse(board.checkMove(new Move(new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 6, 0)));
+		assertFalse(board.checkMove(new Move(
+						new Stone(StoneShape.DIAMOND, StoneColor.BLUE), 
+						new Location(6, 0))));
 	}
 
 	@Test
@@ -186,8 +191,12 @@ public class CheckMoveTest {
 		};
 		board.placeStones(Arrays.asList(setup));
 		
-		assertTrue(board.checkMove(new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0)));
-		assertFalse(board.checkMove(new Move(new Stone(StoneShape.CLUBS, StoneColor.ORANGE), 2, 0)));
+		assertTrue(board.checkMove(new Move(
+						new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 
+						new Location(2, 0))));
+		assertFalse(board.checkMove(new Move(
+						new Stone(StoneShape.CLUBS, StoneColor.ORANGE), 
+						new Location(2, 0))));
 	}
 
 	@Test
@@ -251,7 +260,7 @@ public class CheckMoveTest {
 			new Move(new Stone(StoneShape.CLUBS, StoneColor.RED), 1, 0),
 			new Move(new Stone(StoneShape.RECTANGLE, StoneColor.RED), 3, 0),
 		};
-		assertEquals(5 + 3 + 3, board.calculateScore(Arrays.asList(moves)));
+		assertTrue(board.checkMoves(Arrays.asList(moves)));
 	}
 	
 	@Test

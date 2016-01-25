@@ -1,10 +1,8 @@
 package qwirkle.server;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -13,7 +11,6 @@ import java.util.Observer;
 import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.Move;
-import qwirkle.Stone;
 
 /**
  * Represents a server running the Qwirkle game.
@@ -187,6 +184,15 @@ public class QwirkleServer extends Thread implements Observer {
 		}
 	}
 
+	public void broadcastChatMessage(ClientHandler sender, String message) {
+		Game game = sender.getCurrentGame();
+		for (ClientHandler client : connectedClients) {
+			if (client.getCurrentGame() == game) {
+				client.notifyChatMessage(sender, message);
+			}
+		}
+	}
+
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Board) {
@@ -196,6 +202,10 @@ public class QwirkleServer extends Thread implements Observer {
 	}
 	
 	public void close() {
-		serverSocket.close();
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

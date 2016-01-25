@@ -1,7 +1,6 @@
 package qwirkle.server;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +8,6 @@ import java.util.Map;
 import qwirkle.Game;
 import qwirkle.Player;
 import qwirkle.Stone;
-import qwirkle.client.HumanPlayer;
-
 /**
  * Represents a request for a Qwirkle game. 
  * @author Jerre

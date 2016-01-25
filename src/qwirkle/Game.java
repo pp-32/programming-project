@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-public class Game extends Observable implements Runnable{
+public class Game extends Observable implements Runnable {
 
 	// -- Instance variables -----------------------------------------
 

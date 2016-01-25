@@ -67,6 +67,10 @@ public class Rectangle {
 		return topLeft.toString() + " => " + bottomRight.toString();
 	}
 
+	/**
+	 * Inflates the rectangle by a specific amount of units on each side.
+	 * @param i the amount of units to inflate.
+	 */
 	public void inflate(int i) {
 		topLeft.setX(topLeft.getX() - i);
 		topLeft.setY(topLeft.getY() + i);
@@ -74,6 +78,26 @@ public class Rectangle {
 		bottomRight.setY(bottomRight.getY() - i);
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Rectangle)) {
+			return false;
+		}
+		
+		Rectangle other = (Rectangle) obj;
+		return this.getTopLeft().equals(other.getTopLeft()) 
+			   && this.getBottomRight().equals(other.getBottomRight());
+	}
+	
+	@Override
+	public int hashCode() {
+		return getTopLeft().hashCode() ^ getBottomRight().hashCode();
+	}
+	
+	/**
+	 * Creates a deep copy of the rectangle.
+	 * @return The copy of the rectangle.
+	 */
 	public Rectangle deepCopy() {
 		return new Rectangle(topLeft.deepCopy(), bottomRight.deepCopy());
 	}

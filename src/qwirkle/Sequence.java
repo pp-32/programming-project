@@ -3,9 +3,6 @@ package qwirkle;
 import java.util.ArrayList;
 import java.util.List;
 
-import qwirkle.SequenceDirection;
-import qwirkle.SequenceType;
-
 /**
  * Represents a sequence of stones on a Qwirkle board.
  * @author Jerre
