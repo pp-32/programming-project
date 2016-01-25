@@ -142,7 +142,7 @@ public class TUIView implements View {
 		for (int i = 0; i < stonesCount; i++) {
 			System.out.print("Which stone do you want to place? ");
 			int stoneIndex = readNextInt(0, 5);
-			
+
 			System.out.print("Enter the desired x-location for stone " + stoneIndex + " ");
 			int x = readNextInt(-1000, 1000);
 
@@ -152,7 +152,7 @@ public class TUIView implements View {
 			Location location = new Location(x, y);
 			System.out.print("You placed a stone on (" + x + ", " + y + ")");
 			System.out.println("");
-			
+
 			Move move = new Move(client.getCurrentGame().getHumanPlayer().getStones().get(stoneIndex), location);
 			moves.add(move);
 		}
@@ -172,9 +172,15 @@ public class TUIView implements View {
 	}
 
 	private void printStones(List<Stone> stones) {
+		System.out.print("This is your hand: ");
+		System.out.println("");
+		for (int i = 0; i < stones.size(); i++) {
+			System.out.print("[" + i + "] ");
+		}
+		System.out.println("");
 		for (int i = 0; i < stones.size(); i++) {
 			Stone s = stones.get(i);
-			System.out.print(s.toString());
+			System.out.print(s.toString() + " ");
 			if (i < stones.size() - 1) {
 				System.out.print(" ");
 			}
