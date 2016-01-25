@@ -25,9 +25,9 @@ public class TUIView implements View {
 		Scanner user_input = new Scanner(System.in);
 
 		boolean inputValid = false;
-		
+
 		System.out.print("Enter your name: ");
-		while(!inputValid) {
+		while (!inputValid) {
 			try {
 				String playerName = user_input.nextLine();
 				System.out.print("Your name is: " + playerName);
@@ -40,20 +40,20 @@ public class TUIView implements View {
 		}
 
 		// TODO: let the tui know that the join request is accepted
-		
+
 		System.out.print("Enter the desired amount of players: ");
-		boolean validInput = false;
-		while (!validInput) {
+		boolean inputValid2 = false;
+		while (!inputValid2) {
 			try {
 				int playerCount = Integer.parseInt(user_input.nextLine());
-				if(playerCount <= 4) {
+				if (playerCount <= 4) {
 					System.out.print("The number of players is: " + playerCount);
 					System.out.println("");
 					client.requestGame(playerCount);
-					validInput = true;
+					inputValid2 = true;
 				} else {
 					System.out.println("You didn't enter a valid amount of players. Please try again.");
-					validInput = false;
+					inputValid2 = false;
 				}
 			} catch (NumberFormatException e1) {
 				System.out.println("You didn't enter a valid amount of players. Please try again.");
@@ -101,6 +101,9 @@ public class TUIView implements View {
 			case "exit":
 				continueLoop = false;
 				break;
+			default:
+				System.out.println("You didn't enter a valid command. Please try again.");
+				break;
 			}
 		}
 		return continueLoop;
@@ -108,13 +111,14 @@ public class TUIView implements View {
 
 	private void handleTradeCommand(Scanner commandScanner) {
 		List<Stone> stones = new ArrayList<Stone>();
-		
-		// TODO exceptions
-		// trade <aantal stenen>
-		int stonesCount = Integer.parseInt(commandScanner.next());
+
+		System.out.print("How many stones do you want to trade? ");
+
+		int stonesCount = readNextInt(0, 6);
 
 		for (int i = 0; i < stonesCount; i++) {
-			int stoneIndex = Integer.parseInt(commandScanner.next());
+			System.out.print("Enter the index of the stone you want to trade. ");
+			int stoneIndex = readNextInt(0, 5);
 			stones.add(client.getCurrentGame().getHumanPlayer().getStones().get(stoneIndex));
 		}
 
@@ -125,32 +129,30 @@ public class TUIView implements View {
 	private void handlePlaceCommand() {
 		List<Move> moves = new ArrayList<Move>();
 
-		Scanner commandScanner = new Scanner(System.in);
-
-		// place <aantal stenen> {<index> <x> <y> ....}
-		// TODO Try/catch Block & stonesCount <= 6
 		System.out.print("How many stones do you want to place? ");
-		int stonesCount = Integer.parseInt(commandScanner.nextLine());
+
+		int stonesCount = readNextInt(0, 6);
 
 		for (int i = 0; i < stonesCount; i++) {
 			System.out.print("Which stone do you want to place? ");
-			// TODO Try/catch Block & stoneIndex <= 5 
-			int stoneIndex = Integer.parseInt(commandScanner.nextLine());
+			int stoneIndex = readNextInt(0, 5);
+			
 			System.out.print("Enter the desired x-location for stone " + stoneIndex + " ");
-			// TODO Try/catch Block & x first stone has to be 0
-			int x = Integer.parseInt(commandScanner.nextLine());
+			int x = readNextInt(-1000, 1000);
+
 			System.out.print("Enter the desired y-location for stone " + stoneIndex + " ");
-			// TODO Try/catch Block & y first stone has to be 0
-			int y = Integer.parseInt(commandScanner.nextLine());
+			int y = readNextInt(-1000, 1000);
+
 			Location location = new Location(x, y);
 			System.out.print("You placed a stone on (" + x + ", " + y + ")");
 			System.out.println("");
-
+			
 			Move move = new Move(client.getCurrentGame().getHumanPlayer().getStones().get(stoneIndex), location);
 			moves.add(move);
 		}
 
 		client.setMove(moves);
+
 	}
 
 	public void updateView() {
@@ -197,6 +199,27 @@ public class TUIView implements View {
 	@Override
 	public void showError(String reason) {
 		System.out.println(reason);
+
+	}
+
+	public int readNextInt(int min, int max) {
+		Scanner commandScanner = new Scanner(System.in);
+		int count = 0;
+		boolean valid = false;
+		while (!valid) {
+			try {
+				count = Integer.parseInt(commandScanner.nextLine());
+				if (min <= count && count <= max) {
+					valid = true;
+				} else {
+					System.out.println("You didn't enter a valid amount. Please try again");
+					valid = false;
+				}
+			} catch (Exception e) {
+				System.out.println("You didn't enter a integer. Please try again.");
+			}
+		}
+		return count;
 
 	}
 }
