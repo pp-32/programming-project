@@ -60,13 +60,13 @@ public class GameRequest {
 	public Game createAndStartGame() {
 		Map<String, HumanPlayer> players = new HashMap<String, HumanPlayer>();
 		
-		for (ClientHandler client : getClients()) {
+		for (ClientHandler client : clients) {
 			players.put(client.getClientName(), new HumanPlayer(client.getClientName()));
 		}
 		
 		Game game = new Game(new ArrayList<Player>(players.values()));
 		
-		for (ClientHandler client : getClients()) {
+		for (ClientHandler client : clients) {
 			client.setCurrentGame(game);
 			client.setCurrentPlayer(players.get(client.getClientName()));
 			client.startGame(new ArrayList<String>(players.keySet()));
@@ -78,6 +78,8 @@ public class GameRequest {
 			client.giveStones(stones);
 		}
 
+		clients.get(0).requestMove();
+		
 		return game;
 	}
 }

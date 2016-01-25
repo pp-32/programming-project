@@ -157,6 +157,8 @@ public class QwirkleServer extends Thread implements Observer {
 				client.notifyMove(sender.getClientName(), score, moves);
 			}
 		}
+		game.nextPlayer();
+		getClientByName(game.getCurrentPlayer().getName()).requestMove();
 	}
 
 	/**
@@ -171,7 +173,8 @@ public class QwirkleServer extends Thread implements Observer {
 				client.notifyTrade(sender.getClientName(), amount);
 			}
 		}
-		
+		game.nextPlayer();
+		getClientByName(game.getCurrentPlayer().getName()).requestMove();
 	}
 
 	public void broadcastConnectionLost(ClientHandler sender) {

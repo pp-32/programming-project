@@ -14,7 +14,6 @@ public class TUIView implements View {
 
 	private Lock lock = new ReentrantLock();
 	private Condition gameStarted = lock.newCondition();
-	private Condition turnStarted = lock.newCondition();
 
 	private QwirkleClient client;
 
@@ -108,6 +107,11 @@ public class TUIView implements View {
 	}
 
 	private void handleTradeCommand(Scanner commandScanner) {
+		if (!client.getIsMyTurn()) {
+			showError("Wait for your turn");
+			return;
+		}
+		
 		List<Stone> stones = new ArrayList<Stone>();
 
 		System.out.print("How many stones do you want to trade? ");
@@ -121,10 +125,14 @@ public class TUIView implements View {
 		}
 
 		client.doTrade(stones);
-
 	}
 
 	private void handlePlaceCommand() {
+		if (!client.getIsMyTurn()) {
+			showError("Wait for your turn");
+			return;
+		}
+		
 		List<Move> moves = new ArrayList<Move>();
 
 		System.out.print("How many stones do you want to place? ");
@@ -176,29 +184,30 @@ public class TUIView implements View {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
+		if (!(arg1 instanceof String)) {
+			return;
+		}
+		
 		lock.lock();
 		try {
-			if (arg1 instanceof Game) {
-					gameStarted.signalAll();
-			} else if (arg0 instanceof Board) {
+			switch ((String)arg1) {
+			case "gamestarted":
+				gameStarted.signalAll();
+				break;
+			case "placedstone":
 				System.out.println(((Board) arg0).toString());
-			} else if (arg0 instanceof HumanPlayer) {
-				HumanPlayer p = ((HumanPlayer) arg0);
-				switch ((String) arg1) {
-				case "stones":
-					printStones(p.getStones());
-					break;
-				case "score":
-					System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
-					break;
-				}
-			} else if (arg0 instanceof Player) {
+				break;
+			case "turnstarted":
+				System.out.println("Your turn has started!");
+				break;
+			case "stones":
+				HumanPlayer hp = (HumanPlayer)arg0;
+				printStones(hp.getStones());
+				break;
+			case "score":
 				Player p = ((Player)arg0);
-				switch ((String) arg1) {
-				case "score":
-					System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
-					break;
-				}
+				System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
+				break;
 			}
 		} finally {
 			lock.unlock();

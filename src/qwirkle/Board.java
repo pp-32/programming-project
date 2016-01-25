@@ -207,7 +207,7 @@ public abstract class Board extends Observable {
 			placeStone(m);
 		}
 		setChanged();
-		notifyObservers(this);
+		notifyObservers("placedstone");
 	}
 
 	public int calculateScore(List<Move> moves) {

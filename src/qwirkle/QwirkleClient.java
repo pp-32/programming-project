@@ -66,7 +66,8 @@ public class QwirkleClient extends Observable {
 	private Game game;
 	private View view;
 	private String clientName;
-
+	private boolean myTurn;
+	
 	// TODO: remove.
 	public QwirkleClient() {
 		view = new TUIView(this);
@@ -82,6 +83,10 @@ public class QwirkleClient extends Observable {
 	
 	public Game getCurrentGame() {
 		return game;
+	}
+	
+	public boolean getIsMyTurn() {
+		return myTurn;
 	}
 	
 	/**
@@ -126,12 +131,12 @@ public class QwirkleClient extends Observable {
 				handleNotifyMoveCommand(scanner);
 				break;
 			case Protocol.SERVER_MOVEREQUEST:
-				
+				handleMoveRequest(scanner);
 				break;
 			}
 		}
 	}
-	
+
 	private void handleNotifyMoveCommand(Scanner scanner) {
 		List<Move> moves = new ArrayList<Move>();
 		
@@ -184,7 +189,13 @@ public class QwirkleClient extends Observable {
 		}
 		
 		setChanged();
-		notifyObservers(game);
+		notifyObservers("gamestarted");
+	}
+	
+	private void handleMoveRequest(Scanner scanner) {
+		myTurn = true;
+		setChanged();
+		notifyObservers("turnstarted");
 	}
 	
 	/**
@@ -224,6 +235,7 @@ public class QwirkleClient extends Observable {
 	
 		if (game.getBoard().checkMoves(stonePlacements)) {
 			game.getHumanPlayer().placeStones(game.getBoard(), stonePlacements);
+			myTurn = false;
 			
 		} else {
 			view.showError("Invalid move!");
@@ -259,6 +271,7 @@ public class QwirkleClient extends Observable {
 	 */
 	public void doTrade(List<Stone> stones) {
 		game.getHumanPlayer().stones.removeAll(stones);
+		myTurn = false;
 		
 		try {
 			out.write(Protocol.CLIENT_DOTRADE);

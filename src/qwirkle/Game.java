@@ -49,26 +49,19 @@ public class Game extends Observable {
 	 * Starts the Qwirkle game. Asks after each ended game if the user wants to
 	 * continue. Continues until the user does not want to play anymore.
 	 */
-	public void start() {
+//	public void start() {
+//
+//	}
 
-	}
-
-	public void waitForTurn() {
-		// 
-	}
-	
-	/**
-	 * Prints the game situation.
-	 */
-	private void update() {
-
-	}
-	
 	/**
 	 * 
 	 */
-	private void nextPlayer() {
-		
+	public void nextPlayer() {
+		current = (current + 1) % players.size(); 
+	}
+	
+	public Player getCurrentPlayer() {
+		return players.get(current);
 	}
 	
 	/**
