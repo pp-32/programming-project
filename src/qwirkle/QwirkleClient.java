@@ -125,6 +125,9 @@ public class QwirkleClient extends Observable {
 			case Protocol.SERVER_NOTIFYMOVE:
 				handleNotifyMoveCommand(scanner);
 				break;
+			case Protocol.SERVER_MOVEREQUEST:
+				
+				break;
 			}
 		}
 	}
@@ -175,6 +178,11 @@ public class QwirkleClient extends Observable {
 		game = new Game(players);
 		game.getBoard().addObserver(view);
 		game.getHumanPlayer().addObserver(view);
+		
+		for (Player p : game.getPlayers()) {
+			p.addObserver(view);
+		}
+		
 		setChanged();
 		notifyObservers(game);
 	}

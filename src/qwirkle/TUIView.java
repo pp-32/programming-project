@@ -180,9 +180,20 @@ public class TUIView implements View {
 		} else if (arg0 instanceof Board) {
 			System.out.println(((Board) arg0).toString());
 		} else if (arg0 instanceof HumanPlayer) {
+			HumanPlayer p = ((HumanPlayer) arg0);
 			switch ((String) arg1) {
 			case "stones":
-				printStones(((HumanPlayer) arg0).getStones());
+				printStones(p.getStones());
+				break;
+			case "score":
+				System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
+				break;
+			}
+		} else if (arg0 instanceof Player) {
+			Player p = ((Player)arg0);
+			switch ((String) arg1) {
+			case "score":
+				System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
 				break;
 			}
 		}

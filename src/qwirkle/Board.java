@@ -211,35 +211,53 @@ public abstract class Board extends Observable {
 	}
 
 	public int calculateScore(List<Move> moves) {
-		SequenceDirection direction;
-		if (moves.size() == 1) {
-			direction = SequenceDirection.UNKNOWN;
-		} else {
+		// tactic: first place stones, then get length of each individual orthogonal row
+		// and add them to the total score.
+		int score = 0;
+		
+		Board copy = this.deepCopy();
+		copy.placeStones(moves);	
+		Sequence horizontal = new Sequence(copy, moves.get(0).getLocation(), SequenceDirection.HORIZONTAL);
+		Sequence vertical = new Sequence(copy, moves.get(0).getLocation(), SequenceDirection.VERTICAL);
+		
+		// Determine direction of moves.
+		SequenceDirection direction = SequenceDirection.HORIZONTAL;
+		if (moves.size() > 1) {
 			Location delta = moves.get(0).getLocation().deepCopy();
 			delta.subtract(moves.get(1).getLocation());
 			direction = Sequence.getDirectionFromVector(delta);
 		}
-		
-		Board copy = this.deepCopy();
-		copy.placeStones(moves);		
-		Sequence horizontal = new Sequence(copy, moves.get(0).getLocation(), SequenceDirection.HORIZONTAL);
-		Sequence vertical = new Sequence(copy, moves.get(0).getLocation(), SequenceDirection.VERTICAL);
-		
-		int score = 0;
+
+		// Determine orthogonal direction.
+		SequenceDirection orthogonal = SequenceDirection.UNKNOWN;
 		switch (direction) {
 		case HORIZONTAL:
-			score = horizontal.calculateScore();
+			score += horizontal.getLength();
+			orthogonal = SequenceDirection.VERTICAL;
 			break;
 		case VERTICAL:
-			score = vertical.calculateScore();
+			score += vertical.getLength();
+			orthogonal = SequenceDirection.HORIZONTAL;
 			break;
-		case UNKNOWN:
-			if (horizontal.getLength() > 0 ) {
-				score += horizontal.getLength(); 
-			} else {
-				score += vertical.getLength();
+		}
+
+		// Check for qwirkle bonus.
+		if (score == 6) {
+			score += 6;
+		}
+		
+		for (Move m : moves) {
+			Sequence subsequence = new Sequence(copy, m.getLocation(), orthogonal);
+			int length = subsequence.getLength();
+			
+			// Check for qwirkle bonus.
+			if (length == 6) {
+				// Add qwirkle bonus.
+				score += 6 + 6;
+			} else if (length > 1) {
+				// Add the length of the orthogonal row.
+				score += length;
 			}
-			break;
 		}
 		
 		return score;

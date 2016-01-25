@@ -152,9 +152,8 @@ public class QwirkleServer extends Thread implements Observer {
 		Game game = sender.getCurrentGame();
 		game.getBoard().placeStones(moves);
 		for (ClientHandler client : connectedClients) {
-			if (client.getCurrentGame() == game) {
-				int score = 0;
-				// TODO: calculate score
+			if (client.getCurrentGame() == game && client != sender) {
+				int score = game.getBoard().calculateScore(moves);
 				client.notifyMove(sender.getClientName(), score, moves);
 			}
 		}

@@ -19,6 +19,7 @@ public class Sequence {
 		
 		moves = new ArrayList<Move>();
 		
+		// TODO: add unknown case (exception ?)
 		switch (direction) {
 		case HORIZONTAL:
 			collectStones(new Location(-1, 0));
@@ -64,24 +65,7 @@ public class Sequence {
 			current.add(vector);
 		}
 	}
-	
-	public int calculateScore() {
-		int score = getLength();
-		SequenceDirection orthogonal = getDirection() == SequenceDirection.HORIZONTAL 
-				? SequenceDirection.VERTICAL 
-				: SequenceDirection.HORIZONTAL;
 		
-		for (Move m : getMoves()) {
-			Sequence subsequence = new Sequence(board, m.getLocation(), orthogonal);
-			int length = subsequence.getLength();
-			if (length > 1) {
-				score += length;
-			}
-		}
-		
-		return score;
-	}
-	
 	public boolean isValid() {
 		if (getLength() > 6) {
 			return false;

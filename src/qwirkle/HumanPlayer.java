@@ -16,7 +16,7 @@ public class HumanPlayer extends Player {
 		for (Move m : moves) {
 			this.stones.remove(m.getStone());
 		}
-		
+		setScore(getScore() + board.calculateScore(moves));
 		board.placeStones(moves);
 		setChanged();
 		notifyObservers("stones");

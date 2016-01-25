@@ -127,7 +127,7 @@ public class ScoreTest {
 			new Move(new Stone(StoneShape.CLUBS, StoneColor.RED), 0, -1),
 			new Move(new Stone(StoneShape.RECTANGLE, StoneColor.RED), 0, -3),
 		};
-		assertEquals(5 + 3 + 3, board.calculateScore(Arrays.asList(moves)));
+		assertEquals(5, board.calculateScore(Arrays.asList(moves)));
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class ScoreTest {
 			new Move(new Stone(StoneShape.CLUBS, StoneColor.RED), 1, 0),
 			new Move(new Stone(StoneShape.RECTANGLE, StoneColor.RED), 3, 0),
 		};
-		assertEquals(5 + 3 + 3, board.calculateScore(Arrays.asList(moves)));
+		assertEquals(5, board.calculateScore(Arrays.asList(moves)));
 	}
 	
 	@Test
@@ -182,5 +182,93 @@ public class ScoreTest {
 		};
 		
 		assertEquals(2 + 2 + 2, board.calculateScore(Arrays.asList(moves)));
+	}
+	
+	@Test
+	public void testBonus() {
+		/*
+		 * Board
+		 *    | 1R | 1B | 1O | 1G | x | x
+		 */
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.GREEN), 3, 0),
+		};
+		board.placeStones(Arrays.asList(setup));
+		
+		Move[] moves = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.YELLOW), 4, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.PURPLE), 5, 0),
+		};
+		
+		assertEquals(6 + 6, board.calculateScore(Arrays.asList(moves)));
+	}
+	
+	@Test
+	public void testDoubleBonus() {
+		/*
+		 * Board
+		 *    | 1R | 1B | 1O | 1G |  x |  x
+		 *    |    |    |    |    |    | 2P
+		 *    |    |    |    |    |    | 3P
+		 *    |    |    |    |    |    | 4P
+		 *    |    |    |    |    |    | 5P
+		 *    |    |    |    |    |    | 6P
+		 */
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.GREEN), 3, 0),
+			
+			new Move(new Stone(StoneShape.CROSS, StoneColor.PURPLE), 5, -1),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.PURPLE), 5, -2),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.PURPLE), 5, -3),
+			new Move(new Stone(StoneShape.RECTANGLE, StoneColor.PURPLE), 5, -4),
+			new Move(new Stone(StoneShape.STAR, StoneColor.PURPLE), 5, -5),
+		};
+		board.placeStones(Arrays.asList(setup));
+		
+		Move[] moves = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.YELLOW), 4, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.PURPLE), 5, 0),
+		};
+		
+		assertEquals(6 + 6 + 6 + 6, board.calculateScore(Arrays.asList(moves)));
+	}
+	
+	@Test
+	public void testDoubleBonus2() {
+		/*
+		 * Board
+		 *    | 1R | 1B | 1O | 1G | 1Y |  x
+		 *    |    |    |    |    |    | 2P
+		 *    |    |    |    |    |    | 3P
+		 *    |    |    |    |    |    | 4P
+		 *    |    |    |    |    |    | 5P
+		 *    |    |    |    |    |    | 6P
+		 */
+		Move[] setup = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.RED), 0, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.BLUE), 1, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.ORANGE), 2, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.GREEN), 3, 0),
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.YELLOW), 4, 0),
+			
+			new Move(new Stone(StoneShape.CROSS, StoneColor.PURPLE), 5, -1),
+			new Move(new Stone(StoneShape.CLUBS, StoneColor.PURPLE), 5, -2),
+			new Move(new Stone(StoneShape.DIAMOND, StoneColor.PURPLE), 5, -3),
+			new Move(new Stone(StoneShape.RECTANGLE, StoneColor.PURPLE), 5, -4),
+			new Move(new Stone(StoneShape.STAR, StoneColor.PURPLE), 5, -5),
+		};
+		board.placeStones(Arrays.asList(setup));
+		
+		Move[] moves = {
+			new Move(new Stone(StoneShape.CIRCLE, StoneColor.PURPLE), 5, 0),
+		};
+		
+		assertEquals(6 + 6 + 6 + 6, board.calculateScore(Arrays.asList(moves)));
 	}
 }
