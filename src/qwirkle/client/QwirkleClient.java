@@ -58,12 +58,23 @@ public class QwirkleClient extends Observable implements Observer {
 			System.err.println("ERROR: no valid portnummer!");
 			return;
 		}
+
+		PlayerType playerType = PlayerType.HUMAN;
 		
-		boolean naive = args.length > 2 && args[2].equals("-naive");
+		if (args.length > 2) {
+			switch (args[2]) {
+				case "-naive":
+					playerType = PlayerType.NAIVE;
+					break;
+				case "-smart":
+					playerType = PlayerType.SMART;
+					break;
+			}
+		}
 		// create socket.
 		QwirkleClient client;
 		try {
-			client = new QwirkleClient(host, port, naive);
+			client = new QwirkleClient(host, port, playerType);
 		} catch (IOException e) {
 			System.err.println("ERROR: Could not create socket. " + e.getMessage());
 			return;
@@ -80,10 +91,10 @@ public class QwirkleClient extends Observable implements Observer {
 	private String clientName;
 	private OpenHandPlayer player;
 	private boolean myTurn;
-	private boolean isNaiveComputerPlayer;
+	private PlayerType playerType;
 	
-	public QwirkleClient(InetAddress host, int port, boolean isComputerPlayer) throws IOException {
-		this.isNaiveComputerPlayer = isComputerPlayer;
+	public QwirkleClient(InetAddress host, int port, PlayerType playerType) throws IOException {
+		this.playerType = playerType;
 		socket = new Socket(host, port);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -229,10 +240,16 @@ public class QwirkleClient extends Observable implements Observer {
 		while (scanner.hasNext()) {
 			String name = scanner.next();
 			if (name.equals(clientName)) {
-				if (isNaiveComputerPlayer) {
-					player = new ComputerPlayer(name, new NaiveStrategy());
-				} else {
-					player = new HumanPlayer(name);
+				switch (playerType) {
+					case HUMAN:
+						player = new HumanPlayer(name);
+						break;
+					case NAIVE:
+						player = new ComputerPlayer(name, new NaiveStrategy());
+						break;
+					case SMART:
+						player = new ComputerPlayer(name, new SmartStrategy());
+						break;
 				}
 				players.add(player);
 			} else { 

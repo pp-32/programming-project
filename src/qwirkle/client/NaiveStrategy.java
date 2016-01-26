@@ -23,10 +23,8 @@ public class NaiveStrategy implements Strategy {
 	public void makeMove(ComputerPlayer player, Board board) {
 		List<Move> moves = determineMoves(player, board);
 		if (board.canPickStone() && moves.size() == 0) {
-			System.out.println("[naive]: perform trade");
 			player.performTrade(pickRandomStones(player.getStones()));
 		} else {
-			System.out.println("[naive]: place stones");
 			player.placeStones(board, moves);
 		}
 	}
@@ -46,7 +44,6 @@ public class NaiveStrategy implements Strategy {
 		} else {
 			moves.add(firstMove);
 		}
-		
 		
 		return moves;
 	}

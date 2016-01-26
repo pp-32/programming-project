@@ -32,7 +32,6 @@ public abstract class Board extends Observable {
 	
 	public Board() {
 		stones = new ArrayList<Stone>();
-		// TODO: change to 3
 		for (int i = 0; i < 3; i++) {
 			for (int k = 0; k < 6; k++) {
 				for (int l = 0; l < 6; l++) {
