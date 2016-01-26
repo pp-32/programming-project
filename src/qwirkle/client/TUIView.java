@@ -253,7 +253,7 @@ public class TUIView implements View {
 				if (min <= count && count <= max) {
 					valid = true;
 				} else {
-					System.out.println("You didn't enter a valid amount. Please try again");
+					System.out.println("You didn't enter a valid amount. Please try again.");
 					valid = false;
 				}
 			} catch (Exception e) {
