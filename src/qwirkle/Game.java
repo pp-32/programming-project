@@ -3,6 +3,7 @@ package qwirkle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 public class Game extends Observable implements Runnable {
 
@@ -22,7 +23,7 @@ public class Game extends Observable implements Runnable {
 	 * Index of the current player.
 	 */
 	private int current;
-
+	
 	/**
 	 * Creates a new <code>Game</code> object.
 	 */
@@ -82,7 +83,15 @@ public class Game extends Observable implements Runnable {
 	 * @return true if the game is over
 	 */
 	public boolean gameOver() {
-		return false;
+		if (getBoard().canPickStone()) {
+			return false;
+		}
+		for (Player p : players) {
+			if (p.getHandSize() == 0) {
+				return true;
+			}
+		}
+		return true;
 	}
 	
 	/**
@@ -96,5 +105,6 @@ public class Game extends Observable implements Runnable {
 	public List<Player> getPlayers() {
 		return players;
 	}
+
 
 }

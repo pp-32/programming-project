@@ -77,8 +77,6 @@ public class GameRequest {
 
 		//clients.get(0).requestMove();
 		
-		new Thread(game).start();
-		
 		return game;
 	}
 }

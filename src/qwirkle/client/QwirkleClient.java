@@ -11,10 +11,12 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Scanner;
 
 import qwirkle.Game;
 import qwirkle.Move;
+import qwirkle.MoveResult;
 import qwirkle.OpenHandPlayer;
 import qwirkle.Player;
 import qwirkle.Protocol;
@@ -27,14 +29,14 @@ import qwirkle.View;
  * @author Jerre
  *
  */
-public class QwirkleClient extends Observable {
+public class QwirkleClient extends Observable implements Observer {
 	
 	public static final String USAGE = "Usage: java " + QwirkleClient.class.toString() 
-								+ " <host> <port>";
+								+ " <host> <port> [-naive]";
 	
 	public static void main(String[] args) {
 		
-		if (args.length != 2) {
+		if (args.length < 2) {
 			System.out.println(USAGE);
 			return;
 		}
@@ -57,10 +59,11 @@ public class QwirkleClient extends Observable {
 			return;
 		}
 		
+		boolean naive = args.length > 2 && args[2].equals("-naive");
 		// create socket.
 		QwirkleClient client;
 		try {
-			client = new QwirkleClient(host, port);
+			client = new QwirkleClient(host, port, naive);
 		} catch (IOException e) {
 			System.err.println("ERROR: Could not create socket. " + e.getMessage());
 			return;
@@ -77,13 +80,10 @@ public class QwirkleClient extends Observable {
 	private String clientName;
 	private OpenHandPlayer player;
 	private boolean myTurn;
+	private boolean naive;
 	
-	// TODO: remove.
-	public QwirkleClient() {
-		view = new TUIView(this);
-	}
-	
-	public QwirkleClient(InetAddress host, int port) throws IOException {
+	public QwirkleClient(InetAddress host, int port, boolean naive) throws IOException {
+		this.naive = naive;
 		socket = new Socket(host, port);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -194,8 +194,11 @@ public class QwirkleClient extends Observable {
 		while (scanner.hasNext()) {
 			String name = scanner.next();
 			if (name.equals(clientName)) {
-				// TODO: add computer player.
-				player = new HumanPlayer(name);
+				if (naive) {
+					player = new ComputerPlayer(name, new NaiveStrategy());
+				} else {
+					player = new HumanPlayer(name);
+				}
 				players.add(player);
 			} else { 
 				players.add(new RemotePlayer(name)); 
@@ -207,16 +210,19 @@ public class QwirkleClient extends Observable {
 		
 		for (Player p : game.getPlayers()) {
 			p.addObserver(view);
+			p.addObserver(this);
 		}
 		
 		setChanged();
 		notifyObservers("gamestarted");
+		
 	}
 	
 	private void handleMoveRequest(Scanner scanner) {
 		myTurn = true;
-		setChanged();
-		notifyObservers("turnstarted");
+		player.makeMove(game.getBoard());
+		//setChanged();
+		//notifyObservers("turnstarted");
 	}
 	
 	/**
@@ -253,15 +259,15 @@ public class QwirkleClient extends Observable {
 	 * @param stonePlacements The stones to place.
 	 */
 	public void setMove(List<Move> stonePlacements) {
-	
-		if (game.getBoard().checkMoves(stonePlacements)) {
-			player.placeStones(game.getBoard(), stonePlacements);
-			myTurn = false;
-			
-		} else {
-			view.showError("Invalid move!");
-			return;
-		}
+		myTurn = false;
+//		if (game.getBoard().checkMoves(stonePlacements)) {
+//			player.placeStones(game.getBoard(), stonePlacements);
+//			myTurn = false;
+//			
+//		} else {
+//			view.showError("Invalid move!");
+//			return;
+//		}
 		
 		try {
 			out.write(Protocol.CLIENT_SETMOVE);
@@ -291,7 +297,7 @@ public class QwirkleClient extends Observable {
 	 * @param stones The stones to trade.
 	 */
 	public void doTrade(List<Stone> stones) {
-		player.getStones().removeAll(stones);
+		//player.getStones().removeAll(stones);
 		myTurn = false;
 		
 		try {
@@ -338,5 +344,17 @@ public class QwirkleClient extends Observable {
 
 	public OpenHandPlayer getPlayer() {
 		return player;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (arg instanceof MoveResult) {
+			MoveResult result = (MoveResult) arg;
+			setMove(result.getMoves());
+		} else if (arg instanceof List<?>) {
+			// TODO: more robust check
+			doTrade((List<Stone>)arg);
+		}
+		
 	}
 }

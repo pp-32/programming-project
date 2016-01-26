@@ -283,8 +283,18 @@ public abstract class Board extends Observable {
 		Location topLeft = dimensions.getTopLeft();
 		Location bottomRight = dimensions.getBottomRight();
 		
+		builder.append("      ");
+		for (int x = topLeft.getX(); x <= bottomRight.getX(); x++) {
+			builder.append(String.format("%3d  ", x));
+		}
+		builder.append("\n     +");
+		for (int x = topLeft.getX(); x <= bottomRight.getX(); x++) {
+			builder.append("----+");
+		}
+		builder.append("\n");
+		
 		for (int y = topLeft.getY(); y >= bottomRight.getY(); y--) {
-			builder.append("| ");
+			builder.append(String.format("%4d | ", y));
 			for (int x = topLeft.getX(); x <= bottomRight.getX(); x++) {
 				Stone field = getField(x, y);
 				if (field == null) {
@@ -293,6 +303,10 @@ public abstract class Board extends Observable {
 					builder.append(field.toString());
 				}
 				builder.append(" | ");
+			}
+			builder.append("\n     +");
+			for (int x = topLeft.getX(); x <= bottomRight.getX(); x++) {
+				builder.append("----+");
 			}
 			builder.append("\n");
 		}

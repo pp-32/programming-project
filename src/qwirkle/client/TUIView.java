@@ -11,6 +11,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import qwirkle.Board;
 import qwirkle.Location;
 import qwirkle.Move;
+import qwirkle.MoveResult;
+import qwirkle.OpenHandPlayer;
 import qwirkle.Player;
 import qwirkle.Stone;
 import qwirkle.View;
@@ -89,26 +91,27 @@ public class TUIView implements View {
 		}
 	}
 
-	private boolean processCommand(String command) {
-
+	private boolean processCommand(String command) {		
 		boolean continueLoop = true;
 		try (Scanner commandScanner = new Scanner(command)) {
-			switch (commandScanner.nextLine()) {
-				case "place":
-					handlePlaceCommand();
-					break;
-				case "trade":
-					handleTradeCommand(commandScanner);
-					break;
-				case "chat":
-					handleChatCommand(commandScanner);
-					break;
-				case "exit":
-					continueLoop = false;
-					break;
-				default:
-					System.out.println("You didn't enter a valid command. Please try again.");
-					break;
+			if (commandScanner.hasNextLine()) {
+				switch (commandScanner.nextLine()) {
+					case "place":
+						handlePlaceCommand();
+						break;
+					case "trade":
+						handleTradeCommand(commandScanner);
+						break;
+					case "chat":
+						handleChatCommand(commandScanner);
+						break;
+					case "exit":
+						continueLoop = false;
+						break;
+					default:
+						System.out.println("You didn't enter a valid command. Please try again.");
+						break;
+				}
 			}
 		}
 		return continueLoop;
@@ -139,7 +142,7 @@ public class TUIView implements View {
 			stones.add(client.getPlayer().getStones().get(stoneIndex));
 		}
 
-		client.doTrade(stones);
+		client.getPlayer().performTrade(stones);
 	}
 
 	private void handlePlaceCommand() {
@@ -172,7 +175,10 @@ public class TUIView implements View {
 			moves.add(move);
 		}
 
-		client.setMove(moves);
+		MoveResult result = client.getPlayer().placeStones(client.getCurrentGame().getBoard(), moves);
+		if (!result.isSuccessful()) {
+			System.out.println("Invalid move!");
+		}
 
 	}
 
@@ -222,7 +228,7 @@ public class TUIView implements View {
 					System.out.println("Your turn has started!");
 					break;
 				case "stones":
-					HumanPlayer hp = (HumanPlayer) arg0;
+					OpenHandPlayer hp = (OpenHandPlayer ) arg0;
 					printStones(hp.getStones());
 					break;
 				case "score":

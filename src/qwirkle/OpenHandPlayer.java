@@ -30,16 +30,32 @@ public abstract class OpenHandPlayer extends Player {
 	 * @param board The board the place the stones on.
 	 * @param moves The moves the player should perform.
 	 */
-	public void placeStones(Board board, List<Move> moves) {
+	public MoveResult placeStones(Board board, List<Move> moves) {
+		if (!board.checkMoves(moves)) {
+			return new MoveResult(moves, 0);
+		}
+
+		int score = board.calculateScore(moves);
+		
 		for (Move m : moves) {
 			this.getStones().remove(m.getStone());
 		}
-		setScore(getScore() + board.calculateScore(moves));
+		
+		setScore(getScore() + score);
 		board.placeStones(moves);
+
+		MoveResult result = new MoveResult(moves, score);
 		setChanged();
-		notifyObservers("stones");
+		notifyObservers(result);
+		return result;
 	}
 
+	public void performTrade(List<Stone> stonesToTrade) {
+		this.getStones().removeAll(stonesToTrade);
+		setChanged();
+		notifyObservers(stonesToTrade);
+	}
+	
 	/**
 	 * Gives stones to the player.
 	 * @param stones The stones to give.

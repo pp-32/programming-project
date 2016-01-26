@@ -7,7 +7,7 @@ package qwirkle;
  */
 public class ArrayBoard extends Board {
 
-	private static final int BOARD_DIMENSION = 100;
+	private static final int BOARD_DIMENSION = 200;
 	
 	private Stone[][] field;
 	private Rectangle dimensions;

@@ -163,14 +163,20 @@ public class ClientHandler extends Thread {
 	private void handleSetMoveCommand(Scanner scanner) {
 		List<Move> moves = new ArrayList<Move>();
 		int amount = scanner.nextInt();
+		Board board = currentGame.getBoard();
 		
 		for (int i = 0; i < amount; i++) {
 			moves.add(Move.fromScanner(scanner));
 		}
 
-		this.moveMade();
-		giveStones(currentGame.getBoard().pickStones(amount));
+		List<Stone> newStones = new ArrayList<Stone>();
+		for (int i = 0; i < amount && board.canPickStone(); i++) {
+			newStones.add(board.pickStone());
+		}
+		giveStones(newStones);
+		
 		server.broadcastMove(this, moves);
+		this.moveMade();
 	}
 
 	private void handleDoTradeCommand(Scanner scanner) {
@@ -181,9 +187,9 @@ public class ClientHandler extends Thread {
 			board.placeStoneInBag(Stone.fromScanner(scanner));
 		}
 
-		this.moveMade();
 		giveStones(currentGame.getBoard().pickStones(amount));
 		server.broadcastTrade(this, amount);
+		this.moveMade();
 	}
 
 	/**

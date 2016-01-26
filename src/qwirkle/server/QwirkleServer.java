@@ -127,6 +127,7 @@ public class QwirkleServer extends Thread implements Observer {
 			currentGames.add(game);
 			
 			game.getBoard().addObserver(this);
+			new Thread(game).start();
 		}
 	}
 
