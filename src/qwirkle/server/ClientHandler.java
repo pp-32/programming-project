@@ -17,6 +17,7 @@ import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.Move;
 import qwirkle.MoveResult;
+import qwirkle.OpenHandPlayer;
 import qwirkle.Player;
 import qwirkle.Protocol;
 import qwirkle.Stone;
@@ -180,11 +181,12 @@ public class ClientHandler extends Thread {
 		for (int i = 0; i < amount && board.canPickStone(); i++) {
 			newStones.add(board.pickStone());
 		}
-		giveStones(newStones);
-
-		if (board.getStoneCount() == 0) {
-			System.out.println("pile empty!");
+		if (newStones.size() > 0) {
+			giveStones(newStones);
 		}
+
+		printStones(currentPlayer);
+		
 		server.broadcastMove(this, result);
 		this.moveMade();
 	}
@@ -194,7 +196,10 @@ public class ClientHandler extends Thread {
 
 		Board board = currentGame.getBoard();
 		for (int i = 0; i < amount; i++) {
-			board.placeStoneInBag(Stone.fromScanner(scanner));
+			Stone s = Stone.fromScanner(scanner);
+			board.placeStoneInBag(s);
+			currentPlayer.getStones().remove(s);
+			// TODO: replace with performTrade?
 		}
 
 		giveStones(currentGame.getBoard().pickStones(amount));
@@ -277,6 +282,25 @@ public class ClientHandler extends Thread {
 			e.printStackTrace();
 			shutdown();
 		}
+	}
+
+	// TODO: remove
+	private static void printStones(OpenHandPlayer player) {
+		System.out.print("This is " + player.getName() + "'s hand: ");
+		System.out.println("");
+		List<Stone> stones = player.getStones();
+		for (int i = 0; i < stones.size(); i++) {
+			System.out.print("[" + i + "] ");
+		}
+		System.out.println("");
+		for (int i = 0; i < stones.size(); i++) {
+			Stone s = stones.get(i);
+			System.out.print(s.toString() + " ");
+			if (i < stones.size() - 1) {
+				System.out.print(" ");
+			}
+		}
+		System.out.println();
 	}
 	
 	public void moveMade() {

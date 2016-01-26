@@ -13,6 +13,8 @@ import qwirkle.Stone;
 public class NaiveStrategy implements Strategy {
 
 	private static final Random random = new Random();
+
+	private int x = 0;
 	
 	@Override
 	public String getName() {
@@ -22,8 +24,16 @@ public class NaiveStrategy implements Strategy {
 	@Override
 	public void makeMove(ComputerPlayer player, Board board) {
 		List<Move> moves = determineMoves(player, board);
-		if (moves.size() == 0) {
+		
+		x %= 2;
+		if (board.canPickStone() && (x == 0 || moves.size() == 0)) {
 			System.out.println("[naive]: perform trade");
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			player.performTrade(pickRandomStones(player.getStones()));
 		} else {
 			System.out.println("[naive]: place stones");

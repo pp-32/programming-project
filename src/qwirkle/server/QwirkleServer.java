@@ -12,7 +12,9 @@ import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.Move;
 import qwirkle.MoveResult;
+import qwirkle.OpenHandPlayer;
 import qwirkle.Player;
+import qwirkle.Stone;
 
 /**
  * Represents a server running the Qwirkle game.
@@ -204,17 +206,17 @@ public class QwirkleServer extends Thread implements Observer {
 		} else if (arg0 instanceof Game && arg1 instanceof String) {
 			Game game = (Game) arg0;
 			switch ((String) arg1) {
-			case "gameover":
-				System.out.println("GAME OVER");
-				for (Player p : game.getPlayers()) {
-					System.out.println("Player: " + p.getName());
-					System.out.println("Score: " + p.getScore());
-					System.out.println("Hand: " + p.getHandSize());
-					System.out.println();
-					ClientHandler client = getClientByName(p.getName());
-					client.notifyGameOver(game.getPlayers());
-				}
-				break;
+				case "gameover":
+					System.out.println("GAME OVER");
+					for (Player p : game.getPlayers()) {
+						System.out.println("Player: " + p.getName());
+						System.out.println("Score: " + p.getScore());
+						System.out.println("Hand: " + p.getHandSize());
+						System.out.println();
+						ClientHandler client = getClientByName(p.getName());
+						client.notifyGameOver(game.getPlayers());
+					}
+					break;
 			}
 		}
 		
