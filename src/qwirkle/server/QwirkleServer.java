@@ -11,6 +11,7 @@ import java.util.Observer;
 import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.Move;
+import qwirkle.MoveResult;
 import qwirkle.Player;
 
 /**
@@ -128,6 +129,7 @@ public class QwirkleServer extends Thread implements Observer {
 			currentGames.add(game);
 			
 			game.getBoard().addObserver(this);
+			game.addObserver(this);
 			new Thread(game).start();
 		}
 	}
@@ -151,13 +153,11 @@ public class QwirkleServer extends Thread implements Observer {
 	 * @param sender The client that made the move.
 	 * @param moves The moves the client made.
 	 */
-	public void broadcastMove(ClientHandler sender, List<Move> moves) {
+	public void broadcastMove(ClientHandler sender, MoveResult result) {
 		Game game = sender.getCurrentGame();
-		int score = game.getBoard().calculateScore(moves);
-		game.getBoard().placeStones(moves);
 		for (ClientHandler client : connectedClients) {
 			if (client.getCurrentGame() == game && client != sender) {
-				client.notifyMove(sender.getClientName(), score, moves);
+				client.notifyMove(sender.getClientName(), result.getScore(), result.getMoves());
 			}
 		}
 	}
@@ -198,7 +198,9 @@ public class QwirkleServer extends Thread implements Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Board) {
-			System.out.println(((Board) arg0).toString());
+			Board b = (Board) arg0;
+			System.out.println(b.toString());
+			System.out.println("Stones in pile: " + b.getStoneCount());
 		} else if (arg0 instanceof Game && arg1 instanceof String) {
 			Game game = (Game) arg0;
 			switch ((String) arg1) {
@@ -209,6 +211,8 @@ public class QwirkleServer extends Thread implements Observer {
 					System.out.println("Score: " + p.getScore());
 					System.out.println("Hand: " + p.getHandSize());
 					System.out.println();
+					ClientHandler client = getClientByName(p.getName());
+					client.notifyGameOver(game.getPlayers());
 				}
 				break;
 			}

@@ -93,7 +93,7 @@ public class Game extends Observable implements Runnable {
 				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	/**

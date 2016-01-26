@@ -150,8 +150,31 @@ public class QwirkleClient extends Observable implements Observer {
 				case Protocol.SERVER_CHAT:
 					handleChatCommand(scanner);
 					break;
+				case Protocol.SERVER_GAMEOVER:
+					handleGameOverCommand(scanner);
+					break;
 			}
 		}
+	}
+
+	private void handleGameOverCommand(Scanner scanner) {
+		// TODO: replace with view notification.
+		
+		System.out.println("GAME OVER");
+		
+		while (scanner.hasNext()) {
+			String name = scanner.next();
+			int score = scanner.nextInt();
+
+			System.out.println("Player: " + name);
+			System.out.println("Score: " + score);
+			
+			// ignore next pipe.
+			if (scanner.hasNext()) {
+				scanner.next();
+			}
+		}
+		
 	}
 
 	private void handleChatCommand(Scanner scanner) {

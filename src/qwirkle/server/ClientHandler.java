@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.Move;
+import qwirkle.MoveResult;
 import qwirkle.Player;
 import qwirkle.Protocol;
 import qwirkle.Stone;
@@ -169,13 +170,22 @@ public class ClientHandler extends Thread {
 			moves.add(Move.fromScanner(scanner));
 		}
 
+		MoveResult result = getCurrentPlayer().placeStones(board, moves);
+		if (!result.isSuccessful()) {
+			shutdown();
+			return;
+		}
+		
 		List<Stone> newStones = new ArrayList<Stone>();
 		for (int i = 0; i < amount && board.canPickStone(); i++) {
 			newStones.add(board.pickStone());
 		}
 		giveStones(newStones);
-		
-		server.broadcastMove(this, moves);
+
+		if (board.getStoneCount() == 0) {
+			System.out.println("pile empty!");
+		}
+		server.broadcastMove(this, result);
 		this.moveMade();
 	}
 
@@ -350,8 +360,17 @@ public class ClientHandler extends Thread {
 	public void notifyGameOver(List<Player> players) {
 		try {
 			out.write(Protocol.SERVER_GAMEOVER);
+			out.write(" ");
 
-			//TODO: send scores.
+			for (int i = 0; i < players.size(); i++) {
+				Player p = players.get(i);
+				out.write(p.getName());
+				out.write(" ");
+				out.write(Integer.toString(p.getScore()));
+				if (i < players.size() - 1) {
+					out.write(" | ");
+				}
+			}
 			
 			out.newLine();
 			out.flush();
