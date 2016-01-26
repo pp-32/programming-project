@@ -11,6 +11,7 @@ import java.util.Observer;
 import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.Move;
+import qwirkle.Player;
 
 /**
  * Represents a server running the Qwirkle game.
@@ -198,6 +199,19 @@ public class QwirkleServer extends Thread implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Board) {
 			System.out.println(((Board) arg0).toString());
+		} else if (arg0 instanceof Game && arg1 instanceof String) {
+			Game game = (Game) arg0;
+			switch ((String) arg1) {
+			case "gameover":
+				System.out.println("GAME OVER");
+				for (Player p : game.getPlayers()) {
+					System.out.println("Player: " + p.getName());
+					System.out.println("Score: " + p.getScore());
+					System.out.println("Hand: " + p.getHandSize());
+					System.out.println();
+				}
+				break;
+			}
 		}
 		
 	}

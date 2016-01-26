@@ -33,13 +33,13 @@ public abstract class Board extends Observable {
 	public Board() {
 		stones = new ArrayList<Stone>();
 		
-		for (int i = 0; i < 3; i++) {
+		//for (int i = 0; i < 3; i++) {
 			for (int k = 0; k < 6; k++) {
 				for (int l = 0; l < 6; l++) {
 					stones.add(new Stone(shapes[k], colors[l]));
 				}
 			}
-		}
+		//}
 	}
 	
 	/**

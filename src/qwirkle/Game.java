@@ -45,6 +45,8 @@ public class Game extends Observable implements Runnable {
 			getCurrentPlayer().makeMove(board);
 			nextPlayer();
 		}
+		setChanged();
+		notifyObservers("gameover");
 	}
 	
 	/**

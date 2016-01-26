@@ -248,6 +248,11 @@ public class TUIView implements View {
 					break;
 				case "turnEnded":
 					break;
+				case "gameover":
+					System.out.println("GAME OVER!");
+					printStones(client.getPlayer().getStones());
+					System.out.println("Your score: " + client.getPlayer().getScore());
+					break;
 			}
 		} finally {
 			lock.unlock();
