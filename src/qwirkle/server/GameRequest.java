@@ -54,7 +54,7 @@ public class GameRequest {
 	 * Creates a new game with the connected players and starts it. 
 	 * @return The game.
 	 */
-	public Game createAndStartGame() {
+	public Game createGame() {
 		Map<String, ClientPlayer> players = new HashMap<String, ClientPlayer>();
 		
 		for (ClientHandler client : clients) {
@@ -74,8 +74,6 @@ public class GameRequest {
 			}
 			client.giveStones(stones);
 		}
-
-		//clients.get(0).requestMove();
 		
 		return game;
 	}

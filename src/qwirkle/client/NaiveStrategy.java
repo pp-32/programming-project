@@ -12,10 +12,8 @@ import qwirkle.Stone;
 
 public class NaiveStrategy implements Strategy {
 
-	private static final Random random = new Random();
+	private static final Random RANDOM = new Random();
 
-	private int x = 0;
-	
 	@Override
 	public String getName() {
 		return "Naive";
@@ -24,16 +22,8 @@ public class NaiveStrategy implements Strategy {
 	@Override
 	public void makeMove(ComputerPlayer player, Board board) {
 		List<Move> moves = determineMoves(player, board);
-		
-		x %= 2;
-		if (board.canPickStone() && (x == 0 || moves.size() == 0)) {
+		if (board.canPickStone() && moves.size() == 0) {
 			System.out.println("[naive]: perform trade");
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			player.performTrade(pickRandomStones(player.getStones()));
 		} else {
 			System.out.println("[naive]: place stones");
@@ -41,13 +31,13 @@ public class NaiveStrategy implements Strategy {
 		}
 	}
 
-	private List<Stone> pickRandomStones(List<Stone> stones) {
+	private static List<Stone> pickRandomStones(List<Stone> stones) {
 		List<Stone> pickedStones = new ArrayList<Stone>();
-		pickedStones.add(stones.get(0));
+		pickedStones.add(stones.get(RANDOM.nextInt(stones.size())));
 		return pickedStones;
 	}
 
-	public List<Move> determineMoves(ComputerPlayer player, Board board) {
+	public static List<Move> determineMoves(ComputerPlayer player, Board board) {
 		List<Move> moves = new ArrayList<Move>();
 		
 		Move firstMove = determineFirstMove(player, board);
@@ -61,23 +51,43 @@ public class NaiveStrategy implements Strategy {
 		return moves;
 	}
 	
-	private Move determineFirstMove(ComputerPlayer player, Board board) {
-		Rectangle dimensions = board.getDimensions().deepCopy();
-		dimensions.inflate(1);
-		Location topLeft = dimensions.getTopLeft();
-		Location bottomRight = dimensions.getBottomRight();
-
-		for (int y = topLeft.getY(); y >= bottomRight.getY(); y--) {
-			for (int x = topLeft.getX(); x <= bottomRight.getX(); x++) {
-				for (Stone s : player.getStones()) {
-					Move m = new Move(s, x, y);
-					if (board.checkMove(m)) {
-						return m;
-					}
-				}
+	private static Move determineFirstMove(ComputerPlayer player, Board board) {
+		
+		if (board.isEmpty()) {
+			return new Move(player.getStones().get(0), 0, 0);
+		}
+		
+		for (Location occupiedField : board.getOccupiedFields()) {
+			Move move = findMoveNearLocation(player, board, occupiedField);
+			if (move != null) {
+				return move;
 			}
 		}
 		
+		return null;
+	}
+	
+	private static Move findMoveNearLocation(ComputerPlayer player, 
+											 Board board, 
+											 Location location) {
+		for (int y = location.getY() + 1; y >= location.getY() - 1; y--) {
+			for (int x = location.getX() - 1; x <= location.getX() + 1; x++) {
+				Move move = findMoveForLocation(player, board, new Location(x, y));
+				if (move != null) {
+					return move;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private static Move findMoveForLocation(ComputerPlayer player, Board board, Location location) {
+		for (Stone s : player.getStones()) {
+			Move m = new Move(s, location);
+			if (board.checkMove(m)) {
+				return m;
+			}
+		}
 		return null;
 	}
 	

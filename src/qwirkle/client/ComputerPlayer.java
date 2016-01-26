@@ -1,10 +1,15 @@
 package qwirkle.client;
 
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import qwirkle.Board;
 import qwirkle.OpenHandPlayer;
 
 public class ComputerPlayer extends OpenHandPlayer {
 
+	
 	private Strategy strategy;
 
 	public ComputerPlayer(String theName, Strategy strategy) {

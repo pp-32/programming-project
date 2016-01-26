@@ -2,6 +2,9 @@ package qwirkle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Represents a player that reveals his/her hand to the public.
@@ -9,7 +12,7 @@ import java.util.List;
  *
  */
 public abstract class OpenHandPlayer extends Player {
-
+	
 	private List<Stone> hand;
 	
 	public OpenHandPlayer(String theName) {
@@ -51,7 +54,10 @@ public abstract class OpenHandPlayer extends Player {
 	}
 
 	public void performTrade(List<Stone> stonesToTrade) {
-		this.getStones().removeAll(stonesToTrade);
+		// Do not use removeAll(stonesToTrade), it will remove all occurrences of each stone.
+		for (Stone s : stonesToTrade) {
+			this.hand.remove(s);
+		}
 		setChanged();
 		notifyObservers(stonesToTrade);
 	}
@@ -63,7 +69,7 @@ public abstract class OpenHandPlayer extends Player {
 	public void giveStones(List<Stone> stones) {
 		this.getStones().addAll(stones);
 		setChanged();
-		notifyObservers("stones");		
+		notifyObservers("stones");
 	}
 	
 	@Override

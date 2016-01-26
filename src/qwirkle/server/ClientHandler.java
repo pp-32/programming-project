@@ -148,6 +148,10 @@ public class ClientHandler extends Thread {
 				case Protocol.CLIENT_CHAT:
 					handleChatCommand(scanner);
 					break;
+				default:
+					sendInvalidCommandError("Invalid command!");
+					shutdown();
+					break;
 			}
 		}
 	}
@@ -210,7 +214,7 @@ public class ClientHandler extends Thread {
 	/**
 	 * Notifies the client is accepted by the server.
 	 */
-	public void acceptJoinRequest() {
+	public synchronized void acceptJoinRequest() {
 		
 		try {
 			out.write(Protocol.SERVER_ACCEPTREQUEST + " 0 0 0 0");
@@ -226,7 +230,7 @@ public class ClientHandler extends Thread {
 	 * Notifies a game is started with the given players.
 	 * @param names The names of the players the client will be playing against.
 	 */
-	public void startGame(List<String> names) {
+	public synchronized void startGame(List<String> names) {
 		try {
 			out.write(Protocol.SERVER_STARTGAME);
 			for (String name : names) {
@@ -246,7 +250,7 @@ public class ClientHandler extends Thread {
 	 * Gives stones to the client.
 	 * @param stones The stones to give.
 	 */
-	public void giveStones(List<Stone> stones) {
+	public synchronized void giveStones(List<Stone> stones) {
 		
 		currentPlayer.getStones().addAll(stones);
 		
@@ -273,7 +277,7 @@ public class ClientHandler extends Thread {
 	/**
 	 * Requests the client to make a move.
 	 */
-	public void requestMove() {
+	public synchronized void requestMove() {
 		try {
 			out.write(Protocol.SERVER_MOVEREQUEST);
 			out.newLine();
@@ -327,7 +331,7 @@ public class ClientHandler extends Thread {
 	 * @param score The score the player has earned using the move. 
 	 * @param stonePlacements The placements of the stones.
 	 */
-	public void notifyMove(String name, int score, List<Move> stonePlacements) {
+	public synchronized void notifyMove(String name, int score, List<Move> stonePlacements) {
 
 		try {
 			out.write(Protocol.SERVER_NOTIFYMOVE);
@@ -362,7 +366,7 @@ public class ClientHandler extends Thread {
 	 * @param name The name of the player that traded stones.
 	 * @param stoneCount The amount of stones that were traded.
 	 */
-	public void notifyTrade(String name, int stoneCount) {
+	public synchronized void notifyTrade(String name, int stoneCount) {
 		try {
 			out.write(Protocol.SERVER_NOTIFYTRADE);
 			out.write(" ");
@@ -381,7 +385,7 @@ public class ClientHandler extends Thread {
 	 * Notifies the client the game is over.
 	 * @param players The list of players in the game. 
 	 */
-	public void notifyGameOver(List<Player> players) {
+	public synchronized void notifyGameOver(List<Player> players) {
 		try {
 			out.write(Protocol.SERVER_GAMEOVER);
 			out.write(" ");
@@ -425,7 +429,7 @@ public class ClientHandler extends Thread {
 	 * Notifies the client a specific player disconnected from the game.
 	 * @param name The name of the player that disconnected.
 	 */
-	public void notifyConnectionLost(String name) {
+	public synchronized void notifyConnectionLost(String name) {
 		try {
 			out.write(Protocol.SERVER_CONNECTIONLOST);
 			out.write(" ");
@@ -443,7 +447,7 @@ public class ClientHandler extends Thread {
 	 * @param sender The sender of the message.
 	 * @param message The message that was sent.
 	 */
-	public void notifyChatMessage(ClientHandler sender, String message) {
+	public synchronized void notifyChatMessage(ClientHandler sender, String message) {
 		try {
 			out.write(Protocol.SERVER_CHAT);
 			out.write(" ");

@@ -20,6 +20,8 @@ import qwirkle.View;
 public class TUIView implements View {
 
 	private Lock lock = new ReentrantLock();
+	private boolean acceptedRequest;
+	private Condition firstResponseReceived = lock.newCondition();
 	private Condition gameStarted = lock.newCondition();
 
 	private QwirkleClient client;
@@ -42,20 +44,30 @@ public class TUIView implements View {
 		System.out.println(" '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' ");
 		Scanner userInput = new Scanner(System.in);
 
-		boolean inputValid = false;
-
-		System.out.print("Enter your name: ");
-		while (!inputValid) {
-			try {
-				String playerName = userInput.nextLine();
+		String playerName = null;
+		
+		while (!acceptedRequest) {
+			boolean inputValid = false;
+			System.out.print("Enter your name: ");
+			while (!inputValid) {
+				playerName = userInput.nextLine();
 				System.out.print("Your name is: " + playerName);
 				System.out.println("");
-				client.requestJoin(playerName);
-				inputValid = true;
-			} catch (Exception e1) {
-				System.out.println("You didn't enter a valid name. Please try again");
+				inputValid = !playerName.contains(" ");
+			}
+	
+			client.requestJoin(playerName);
+			lock.lock();
+			try {
+				firstResponseReceived.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} finally {
+				lock.unlock();
 			}
 		}
+
+		System.out.println("You joined the server!");
 
 		// TODO: let the tui know that the join request is accepted
 
@@ -105,25 +117,24 @@ public class TUIView implements View {
 	private boolean processCommand(String command) {		
 		boolean continueLoop = true;
 		try (Scanner commandScanner = new Scanner(command)) {
-			if (commandScanner.hasNextLine()) {
-				switch (commandScanner.nextLine()) {
-					case "place":
-						handlePlaceCommand();
-						break;
-					case "trade":
-						handleTradeCommand(commandScanner);
-						break;
-					case "chat":
-						handleChatCommand(commandScanner);
-						break;
-					case "exit":
-						continueLoop = false;
-						break;
-					default:
-						System.out.println("You didn't enter a valid command. Please try again.");
-						break;
-				}
+			switch (commandScanner.nextLine()) {
+				case "place":
+					handlePlaceCommand();
+					break;
+				case "trade":
+					handleTradeCommand(commandScanner);
+					break;
+				case "chat":
+					handleChatCommand(commandScanner);
+					break;
+				case "exit":
+					continueLoop = false;
+					break;
+				default:
+					System.out.println("You didn't enter a valid command. Please try again.");
+					break;
 			}
+			
 		}
 		return continueLoop;
 	}
@@ -145,7 +156,7 @@ public class TUIView implements View {
 
 		System.out.print("How many stones do you want to trade? ");
 
-		int stonesCount = readNextInt(0, 6);
+		int stonesCount = readNextInt(1, 6);
 
 		for (int i = 0; i < stonesCount; i++) {
 			System.out.print("Enter the index of the stone you want to trade. ");
@@ -161,13 +172,13 @@ public class TUIView implements View {
 			showError("Wait for your turn");
 			return;
 		}
-		
+
+		OpenHandPlayer player = client.getPlayer();
 		List<Move> moves = new ArrayList<Move>();
 
 		System.out.print("How many stones do you want to place? ");
 
 		int stonesCount = readNextInt(0, 6);
-
 		for (int i = 0; i < stonesCount; i++) {
 			System.out.print("Which stone do you want to place? ");
 			int stoneIndex = readNextInt(0, 5);
@@ -182,11 +193,11 @@ public class TUIView implements View {
 			System.out.print("You placed a stone on (" + x + ", " + y + ")");
 			System.out.println("");
 
-			Move move = new Move(client.getPlayer().getStones().get(stoneIndex), location);
+			Move move = new Move(player.getStones().get(stoneIndex), location);
 			moves.add(move);
 		}
 
-		MoveResult result = client.getPlayer().placeStones(client.getCurrentGame().getBoard(), moves);
+		MoveResult result = player.placeStones(client.getCurrentGame().getBoard(), moves);
 		if (!result.isSuccessful()) {
 			System.out.println("Invalid move!");
 		}
@@ -229,6 +240,10 @@ public class TUIView implements View {
 		lock.lock();
 		try {
 			switch ((String) arg1) {
+				case "acceptedrequest":
+					acceptedRequest = true;
+					firstResponseReceived.signalAll();
+					break;
 				case "gamestarted":
 					gameStarted.signalAll();
 					break;
@@ -239,12 +254,13 @@ public class TUIView implements View {
 					System.out.println("Your turn has started!");
 					break;
 				case "stones":
-					OpenHandPlayer hp = (OpenHandPlayer ) arg0;
+					OpenHandPlayer hp = (OpenHandPlayer) arg0;
 					printStones(hp.getStones());
 					break;
 				case "score":
 					Player p = (Player) arg0;
-					System.out.println("Player " + p.getName() + " has now " + p.getScore() + " score.");
+					System.out.println("Player " + p.getName() 
+									 + " has now " + p.getScore() + " score.");
 					break;
 				case "turnEnded":
 					break;
@@ -262,13 +278,17 @@ public class TUIView implements View {
 	@Override
 	public void showError(String reason) {
 		System.out.println(reason);
-
+		if (!acceptedRequest) {
+			lock.lock();
+			firstResponseReceived.signalAll();
+			lock.unlock();
+		}
 	}
 
 	public int readNextInt(int min, int max) {
-		Scanner commandScanner = new Scanner(System.in);
 		int count = 0;
 		boolean valid = false;
+		Scanner commandScanner = new Scanner(System.in);
 		while (!valid) {
 			try {
 				count = Integer.parseInt(commandScanner.nextLine());
@@ -278,10 +298,11 @@ public class TUIView implements View {
 					System.out.println("You didn't enter a valid amount. Please try again.");
 					valid = false;
 				}
-			} catch (Exception e) {
+			} catch (NumberFormatException e) {
 				System.out.println("You didn't enter a integer. Please try again.");
 			}
 		}
+	
 		return count;
 
 	}

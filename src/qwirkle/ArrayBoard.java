@@ -1,5 +1,8 @@
 package qwirkle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Provides an implementation of Board using a 2D array as back-end.
  * @author Jerre
@@ -11,6 +14,8 @@ public class ArrayBoard extends Board {
 	
 	private Stone[][] field;
 	private Rectangle dimensions;
+
+	private List<Location> occupied;
 	
 	public ArrayBoard() {
 		reset();
@@ -27,6 +32,7 @@ public class ArrayBoard extends Board {
 
 	@Override
 	public void reset() {
+		occupied = new ArrayList<Location>();
 		field = new Stone[BOARD_DIMENSION][BOARD_DIMENSION];
 		dimensions = new Rectangle(0, 0, 0, 0);
 	}
@@ -47,7 +53,8 @@ public class ArrayBoard extends Board {
 		int y = move.getLocation().getY();
 		
 		field[x + BOARD_DIMENSION / 2][y + BOARD_DIMENSION / 2] = move.getStone();
-
+		occupied.add(move.getLocation().deepCopy());
+		
 		// update dimensions when needed:
 		if (x < dimensions.getTopLeft().getX()) {
 			dimensions.getTopLeft().setX(x);
@@ -60,5 +67,10 @@ public class ArrayBoard extends Board {
 		} else if (y < dimensions.getBottomRight().getY()) {
 			dimensions.getBottomRight().setY(y);
 		}
+	}
+
+	@Override
+	public List<Location> getOccupiedFields() {
+		return occupied;
 	}
 }

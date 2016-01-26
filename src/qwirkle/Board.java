@@ -32,7 +32,6 @@ public abstract class Board extends Observable {
 	
 	public Board() {
 		stones = new ArrayList<Stone>();
-		
 		// TODO: change to 3
 		for (int i = 0; i < 3; i++) {
 			for (int k = 0; k < 6; k++) {
@@ -63,6 +62,12 @@ public abstract class Board extends Observable {
 	 * @return the dimensions.
 	 */
 	public abstract Rectangle getDimensions();
+	
+	/**
+	 * Gets all occupied fields on the board.
+	 * @return The locations of all occupied fields.
+	 */
+	public abstract List<Location> getOccupiedFields(); 
 	
 	/**
 	 * Gets the stone that is located at the given position.

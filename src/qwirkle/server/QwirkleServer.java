@@ -127,7 +127,7 @@ public class QwirkleServer extends Thread implements Observer {
 		
 		if (request.isFull()) {
 			pendingRequests.remove(request);
-			Game game = request.createAndStartGame();
+			Game game = request.createGame();
 			currentGames.add(game);
 			
 			game.getBoard().addObserver(this);
@@ -172,14 +172,26 @@ public class QwirkleServer extends Thread implements Observer {
 	public void broadcastTrade(ClientHandler sender, int amount) {
 		Game game = sender.getCurrentGame();
 		for (ClientHandler client : connectedClients) {
-			if (client.getCurrentGame() == game) {
+			if (client.getCurrentGame() == game && client != sender) {
 				client.notifyTrade(sender.getClientName(), amount);
 			}
 		}
 	}
 
 	public void broadcastConnectionLost(ClientHandler sender) {
+		
+		// remove client from connected clients 
 		connectedClients.remove(sender);
+		
+		// remove client from pending requests.
+		for (GameRequest request : pendingRequests) {
+			if (request.getClients().contains(sender)) {
+				request.getClients().remove(sender);
+				break;
+			}
+		}
+		
+		// notify clients in same game.
 		Game game = sender.getCurrentGame();
 		for (ClientHandler client : connectedClients) {
 			if (client.getCurrentGame() == game) {
