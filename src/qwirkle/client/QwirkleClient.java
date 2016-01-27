@@ -59,6 +59,7 @@ public class QwirkleClient extends Observable implements Observer {
 			return;
 		}
 
+		// parse player type (if available)
 		PlayerType playerType = PlayerType.HUMAN;
 		
 		if (args.length > 2) {
@@ -71,12 +72,13 @@ public class QwirkleClient extends Observable implements Observer {
 					break;
 			}
 		}
-		// create socket.
+		
+		// start client.
 		QwirkleClient client;
 		try {
 			client = new QwirkleClient(host, port, playerType);
 		} catch (IOException e) {
-			System.err.println("ERROR: Could not create socket. " + e.getMessage());
+			System.err.println("ERROR: Could not create client. " + e.getMessage());
 			return;
 		}
 		
@@ -92,20 +94,29 @@ public class QwirkleClient extends Observable implements Observer {
 	private OpenHandPlayer player;
 	private boolean myTurn;
 	private PlayerType playerType;
+	private boolean supportsChat;
 	
 	public QwirkleClient(InetAddress host, int port, PlayerType playerType) throws IOException {
 		this.playerType = playerType;
-		socket = new Socket(host, port);
-		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-		view = new TUIView(this);
-		addObserver(view);
+		this.socket = new Socket(host, port);
+		this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+		this.view = new TUIView(this);
+		this.addObserver(view);
 	}
 	
+	/**
+	 * Gets the game the client is currently playing.
+	 * @return The game.
+	 */
 	public Game getCurrentGame() {
 		return game;
 	}
 	
+	/**
+	 * Determines whether the client should make a move or not.
+	 * @return True if its the client's turn, false otherwise.
+	 */
 	public boolean getIsMyTurn() {
 		return myTurn;
 	}
@@ -176,6 +187,8 @@ public class QwirkleClient extends Observable implements Observer {
 	}
 
 	private void handleAcceptRequest(Scanner scanner) {
+		supportsChat = scanner.nextInt() == 1;
+		
 		setChanged();
 		notifyObservers("acceptedrequest");
 	}
@@ -273,8 +286,6 @@ public class QwirkleClient extends Observable implements Observer {
 	private void handleMoveRequest(Scanner scanner) {
 		myTurn = true;
 		player.makeMove(game.getBoard());
-		//setChanged();
-		//notifyObservers("turnstarted");
 	}
 	
 	/**
@@ -312,14 +323,6 @@ public class QwirkleClient extends Observable implements Observer {
 	 */
 	public synchronized void setMove(List<Move> stonePlacements) {
 		myTurn = false;
-//		if (game.getBoard().checkMoves(stonePlacements)) {
-//			player.placeStones(game.getBoard(), stonePlacements);
-//			myTurn = false;
-//			
-//		} else {
-//			view.showError("Invalid move!");
-//			return;
-//		}
 		
 		try {
 			out.write(Protocol.CLIENT_SETMOVE);
@@ -349,7 +352,6 @@ public class QwirkleClient extends Observable implements Observer {
 	 * @param stones The stones to trade.
 	 */
 	public synchronized void doTrade(List<Stone> stones) {
-		//player.getStones().removeAll(stones);
 		myTurn = false;
 		
 		try {
@@ -372,6 +374,11 @@ public class QwirkleClient extends Observable implements Observer {
 	}
 
 	public synchronized void sendChatMessage(String message) {
+		if (!supportsChat) {
+			view.showError("Server doesn't support chat messages!");
+			return;
+		}
+		
 		try {
 			out.write(Protocol.CLIENT_CHAT);
 			out.write(" ");

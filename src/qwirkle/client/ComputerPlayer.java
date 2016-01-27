@@ -1,9 +1,5 @@
 package qwirkle.client;
 
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 import qwirkle.Board;
 import qwirkle.OpenHandPlayer;
 

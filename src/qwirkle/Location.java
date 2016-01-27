@@ -48,6 +48,7 @@ public class Location {
 		this.y = y;
 	}
 		
+	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ")";
 	}
@@ -72,7 +73,7 @@ public class Location {
 	
 	/**
 	 * Creates a deep copy of the location.
-	 * @return
+	 * @return The copy.
 	 */
 	public Location deepCopy() {
 		return new Location(getX(), getY());

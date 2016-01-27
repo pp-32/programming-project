@@ -24,9 +24,15 @@ public class ArrayBoard extends Board {
 	@Override
 	public Board deepCopy() { 
 		ArrayBoard copy = new ArrayBoard();
+		
 		for (int i = 0; i < BOARD_DIMENSION; i++) {
 			System.arraycopy(this.field[i], 0, copy.field[i], 0, BOARD_DIMENSION);
 		}
+		
+		for (Location l : occupied) {
+			copy.occupied.add(l);
+		}
+		
 		return copy;
 	}
 

@@ -44,8 +44,8 @@ public class TUIView implements View {
 		System.out.println(" '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' ");
 		Scanner userInput = new Scanner(System.in);
 
+		// ask for name and request to join.
 		String playerName = null;
-		
 		while (!acceptedRequest) {
 			boolean inputValid = false;
 			System.out.print("Enter your name: ");
@@ -67,30 +67,15 @@ public class TUIView implements View {
 			}
 		}
 
+		// ask for amount of players.
 		System.out.println("You joined the server!");
-
-		// TODO: let the tui know that the join request is accepted
-
 		System.out.print("Enter the desired amount of players: ");
-		boolean inputValid2 = false;
-		while (!inputValid2) {
-			try {
-				int playerCount = Integer.parseInt(userInput.nextLine());
-				if (playerCount <= 4) {
-					System.out.print("The number of players is: " + playerCount);
-					System.out.println("");
-					client.requestGame(playerCount);
-					inputValid2 = true;
-				} else {
-					System.out.println("You didn't enter a valid amount of players. Please try again.");
-					inputValid2 = false;
-				}
-			} catch (NumberFormatException e1) {
-				System.out.println("You didn't enter a valid amount of players. Please try again.");
-			}
-		}
+		int playerCount = readNextInt(1, 4);
+		System.out.print("The number of players is: " + playerCount);
+		System.out.println("");
+		
+		client.requestGame(playerCount);
 
-		// TODO: let the tui know that the game request is accepted
 		System.out.println("Waiting for game...");
 
 		lock.lock();
@@ -104,6 +89,7 @@ public class TUIView implements View {
 			lock.unlock();
 		}
 
+		// start basic I/O loop
 		try (Scanner scanner = new Scanner(System.in)) {
 			boolean continueLoop = true;
 			while (continueLoop) {
@@ -141,9 +127,8 @@ public class TUIView implements View {
 
 	private void handleChatCommand(Scanner commandScanner) {
 		System.out.print("Enter your message: ");
-		try (Scanner messageScanner = new Scanner(System.in)) {
-			client.sendChatMessage(messageScanner.nextLine());
-		}
+		Scanner messageScanner = new Scanner(System.in);
+		client.sendChatMessage(messageScanner.nextLine());
 	}
 
 	private void handleTradeCommand(Scanner commandScanner) {
@@ -178,7 +163,7 @@ public class TUIView implements View {
 
 		System.out.print("How many stones do you want to place? ");
 
-		int stonesCount = readNextInt(0, 6);
+		int stonesCount = readNextInt(1, 6);
 		for (int i = 0; i < stonesCount; i++) {
 			System.out.print("Which stone do you want to place? ");
 			int stoneIndex = readNextInt(0, 5);
@@ -248,7 +233,7 @@ public class TUIView implements View {
 					gameStarted.signalAll();
 					break;
 				case "placedstone":
-					System.out.println(((Board) arg0).toString());
+					printBoard();
 					break;
 				case "turnstarted":
 					System.out.println("Your turn has started!");
@@ -272,6 +257,15 @@ public class TUIView implements View {
 			}
 		} finally {
 			lock.unlock();
+		}
+	}
+
+	private void printBoard() {
+		System.out.println(client.getCurrentGame().getBoard());
+		for (Player player : client.getCurrentGame().getPlayers()) {
+			System.out.println("Player " + player.getName() 
+							   + " has " + player.getHandSize() + " stones and"
+							   + " has " + player.getScore() + " score.");
 		}
 	}
 

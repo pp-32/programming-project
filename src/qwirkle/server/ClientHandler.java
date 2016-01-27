@@ -217,7 +217,7 @@ public class ClientHandler extends Thread {
 	public synchronized void acceptJoinRequest() {
 		
 		try {
-			out.write(Protocol.SERVER_ACCEPTREQUEST + " 0 0 0 0");
+			out.write(Protocol.SERVER_ACCEPTREQUEST + " 1 0 0 0");
 			out.newLine();
 			out.flush();
 		} catch (IOException e) {

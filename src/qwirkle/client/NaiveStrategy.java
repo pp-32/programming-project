@@ -7,7 +7,6 @@ import java.util.Random;
 import qwirkle.Board;
 import qwirkle.Location;
 import qwirkle.Move;
-import qwirkle.Rectangle;
 import qwirkle.Stone;
 
 public class NaiveStrategy implements Strategy {

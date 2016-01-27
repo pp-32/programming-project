@@ -21,8 +21,10 @@ public class Sequence {
 		
 		moves = new ArrayList<Move>();
 		
-		// TODO: add unknown case (exception ?)
 		switch (direction) {
+			case UNKNOWN:
+				moves.add(new Move(board.getField(location), location));
+				break;
 			case HORIZONTAL:
 				collectStones(new Location(-1, 0));
 				moves.add(new Move(board.getField(location), location));

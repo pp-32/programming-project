@@ -10,11 +10,8 @@ import java.util.Observer;
 
 import qwirkle.Board;
 import qwirkle.Game;
-import qwirkle.Move;
 import qwirkle.MoveResult;
-import qwirkle.OpenHandPlayer;
 import qwirkle.Player;
-import qwirkle.Stone;
 
 /**
  * Represents a server running the Qwirkle game.

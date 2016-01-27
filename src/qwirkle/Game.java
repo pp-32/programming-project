@@ -3,7 +3,6 @@ package qwirkle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 
 public class Game extends Observable implements Runnable {
 
@@ -33,8 +32,20 @@ public class Game extends Observable implements Runnable {
 		this.players.addAll(players);
 	}
 	
+	/**
+	 * Gets the board of the game.
+	 * @return The board.
+	 */
 	public Board getBoard() {
 		return board;
+	}
+	
+	/**
+	 * Gets the players playing the game.
+	 * @return The players
+	 */
+	public List<Player> getPlayers() {
+		return players;
 	}
 
 	/**
@@ -63,21 +74,7 @@ public class Game extends Observable implements Runnable {
 	public Player getCurrentPlayer() {
 		return players.get(current);
 	}
-	
-	/**
-	 * Resets the game. 
-	 */
-	public void reset() {
 		
-	}
-	
-	/**
-	 * Prints the score.
-	 */
-	public void updateScore() {
-		
-	}
-	
 	/**
 	 * Returns true if the game is over. This is the case if a player has used
 	 * up all his/her stones or if the bag is empty and no more moves can be done.
@@ -98,14 +95,16 @@ public class Game extends Observable implements Runnable {
 	
 	/**
 	 * Checks if a player has won. A player wins if he/she has the highest score.
-	 * @return
+	 * @param player The player to check.
+	 * @return True if the player has won, false otherwise.
 	 */
-	public boolean isWinner() {
-		return false;
-	}
-
-	public List<Player> getPlayers() {
-		return players;
+	public boolean isWinner(Player player) {
+		for (Player other : getPlayers()) {
+			if (other.getScore() > player.getScore()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 
