@@ -8,7 +8,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import qwirkle.Board;
 import qwirkle.Location;
 import qwirkle.Move;
 import qwirkle.MoveResult;
