@@ -66,12 +66,18 @@ public class StoneTest {
 
 	@Test
 	public void testShapeToString() {
-		assertEquals(Stone.shapeToString(StoneShape.CIRCLE), Integer.toString(Protocol.CIRCLE));
-		assertEquals(Stone.shapeToString(StoneShape.CLUBS), Integer.toString(Protocol.CLUBS));
-		assertEquals(Stone.shapeToString(StoneShape.CROSS), Integer.toString(Protocol.CROSS));
-		assertEquals(Stone.shapeToString(StoneShape.DIAMOND), Integer.toString(Protocol.DIAMOND));
-		assertEquals(Stone.shapeToString(StoneShape.RECTANGLE), Integer.toString(Protocol.RECTANGLE));
-		assertEquals(Stone.shapeToString(StoneShape.STAR), Integer.toString(Protocol.STAR));
+		assertEquals(Stone.shapeToString(StoneShape.CIRCLE), 
+					 Integer.toString(Protocol.CIRCLE));
+		assertEquals(Stone.shapeToString(StoneShape.CLUBS), 
+					 Integer.toString(Protocol.CLUBS));
+		assertEquals(Stone.shapeToString(StoneShape.CROSS), 
+					 Integer.toString(Protocol.CROSS));
+		assertEquals(Stone.shapeToString(StoneShape.DIAMOND), 
+					 Integer.toString(Protocol.DIAMOND));
+		assertEquals(Stone.shapeToString(StoneShape.RECTANGLE), 
+					 Integer.toString(Protocol.RECTANGLE));
+		assertEquals(Stone.shapeToString(StoneShape.STAR), 
+					 Integer.toString(Protocol.STAR));
 	}
 	
 }

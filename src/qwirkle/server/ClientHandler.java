@@ -17,7 +17,6 @@ import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.Move;
 import qwirkle.MoveResult;
-import qwirkle.OpenHandPlayer;
 import qwirkle.Player;
 import qwirkle.Protocol;
 import qwirkle.Stone;
@@ -177,6 +176,9 @@ public class ClientHandler extends Thread {
 		
 		for (int i = 0; i < amount; i++) {
 			moves.add(Move.fromScanner(scanner));
+			if (i < amount - 1) {
+				scanner.next();
+			}
 		}
 
 		MoveResult result = getCurrentPlayer().placeStones(board, moves);
@@ -203,6 +205,11 @@ public class ClientHandler extends Thread {
 		Board board = currentGame.getBoard();
 		for (int i = 0; i < amount; i++) {
 			Stone s = Stone.fromScanner(scanner);
+
+			if (i < amount - 1) {
+				scanner.next();
+			}
+			
 			board.placeStoneInBag(s);
 			currentPlayer.getStones().remove(s);
 			// TODO: replace with performTrade?
@@ -260,12 +267,17 @@ public class ClientHandler extends Thread {
 			out.write(Protocol.SERVER_GIVESTONES);
 			out.write(" ");
 			out.write(Integer.toString(stones.size()));
+			out.write(" ");
 			
-			for (Stone s : stones) {
-				out.write(" ");
+			for (int i = 0; i < stones.size(); i++) {
+				Stone s = stones.get(i);
 				out.write(Stone.shapeToString(s.getShape()));
 				out.write(" ");
 				out.write(Stone.colorToString(s.getColor()));
+				
+				if (i < stones.size() - 1) {
+					out.write(" | ");
+				}
 			}
 			
 			out.newLine();
@@ -331,9 +343,10 @@ public class ClientHandler extends Thread {
 			out.write(Integer.toString(score));
 			out.write(" ");
 			out.write(Integer.toString(stonePlacements.size()));
+			out.write(" ");
 			
-			for (Move move : stonePlacements) {
-				out.write(" ");
+			for (int i = 0; i < stonePlacements.size(); i++) {
+				Move move = stonePlacements.get(i);
 				out.write(Stone.shapeToString(move.getStone().getShape()));
 				out.write(" ");
 				out.write(Stone.colorToString(move.getStone().getColor()));
@@ -341,6 +354,10 @@ public class ClientHandler extends Thread {
 				out.write(Integer.toString(move.getLocation().getX()));
 				out.write(" ");
 				out.write(Integer.toString(move.getLocation().getY()));
+				
+				if (i < stonePlacements.size() - 1) {
+					out.write(" | ");
+				}
 			}
 			
 			out.newLine();

@@ -175,6 +175,11 @@ public class QwirkleServer extends Thread implements Observer {
 		}
 	}
 
+	/**
+	 * Broadcasts to everyone in the game the connection
+	 * with a client was lost.
+	 * @param sender The disconnected client. 
+	 */
 	public void broadcastConnectionLost(ClientHandler sender) {
 		
 		// remove client from connected clients 
@@ -197,6 +202,11 @@ public class QwirkleServer extends Thread implements Observer {
 		}
 	}
 
+	/**
+	 * Broadcasts to everyone in the same game a chat message.
+	 * @param sender The sender of the chat message.
+	 * @param message The message.
+	 */
 	public void broadcastChatMessage(ClientHandler sender, String message) {
 		Game game = sender.getCurrentGame();
 		for (ClientHandler client : connectedClients) {
@@ -210,18 +220,18 @@ public class QwirkleServer extends Thread implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Board) {
 			Board b = (Board) arg0;
-			System.out.println(b.toString());
-			System.out.println("Stones in pile: " + b.getStoneCount());
+			//System.out.println(b.toString());
+			//System.out.println("Stones in pile: " + b.getStoneCount());
 		} else if (arg0 instanceof Game && arg1 instanceof String) {
 			Game game = (Game) arg0;
 			switch ((String) arg1) {
 				case "gameover":
 					System.out.println("GAME OVER");
 					for (Player p : game.getPlayers()) {
-						System.out.println("Player: " + p.getName());
-						System.out.println("Score: " + p.getScore());
-						System.out.println("Hand: " + p.getHandSize());
-						System.out.println();
+						//System.out.println("Player: " + p.getName());
+						//System.out.println("Score: " + p.getScore());
+						//System.out.println("Hand: " + p.getHandSize());
+						//System.out.println();
 						ClientHandler client = getClientByName(p.getName());
 						client.notifyGameOver(game.getPlayers());
 					}
@@ -231,6 +241,9 @@ public class QwirkleServer extends Thread implements Observer {
 		
 	}
 	
+	/**
+	 * Closes the server.
+	 */
 	public void close() {
 		try {
 			serverSocket.close();

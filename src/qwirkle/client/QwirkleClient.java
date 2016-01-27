@@ -241,6 +241,9 @@ public class QwirkleClient extends Observable implements Observer {
 		
 		for (int i = 0; i < amount; i++) {
 			moves.add(Move.fromScanner(scanner));
+			if (i < amount - 1) {
+				scanner.next();
+			}
 		}
 				
 		for (Player p : game.getPlayers()) {
@@ -259,6 +262,9 @@ public class QwirkleClient extends Observable implements Observer {
 		for (int i = 0; i < amount; i++) {
 			stones.add(Stone.fromScanner(scanner));
 			game.getBoard().pickStone();
+			if (i < amount - 1) {
+				scanner.next();
+			}
 		}
 		
 		player.giveStones(stones);
@@ -351,9 +357,10 @@ public class QwirkleClient extends Observable implements Observer {
 			out.write(Protocol.CLIENT_SETMOVE);
 			out.write(" ");
 			out.write(Integer.toString(stonePlacements.size()));
+			out.write(" ");
 			
-			for (Move move : stonePlacements) {
-				out.write(" ");
+			for (int i = 0; i < stonePlacements.size(); i++) {
+				Move move = stonePlacements.get(i);
 				out.write(Stone.shapeToString(move.getStone().getShape()));
 				out.write(" ");
 				out.write(Stone.colorToString(move.getStone().getColor()));
@@ -361,6 +368,10 @@ public class QwirkleClient extends Observable implements Observer {
 				out.write(Integer.toString(move.getLocation().getX()));
 				out.write(" ");
 				out.write(Integer.toString(move.getLocation().getY()));
+				
+				if (i < stonePlacements.size() - 1) {
+					out.write(" | ");
+				}
 			}
 			
 			out.newLine();
@@ -381,12 +392,16 @@ public class QwirkleClient extends Observable implements Observer {
 			out.write(Protocol.CLIENT_DOTRADE);
 			out.write(" ");
 			out.write(Integer.toString(stones.size()));
+			out.write(" ");
 			
-			for (Stone s: stones) {
-				out.write(" ");
+			for (int i = 0; i < stones.size(); i++) {
+				Stone s = stones.get(i);
 				out.write(Stone.shapeToString(s.getShape()));
 				out.write(" ");
 				out.write(Stone.colorToString(s.getColor()));
+				if (i < stones.size() - 1) {
+					out.write(" | ");
+				}
 			}
 			
 			out.newLine();
@@ -396,6 +411,10 @@ public class QwirkleClient extends Observable implements Observer {
 		}
 	}
 
+	/**
+	 * Sends a chat message to the server.
+	 * @param message
+	 */
 	public synchronized void sendChatMessage(String message) {
 		if (!supportsChat) {
 			view.showError("Server doesn't support chat messages!");
@@ -431,7 +450,7 @@ public class QwirkleClient extends Observable implements Observer {
 			setMove(result.getMoves());
 		} else if (arg instanceof List<?>) {
 			// TODO: more robust check
-			doTrade((List<Stone>)arg);
+			doTrade((List<Stone>) arg);
 		}
 		
 	}

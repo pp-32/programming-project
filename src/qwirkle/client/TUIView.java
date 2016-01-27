@@ -1,5 +1,6 @@
 package qwirkle.client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -254,6 +255,19 @@ public class TUIView implements View {
 					System.out.println("GAME OVER!");
 					printStones(client.getPlayer().getStones());
 					System.out.println("Your score: " + client.getPlayer().getScore());
+
+					int input;
+					boolean validInput = false;
+					while (!validInput) {
+						System.out.println("Do you want to play another game? [y/n]:");
+						try {
+							input = System.in.read();
+							validInput = input == 'y' || input == 'n';
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+					//continueGame = input == 'y';
 					break;
 			}
 		} finally {

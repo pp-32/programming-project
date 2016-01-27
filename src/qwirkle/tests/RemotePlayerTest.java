@@ -34,7 +34,7 @@ public class RemotePlayerTest {
 	@Test
 	public void testUpdateHandSize() {
 		assertEquals(0, remotePlayer.getHandSize());
-		remotePlayer.setHandSize(6);;
+		remotePlayer.setHandSize(6);
 		assertEquals(6, remotePlayer.getHandSize());
 	}
 

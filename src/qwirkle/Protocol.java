@@ -1,6 +1,6 @@
 package qwirkle;
 /**
- * Eindopdracht Module 2 2015-2016: 'Qwirkle'
+ * Eindopdracht Module 2 2015-2016: 'Qwirkle'.
  * Interface Protocol met daarin de gemaakte afspraken tijdens werkcollege 06-01-2016
  * @author  Wim Kamerman
  * @version 1.0.1 (13-01-2016)
@@ -10,12 +10,14 @@ package qwirkle;
  * v1.0.1
  * - Meerdere kleine fouten in beschrijvingen van parameters verbeterd.
  * - Bij een paar ingewikkelde commando's voorbeelden toegevoegd.
- * - Toegevoegde eis aan commandostructuur met pipes: spatie voor en achter de pipe is verplicht. Zo kun je op meerdere manieren het commando uitlezen.
+ * - Toegevoegde eis aan commandostructuur met pipes: spatie voor en achter de pipe is verplicht. 
+ *   Zo kun je op meerdere manieren het commando uitlezen.
  *
  * v1.0.0
  * - Opzet Protocol
  * - Y-coordinaten bord omgedraaid, niet volgens afspraak in werkcollege!
- * - Wijzigen Challenge server respons, van CHALLENGE_RESPONSE naar CHALLENGE_RESULT, niet volgens afspraak in werkcollege!
+ * - Wijzigen Challenge server respons, van CHALLENGE_RESPONSE naar CHALLENGE_RESULT, 
+     volgens afspraak in werkcollege!
  *
  */
 
@@ -23,12 +25,15 @@ package qwirkle;
 public interface Protocol {
 
 	/**
-	 * LET OP: VOLGORDE VAN PARAMETERS BIJ FUNCTIES IS EXPLICIET. VOLG VOLGORDE ZOALS IN JAVADOC AANGEGEVEN.
+	 * LET OP: VOLGORDE VAN PARAMETERS BIJ FUNCTIES IS EXPLICIET. 
+	 * VOLG VOLGORDE ZOALS IN JAVADOC AANGEGEVEN.
 	 * LET OP: ALLE PARAMETERS ZIJN VAN HET TYPE "STRING" EN GESCHEIDEN DOOR EEN SPATIE
 	 * LET OP: PARAMETERS MOGEN GEEN SPATIES EN PIPES (|) BEVATTEN!
-	 * LET OP: BIJ HET VERSTUREN VAN COMMANDO'S MET DOOR PIPES GESCHEIDEN 'BLOKKEN PARAMETERS', EEN SPATIE VOOR EN ACHTER DE PIPE INVOEGEN.
+	 * LET OP: BIJ HET VERSTUREN VAN COMMANDO'S MET DOOR PIPES GESCHEIDEN 'BLOKKEN PARAMETERS',
+	 * EEN SPATIE VOOR EN ACHTER DE PIPE INVOEGEN.
 	 *
-	 * In dit document worden de coordinaten van blokken gemarkeerd als 2 aparte strings, eerst "X", dan "Y"
+	 * In dit document worden de coordinaten van blokken gemarkeerd als 2 aparte strings, 
+	 * eerst "X", dan "Y".
 	 * Opzet coordinaten bord, gescreven als (X,Y):
 	 *
 	 * 	(-1,-1)	(0,-1)	(1,-1)
@@ -86,7 +91,8 @@ public interface Protocol {
 	 * - leaderboard = 1 || 0
 	 * - security = 1 || 0
 	 *
-	 * Voorbeeld: pietje wil joinen, client ondersteunt wel chat, geen challenge, geen leaderboard en geen security:
+	 * Voorbeeld: pietje wil joinen, client ondersteunt wel chat, geen challenge,
+	 * geen leaderboard en geen security:
 	 * Code: "joinrequest pietje 1 0 0 0"
 	 *
 	 * Richting: Client -> Server
@@ -94,7 +100,8 @@ public interface Protocol {
 	String CLIENT_JOINREQUEST = "joinrequest";
 
 	/**
-	 * Wordt gebruikt om client te accepteren en vanuit de server de client te melden welke functionaliteit ondersteund wordt.
+	 * Wordt gebruikt om client te accepteren en vanuit de server de client te melden 
+	 * welke functionaliteit ondersteund wordt.
 	 *
 	 * Lijst van argumenten:
 	 * - name = Naam van geaccepteerde client
@@ -110,7 +117,8 @@ public interface Protocol {
 	 * - leaderboard = 1 || 0
 	 * - security = 1 || 0
 	 *
-	 * Voorbeeld: pietje accepteren, server ondersteunt geen chat, geen challenge, geen leaderboard en geen security:
+	 * Voorbeeld: pietje accepteren, server ondersteunt geen chat, geen challenge, 
+	 * geen leaderboard en geen security:
 	 * Code: "acceptrequest pietje 0 0 0 0"
 	 *
 	 * Richting: Server -> Client
@@ -121,7 +129,8 @@ public interface Protocol {
 	 * Wordt gebruikt om aan de server duidelijk te maken dat men deel wil nemen aan een spel.
 	 *
 	 * Argument:
-	 * - amount = Aantal spelers in spel waaraan deelgenomen wordt. Als geen amount meegegeven wordt, maakt het niet uit hoeveel spelers.
+	 * - amount = Aantal spelers in spel waaraan deelgenomen wordt. Als geen amount 
+	 *            meegegeven wordt, maakt het niet uit hoeveel spelers.
 	 *
 	 * Eis aan argument:
 	 * 2 =< amount <= 4 || argument == null
@@ -134,7 +143,8 @@ public interface Protocol {
 	 * Wordt gebruikt om aan clients duidelijk te maken dat een spel gestart wordt.
 	 *
 	 * Argument:
-	 * - names = Lijst met namen van deelnemers, gesorteerd op beurtvolgorde, gescheiden door spaties.
+	 * - names = Lijst met namen van deelnemers, gesorteerd op beurtvolgorde, 
+	 *           gescheiden door spaties.
 	 *
 	 * Eis aan argument:
 	 * - names: minimaal 2 namen
@@ -198,7 +208,9 @@ public interface Protocol {
 	String CLIENT_SETMOVE = "setmove";
 
 	/**
-	 * Wordt gebruikt om alle clients mede te delen welke zet gedaan is. Is kopie van CLIENT_SETMOVE, plus naam speler en aantal punten
+	 * Wordt gebruikt om alle clients mede te delen welke zet gedaan is. 
+	 * Is kopie van CLIENT_SETMOVE, plus naam speler en aantal punten
+	 * 
 	 * Lijst argumenten:
 	 * - name = Naam van speler die zet heeft gedaan
 	 * - score = Score behaald door zet van client
@@ -218,7 +230,8 @@ public interface Protocol {
 	 * - locationX = integer
 	 * - locationY = integer
 	 *
-	 * Voorbeeld: client 'Ruud' zet 2 stenen, een blauw vierkant op (3,4) en een rood vierkant op (3,5), en scoort daarmee 3 punten:
+	 * Voorbeeld: client 'Ruud' zet 2 stenen, een blauw vierkant op (3,4) en een rood 
+	 *            vierkant op (3,5), en scoort daarmee 3 punten:
 	 * Code: "notifymove Ruud 3 2 4 5 3 4 | 4 1 3 5"
 	 *
 	 * Richting: Server -> Client
@@ -226,7 +239,8 @@ public interface Protocol {
 	String SERVER_NOTIFYMOVE = "notifymove";
 
 	/**
-	 * Wordt gebruikt om een set stenen met de server te ruilen
+	 * Wordt gebruikt om een set stenen met de server te ruilen.
+	 * 
 	 * Lijst argumenten:
 	 * - amount = Aantal stenen dat geruild moet worden
 	 * Per steen de volgende 2 waardes invoeren, per steen gescheiden door een pipe (|)
@@ -243,7 +257,8 @@ public interface Protocol {
 	String CLIENT_DOTRADE = "givestones";
 
 	/**
-	 * Wordt gebruikt om alle clients mede te delen welke speler welk aantal stenen heeft geruild
+	 * Wordt gebruikt om alle clients mede te delen welke speler welk aantal stenen heeft geruild.
+	 * 
 	 * Lijst argumenten:
 	 * - name = Naam van speler die stenen heeft geruild
 	 * - amount = Aantal stenen dat geruild is
@@ -260,8 +275,12 @@ public interface Protocol {
 	String SERVER_NOTIFYTRADE = "notifytrade";
 
 	/**
-	 * Wordt gebruikt om alle clients mede te delen welke speler heeft gewonnen, en met welke score. Daarnaast scores van alle spelers.
-	 * Per speler de volgende 2 waardes invoeren, per speler gescheiden door een pipe (|), aflopend op score. (winnaar eerst)
+	 * Wordt gebruikt om alle clients mede te delen welke speler heeft gewonnen, 
+	 * en met welke score. Daarnaast scores van alle spelers. 
+	 * 
+	 * Per speler de volgende 2 waardes invoeren, per speler gescheiden door 
+	 * een pipe (|), aflopend op score. (winnaar eerst).
+	 * 
 	 * Lijst argumenten:
 	 * - name = naam van speler
 	 * - score = score van speler
@@ -270,7 +289,8 @@ public interface Protocol {
 	 * - name bevat geen spaties
 	 * - score >= 0
 	 *
-	 * Voorbeeld: spel met 3 spelers, 'Wessel' heeft met 67 punten gewonnen van 'Teun' met 45 punten en 'Rik' met 54 punten:
+	 * Voorbeeld: spel met 3 spelers, 'Wessel' heeft met 67 punten gewonnen
+	 *            van 'Teun' met 45 punten en 'Rik' met 54 punten:
 	 * Code: "gameover Wessel 67 | Teun 45 | Rik 54"
 	 *
 	 * Richting: Server -> Client
@@ -291,7 +311,7 @@ public interface Protocol {
 	String SERVER_INVALIDCOMMAND = "invalidcommand";
 
 	/**
-	 * Wordt gebruikt door server om spelers te laten weten welke client is weggevallen
+	 * Wordt gebruikt door server om spelers te laten weten welke client is weggevallen.
 	 *
 	 * Argument:
 	 * - name = naam van weggevallen speler
@@ -344,7 +364,8 @@ public interface Protocol {
 	 * Wordt gebruikt om de server te informeren over een gevraagde challenge.
 	 *
 	 * Argument:
-	 * - name = Lijst met namen van andere clients die gechallenged moeten worden, gescheiden door pipes (|)
+	 * - name = Lijst met namen van andere clients die gechallenged moeten worden, 
+	 * 			gescheiden door pipes (|).
 	 *
 	 * Eisen aan argument:
 	 * - \foreach name bevat geen spatie of pipe
@@ -358,7 +379,8 @@ public interface Protocol {
 	 * Wordt gebruikt om een client te informeren van een challenge.
 	 *
 	 * Argument:
-	 * - name = Lijst met namen van andere clients die gechallenged moeten worden, gescheiden door pipes (|), waarbij de uitdager vooraan staat.
+	 * - name = Lijst met namen van andere clients die gechallenged moeten worden, 
+	 *          gescheiden door pipes (|), waarbij de uitdager vooraan staat.
 	 *
 	 * Eisen aan argument:
 	 * - \foreach name bevat geen spatie of pipe
@@ -369,7 +391,7 @@ public interface Protocol {
 	String SERVER_NOTIFY_CHALLENGE = "notify_challenge";
 
 	/**
-	 * Wordt gebruikt door een client om een challenge al dan niet te accepteren
+	 * Wordt gebruikt door een client om een challenge al dan niet te accepteren.
 	 *
 	 * Argument:
 	 * - response = 	0 als client niet mee wenst te doen aan challenge
@@ -399,18 +421,20 @@ public interface Protocol {
 	String SERVER_CHALLENGE_RESULT = "challenge_result";
 
 	/**
-	 * Wordt gebruikt door client om leaderboard op te vragen
+	 * Wordt gebruikt door client om leaderboard op te vragen.
 	 * Richting: Client -> Server
 	 */
 	String CLIENT_GET_LEADERBOARD = "get_leaderboard";
 
 	/**
-	 * Wordt gebruikt om alle leaderboard naar client te sturen
+	 * Wordt gebruikt om alle leaderboard naar client te sturen.
+	 * 
 	 * Argumenten:
 	 * Per speler de volgende 3 waardes invoeren, per speler gescheiden door een pipe (|)
 	 * - name = Naam van speler die zet heeft gedaan
 	 * - score = Score behaald door zet van client
-	 * - time = tijdstip behalen score uitgedrukt in aantal seconden sinds 1 januari 1970 (System.currentTimeMillis())
+	 * - time = tijdstip behalen score uitgedrukt in aantal seconden 
+	 * 			sinds 1 januari 1970 (System.currentTimeMillis())
 	 *
 	 * Eisen aan argumenten:
 	 * - name bevat geen spaties
