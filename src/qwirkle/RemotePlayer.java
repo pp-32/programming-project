@@ -1,5 +1,6 @@
 package qwirkle;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -48,14 +49,22 @@ public class RemotePlayer extends Player {
 
 	public void notifyPlacedStones(Board board, List<Move> moves, int score) {
 		board.placeStones(moves);
-		setScore(getScore() + score);		
+		setScore(getScore() + score);
+		int handSize = getHandSize() - moves.size();
+		for (int i = 0; i < moves.size() && board.canPickStone(); i++) {
+			board.pickStone();
+			handSize++;
+		}
+		setHandSize(handSize);
+		
 		lock.lock();
 		try {
 			moveMade.signalAll();
 		} finally {
 			lock.unlock();
 		}		
-		// TODO: update hand size;
+
+		
 	}
 	
 	public void notifyTraded() {

@@ -15,6 +15,8 @@ public class ComputerPlayer extends OpenHandPlayer {
 
 	@Override
 	public void makeMove(Board board) {
+		setChanged();
+		notifyObservers("turnstarted");
 		strategy.makeMove(this, board);
 	}
 

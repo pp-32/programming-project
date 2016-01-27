@@ -17,6 +17,9 @@ public class ArrayBoard extends Board {
 
 	private List<Location> occupied;
 	
+	/**
+	 * Creates a new array board.
+	 */
 	public ArrayBoard() {
 		reset();
 	}

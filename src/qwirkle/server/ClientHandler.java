@@ -188,8 +188,6 @@ public class ClientHandler extends Thread {
 		if (newStones.size() > 0) {
 			giveStones(newStones);
 		}
-
-		printStones(currentPlayer);
 		
 		server.broadcastMove(this, result);
 		this.moveMade();
@@ -278,6 +276,10 @@ public class ClientHandler extends Thread {
 	 * Requests the client to make a move.
 	 */
 	public synchronized void requestMove() {
+		
+		// TODO: remove
+		printStones(currentPlayer);
+		
 		try {
 			out.write(Protocol.SERVER_MOVEREQUEST);
 			out.newLine();

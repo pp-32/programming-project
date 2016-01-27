@@ -8,6 +8,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import qwirkle.Board;
+import qwirkle.Game;
 import qwirkle.Location;
 import qwirkle.Move;
 import qwirkle.MoveResult;
@@ -260,8 +262,13 @@ public class TUIView implements View {
 	}
 
 	private void printBoard() {
-		System.out.println(client.getCurrentGame().getBoard());
-		for (Player player : client.getCurrentGame().getPlayers()) {
+		Game game = client.getCurrentGame();
+		Board board = game.getBoard();
+		
+		System.out.println(board);
+		System.out.println("There are " + board.getStoneCount() + " in the pile.");
+		
+		for (Player player : game.getPlayers()) {
 			System.out.println("Player " + player.getName() 
 							   + " has " + player.getHandSize() + " stones and"
 							   + " has " + player.getScore() + " score.");

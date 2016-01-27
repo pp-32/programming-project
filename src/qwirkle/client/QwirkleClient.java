@@ -243,6 +243,7 @@ public class QwirkleClient extends Observable implements Observer {
 		
 		for (int i = 0; i < amount; i++) {
 			stones.add(Stone.fromScanner(scanner));
+			game.getBoard().pickStone();
 		}
 		
 		player.giveStones(stones);
@@ -266,7 +267,9 @@ public class QwirkleClient extends Observable implements Observer {
 				}
 				players.add(player);
 			} else { 
-				players.add(new RemotePlayer(name)); 
+				RemotePlayer remote = new RemotePlayer(name);
+				remote.setHandSize(6);
+				players.add(remote); 
 			}
 		}
 		
@@ -276,6 +279,11 @@ public class QwirkleClient extends Observable implements Observer {
 		for (Player p : game.getPlayers()) {
 			p.addObserver(view);
 			p.addObserver(this);
+			
+			if (p instanceof RemotePlayer) {
+				game.getBoard().pickStones(6);
+				
+			}
 		}
 		
 		setChanged();
