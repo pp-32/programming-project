@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+/**
+ * Represents a Qwirkle game. 
+ * @author Jerre
+ *
+ */
 public class Game extends Observable implements Runnable {
 
 	// -- Instance variables -----------------------------------------

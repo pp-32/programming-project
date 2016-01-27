@@ -9,6 +9,11 @@ import qwirkle.Location;
 import qwirkle.Move;
 import qwirkle.Stone;
 
+/**
+ * Represents a smart strategy used in playing the Qwirkle game.
+ * @author Jerre
+ *
+ */
 public class SmartStrategy implements Strategy {
 
 	private static final Random RANDOM = new Random();

@@ -18,6 +18,10 @@ public class RemotePlayer extends Player {
 	
 	private int handSize;
 
+	/**
+	 * Creates a new remote player.
+	 * @param theName The name of the player.
+	 */
 	public RemotePlayer(String theName) {
 		super(theName);
 	}
@@ -47,6 +51,12 @@ public class RemotePlayer extends Player {
 		}		
 	}
 
+	/**
+	 * Notifies the remote player has placed stones onto the board.
+	 * @param board The board the player has placed stones on.
+	 * @param moves The moves the player has made.
+	 * @param score The score the player has gained.
+	 */
 	public void notifyPlacedStones(Board board, List<Move> moves, int score) {
 		board.placeStones(moves);
 		setScore(getScore() + score);
@@ -62,11 +72,12 @@ public class RemotePlayer extends Player {
 			moveMade.signalAll();
 		} finally {
 			lock.unlock();
-		}		
-
-		
+		}
 	}
 	
+	/**
+	 * Notifies the player has traded stones.
+	 */
 	public void notifyTraded() {
 		moveMade.signalAll();
 	}

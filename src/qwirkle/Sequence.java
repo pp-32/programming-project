@@ -14,6 +14,12 @@ public class Sequence {
 	private SequenceDirection direction;
 	private List<Move> moves;
 	 
+	/**
+	 * Creates a new Sequence instance.
+	 * @param board The board the sequence is located at.
+	 * @param location The location of one stone in the sequence.
+	 * @param direction The direction of the sequence.
+	 */
 	public Sequence(Board board, Location location, SequenceDirection direction) {
 		this.board = board;
 		this.location = location;

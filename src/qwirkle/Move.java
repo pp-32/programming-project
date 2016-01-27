@@ -47,10 +47,16 @@ public class Move {
 		return location;
 	}
 	
+	@Override
 	public String toString() {
 		return getStone().toString() + " -> " + getLocation();
 	}
 	
+	/**
+	 * Reads a move from a scanner.
+	 * @param scanner The scanner to read from.
+	 * @return The move.
+	 */
 	public static Move fromScanner(Scanner scanner) {
 		return new Move(Stone.fromScanner(scanner), Location.fromScanner(scanner));
 	}

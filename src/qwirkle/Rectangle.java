@@ -10,11 +10,23 @@ public class Rectangle {
 	private Location topLeft;
 	private Location bottomRight;
 
+	/**
+	 * Creates a new Rectangle.
+	 * @param topLeft The top left location of the rectangle.
+	 * @param bottomRight The bototm right location of the rectangle.
+	 */
 	public Rectangle(Location topLeft, Location bottomRight) {
 		this.topLeft = topLeft;
 		this.bottomRight = bottomRight;
 	}
 	
+	/**
+	 * Creates a new Rectangle.
+	 * @param x1 The x-coordinate of the top left location of the rectangle.
+	 * @param y1 The y-coordinate of the top left location of the rectangle.
+	 * @param x2 The x-coordinate of the bottom right location of the rectangle.
+	 * @param y2 The y-coordinate of the bottom right location of the rectangle.
+	 */
 	public Rectangle(int x1, int y1, int x2, int y2) {
 		this(new Location(x1, y1), new Location(x2, y2));
 	}
@@ -62,10 +74,6 @@ public class Rectangle {
 			&& point.getY() <= topLeft.getY()
 			&& point.getY() >= bottomRight.getY();
 	}
-	
-	public String toString() {
-		return topLeft.toString() + " => " + bottomRight.toString();
-	}
 
 	/**
 	 * Inflates the rectangle by a specific amount of units on each side.
@@ -76,6 +84,14 @@ public class Rectangle {
 		topLeft.setY(topLeft.getY() + i);
 		bottomRight.setX(bottomRight.getX() + i);
 		bottomRight.setY(bottomRight.getY() - i);
+	}
+
+	/**
+	 * Creates a deep copy of the rectangle.
+	 * @return The copy of the rectangle.
+	 */
+	public Rectangle deepCopy() {
+		return new Rectangle(topLeft.deepCopy(), bottomRight.deepCopy());
 	}
 	
 	@Override
@@ -94,11 +110,8 @@ public class Rectangle {
 		return getTopLeft().hashCode() ^ getBottomRight().hashCode();
 	}
 	
-	/**
-	 * Creates a deep copy of the rectangle.
-	 * @return The copy of the rectangle.
-	 */
-	public Rectangle deepCopy() {
-		return new Rectangle(topLeft.deepCopy(), bottomRight.deepCopy());
+	@Override
+	public String toString() {
+		return topLeft.toString() + " => " + bottomRight.toString();
 	}
 }

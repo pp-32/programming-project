@@ -9,6 +9,11 @@ import qwirkle.Location;
 import qwirkle.Move;
 import qwirkle.Stone;
 
+/**
+ * Represents a naive strategy for playing the Qwirkle game.
+ * @author Jerre
+ *
+ */
 public class NaiveStrategy implements Strategy {
 
 	private static final Random RANDOM = new Random();
@@ -18,6 +23,9 @@ public class NaiveStrategy implements Strategy {
 		return "Naive";
 	}
 
+	/**
+	 * Places a random stone onto the board, or trades a random stone.
+	 */
 	@Override
 	public void makeMove(ComputerPlayer player, Board board) {
 		List<Move> moves = determineMoves(player, board);
@@ -34,7 +42,7 @@ public class NaiveStrategy implements Strategy {
 		return pickedStones;
 	}
 
-	public static List<Move> determineMoves(ComputerPlayer player, Board board) {
+	private static List<Move> determineMoves(ComputerPlayer player, Board board) {
 		List<Move> moves = new ArrayList<Move>();
 		
 		Move firstMove = determineFirstMove(player, board);

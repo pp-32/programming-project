@@ -12,6 +12,10 @@ public abstract class OpenHandPlayer extends Player {
 	
 	private List<Stone> hand;
 	
+	/**
+	 * Creates a new OpenHandPlayer instance.
+	 * @param theName The name of the player.
+	 */
 	public OpenHandPlayer(String theName) {
 		super(theName);
 		hand = new ArrayList<Stone>();
@@ -23,6 +27,11 @@ public abstract class OpenHandPlayer extends Player {
 	 */
 	public List<Stone> getStones() {
 		return this.hand;
+	}
+	
+	@Override
+	public int getHandSize() {
+		return this.hand.size();
 	}
 	
 	/**
@@ -50,6 +59,11 @@ public abstract class OpenHandPlayer extends Player {
 		return result;
 	}
 
+	/**
+	 * Removes the stones from the hand and notifies the observers 
+	 * of the player the player wants to trade. 
+	 * @param stonesToTrade The stones to trade.
+	 */
 	public void performTrade(List<Stone> stonesToTrade) {
 		// Do not use removeAll(stonesToTrade), it will remove all occurrences of each stone.
 		for (Stone s : stonesToTrade) {
@@ -67,10 +81,5 @@ public abstract class OpenHandPlayer extends Player {
 		this.getStones().addAll(stones);
 		setChanged();
 		notifyObservers("stones");
-	}
-	
-	@Override
-	public int getHandSize() {
-		return this.hand.size();
 	}
 }

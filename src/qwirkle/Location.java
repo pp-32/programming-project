@@ -11,6 +11,11 @@ public class Location {
 	private int x;
 	private int y;
 
+	/**
+	 * Creates a new location.
+	 * @param x The x-coordinate.
+	 * @param y The y-coordinate.
+	 */
 	public Location(int x, int y) {
 		this.setX(x);
 		this.setY(y);
@@ -94,6 +99,11 @@ public class Location {
 		return getX() ^ getY();
 	}
 	
+	/**
+	 * Reads a location from a scanner.
+	 * @param scanner The scanner to read from.
+	 * @return The location.
+	 */
 	public static Location fromScanner(Scanner scanner) {
 		return new Location(scanner.nextInt(), scanner.nextInt());
 	}

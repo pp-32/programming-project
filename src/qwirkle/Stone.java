@@ -43,6 +43,7 @@ public class Stone {
 		return color;
 	}
 
+	@Override
 	public String toString() {
 		String shapeString = null;
 		switch (shape) {
@@ -90,6 +91,7 @@ public class Stone {
 		return shapeString + colorString;
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Stone)) {
 			return false;
@@ -99,14 +101,25 @@ public class Stone {
 			&& stone.getColor() == this.getColor();	
 	}
 	
+	@Override
 	public int hashCode() {
 		return getShape().hashCode() ^ getColor().hashCode();
 	}
 	
+	/**
+	 * Reads a stone from a scanner.
+	 * @param scanner The scanner to read from.
+	 * @return The stone that was read.
+	 */
 	public static Stone fromScanner(Scanner scanner) {
 		return new Stone(idToShape(scanner.nextInt()), idToColor(scanner.nextInt()));
 	}
 	
+	/**
+	 * Formats a shape to a string according to the protocol.
+	 * @param shape The shape to convert.
+	 * @return The formatted shape.
+	 */
 	public static String shapeToString(StoneShape shape) {
 		int shapeId = 0;
 		switch (shape) {
@@ -132,6 +145,11 @@ public class Stone {
 		return Integer.toString(shapeId);
 	}
 	
+	/**
+	 * Converts a formatted shape ID to a shape.
+	 * @param id The shape ID.
+	 * @return The shape.
+	 */
 	public static StoneShape idToShape(int id) {
 		switch (id) {
 			case Protocol.CIRCLE:
@@ -151,6 +169,11 @@ public class Stone {
 		return StoneShape.CIRCLE;
 	}
 	
+	/**
+	 * Formats a color to a string according to the protocol.
+	 * @param color The color to format.
+	 * @return The formatted color.
+	 */
 	public static String colorToString(StoneColor color) {
 		int colorId = 0;
 		switch (color) {
@@ -176,6 +199,11 @@ public class Stone {
 		return Integer.toString(colorId);
 	}
 	
+	/**
+	 * Converts a color ID to an actual color.
+	 * @param id The color ID.
+	 * @return The converted color.
+	 */
 	public static StoneColor idToColor(int id) {
 		switch (id) {
 			case Protocol.BLUE:

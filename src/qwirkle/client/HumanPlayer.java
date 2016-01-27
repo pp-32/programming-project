@@ -11,11 +11,20 @@ import qwirkle.MoveResult;
 import qwirkle.OpenHandPlayer;
 import qwirkle.Stone;
 
+/**
+ * Represents a human player in the Qwirkle game.
+ * @author Jerre
+ *
+ */
 public class HumanPlayer extends OpenHandPlayer {
 
 	private Lock lock = new ReentrantLock();
 	private Condition moveMade = lock.newCondition();
 	
+	/**
+	 * Creates a new instance of the HumanPlayer.
+	 * @param theName The name of the player.
+	 */
 	public HumanPlayer(String theName) {
 		super(theName);
 	}
@@ -34,6 +43,7 @@ public class HumanPlayer extends OpenHandPlayer {
 		}
 	}
 
+	@Override
 	public void performTrade(List<Stone> stonesToTrade) {
 		lock.lock();
 		try {
@@ -44,6 +54,7 @@ public class HumanPlayer extends OpenHandPlayer {
 		}
 	}
 	
+	@Override
 	public MoveResult placeStones(Board board, List<Move> moves) {
 
 		lock.lock();

@@ -30,6 +30,9 @@ public abstract class Board extends Observable {
 	
 	private List<Stone> stones; 
 	
+	/**
+	 * Instantiates a new board.
+	 */
 	public Board() {
 		stones = new ArrayList<Stone>();
 		for (int i = 0; i < 3; i++) {
@@ -41,6 +44,10 @@ public abstract class Board extends Observable {
 		}
 	}
 	
+	/**
+	 * Gets the amount of stones in the pile.
+	 * @return The amount of stones.
+	 */
 	public int getStoneCount() {
 		return stones.size();
 	}
@@ -219,6 +226,11 @@ public abstract class Board extends Observable {
 		notifyObservers("placedstone");
 	}
 
+	/**
+	 * Calculates the score of the given moves.
+	 * @param moves The moves.
+	 * @return The score.
+	 */
 	public int calculateScore(List<Move> moves) {
 		// tactic: first place stones, then get length of each individual orthogonal row
 		// and add them to the total score.
@@ -285,6 +297,7 @@ public abstract class Board extends Observable {
 		return score;
 	}
 	
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		Rectangle dimensions = getDimensions().deepCopy();		

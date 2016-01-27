@@ -96,6 +96,13 @@ public class QwirkleClient extends Observable implements Observer {
 	private PlayerType playerType;
 	private boolean supportsChat;
 	
+	/**
+	 * Creates a new client.
+	 * @param host The host of the server.
+	 * @param port The port number to use for communication with the server..
+	 * @param playerType The player type.
+	 * @throws IOException Occurs when the creation of the communication socket fails.
+	 */
 	public QwirkleClient(InetAddress host, int port, PlayerType playerType) throws IOException {
 		this.playerType = playerType;
 		this.socket = new Socket(host, port);
@@ -111,6 +118,14 @@ public class QwirkleClient extends Observable implements Observer {
 	 */
 	public Game getCurrentGame() {
 		return game;
+	}
+
+	/**
+	 * Gets the player the client is currently playing as.
+	 * @return The player.
+	 */
+	public OpenHandPlayer getPlayer() {
+		return player;
 	}
 	
 	/**
@@ -408,11 +423,7 @@ public class QwirkleClient extends Observable implements Observer {
 			e.printStackTrace();
 		}
 	}
-
-	public OpenHandPlayer getPlayer() {
-		return player;
-	}
-
+	
 	@Override
 	public void update(Observable o, Object arg) {
 		if (arg instanceof MoveResult) {

@@ -3,6 +3,11 @@ package qwirkle.server;
 import qwirkle.Board;
 import qwirkle.OpenHandPlayer;
 
+/**
+ * Represents a client player.
+ * @author Jerre
+ *
+ */
 public class ClientPlayer extends OpenHandPlayer {
 
 	private ClientHandler client;

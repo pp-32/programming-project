@@ -44,7 +44,7 @@ public class ClientHandler extends Thread {
 	/**
 	 * Creates a new instance of a client handler, using the given socket. 
 	 * @param socket The socket that is used for read and write operations.
-	 * @throws IOException 
+	 * @throws IOException Occurs when the socket I/O streams cannot be created.
 	 */
 	public ClientHandler(QwirkleServer server, Socket socket) throws IOException {
 		this.server = server;
@@ -61,6 +61,10 @@ public class ClientHandler extends Thread {
 		return clientName;
 	}
 	
+	/**
+	 * Gets a value indicating whether the client supports chat messages.
+	 * @return True if the client supports chat messages, false otherwise.
+	 */
 	public boolean getSupportsChatMessages() {
 		return supportsChatMessages;
 	}
@@ -276,10 +280,6 @@ public class ClientHandler extends Thread {
 	 * Requests the client to make a move.
 	 */
 	public synchronized void requestMove() {
-		
-		// TODO: remove
-		printStones(currentPlayer);
-		
 		try {
 			out.write(Protocol.SERVER_MOVEREQUEST);
 			out.newLine();
@@ -289,26 +289,10 @@ public class ClientHandler extends Thread {
 			shutdown();
 		}
 	}
-
-	// TODO: remove
-	private static void printStones(OpenHandPlayer player) {
-		System.out.print("This is " + player.getName() + "'s hand: ");
-		System.out.println("");
-		List<Stone> stones = player.getStones();
-		for (int i = 0; i < stones.size(); i++) {
-			System.out.print("[" + i + "] ");
-		}
-		System.out.println("");
-		for (int i = 0; i < stones.size(); i++) {
-			Stone s = stones.get(i);
-			System.out.print(s.toString() + " ");
-			if (i < stones.size() - 1) {
-				System.out.print(" ");
-			}
-		}
-		System.out.println();
-	}
 	
+	/**
+	 * Notifies the client the move was made.
+	 */
 	public void moveMade() {
 		makeMoveLock.lock();
 		try {
@@ -318,6 +302,10 @@ public class ClientHandler extends Thread {
 		}
 	}
 	
+	/**
+	 * Blocks the current thread until the move was made.
+	 * @throws InterruptedException Occurs when the waiting is interrupted.
+	 */
 	public void waitForMove() throws InterruptedException {
 		makeMoveLock.lock();
 		try {
@@ -464,6 +452,9 @@ public class ClientHandler extends Thread {
 		}		
 	}
 	
+	/**
+	 * Closes the connection with the client.
+	 */
 	public void shutdown() {
 		server.broadcastConnectionLost(this);
 		try {
