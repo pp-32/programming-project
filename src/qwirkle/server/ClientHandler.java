@@ -182,10 +182,10 @@ public class ClientHandler extends Thread {
 		}
 
 		MoveResult result = getCurrentPlayer().placeStones(board, moves);
-		if (!result.isSuccessful()) {
-			shutdown();
-			return;
-		}
+		//if (!result.isSuccessful()) {
+		//	shutdown();
+		//	return;
+		//}
 		
 		List<Stone> newStones = new ArrayList<Stone>();
 		for (int i = 0; i < amount && board.canPickStone(); i++) {
@@ -226,7 +226,7 @@ public class ClientHandler extends Thread {
 	public synchronized void acceptJoinRequest() {
 		
 		try {
-			out.write(Protocol.SERVER_ACCEPTREQUEST + " 1 0 0 0");
+			out.write(Protocol.SERVER_ACCEPTREQUEST + " " + getClientName() + " 1 0 0 0");
 			out.newLine();
 			out.flush();
 		} catch (IOException e) {
@@ -473,6 +473,8 @@ public class ClientHandler extends Thread {
 	 * Closes the connection with the client.
 	 */
 	public void shutdown() {
+
+		System.out.println(getClientName() + " shut down.");
 		server.broadcastConnectionLost(this);
 		try {
 			socket.close();

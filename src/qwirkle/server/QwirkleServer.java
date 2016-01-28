@@ -155,7 +155,7 @@ public class QwirkleServer extends Thread implements Observer {
 	public void broadcastMove(ClientHandler sender, MoveResult result) {
 		Game game = sender.getCurrentGame();
 		for (ClientHandler client : connectedClients) {
-			if (client.getCurrentGame() == game && client != sender) {
+			if (client.getCurrentGame() == game) { // client != sender
 				client.notifyMove(sender.getClientName(), result.getScore(), result.getMoves());
 			}
 		}
@@ -169,7 +169,7 @@ public class QwirkleServer extends Thread implements Observer {
 	public void broadcastTrade(ClientHandler sender, int amount) {
 		Game game = sender.getCurrentGame();
 		for (ClientHandler client : connectedClients) {
-			if (client.getCurrentGame() == game && client != sender) {
+			if (client.getCurrentGame() == game) { // client != sender
 				client.notifyTrade(sender.getClientName(), amount);
 			}
 		}

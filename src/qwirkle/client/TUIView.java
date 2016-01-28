@@ -26,6 +26,7 @@ public class TUIView implements View {
 	private Condition firstResponseReceived = lock.newCondition();
 	private Condition gameStarted = lock.newCondition();
 
+	private Scanner inputScanner = new Scanner(System.in);
 	private QwirkleClient client;
 
 	public TUIView(QwirkleClient client) {
@@ -44,20 +45,19 @@ public class TUIView implements View {
 		System.out.println("| |              | || |              | || |              | || |              | || |              | || |              | || |              | |");
 		System.out.println("| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |");
 		System.out.println(" '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' ");
-		Scanner userInput = new Scanner(System.in);
-
+		
 		// ask for name and request to join.
 		String playerName = null;
 		while (!acceptedRequest) {
 			boolean inputValid = false;
 			System.out.print("Enter your name: ");
 			while (!inputValid) {
-				playerName = userInput.nextLine();
+				playerName = inputScanner.nextLine();
 				System.out.print("Your name is: " + playerName);
 				System.out.println("");
 				inputValid = !playerName.contains(" ");
 			}
-	
+
 			client.requestJoin(playerName);
 			lock.lock();
 			try {
@@ -92,14 +92,12 @@ public class TUIView implements View {
 		}
 
 		// start basic I/O loop
-		try (Scanner scanner = new Scanner(System.in)) {
-			boolean continueLoop = true;
-			while (continueLoop) {
-				// TODO Try/catch Block
-				System.out.print("Place, trade or exit? ");
-				continueLoop = scanner.hasNextLine() && processCommand(scanner.nextLine());
-			}
-		}
+		boolean continueLoop = true;
+		while (continueLoop) {
+			// TODO Try/catch Block
+			System.out.print("Place, trade or exit? ");
+			continueLoop = inputScanner.hasNextLine() && processCommand(inputScanner.nextLine());
+		}		
 	}
 
 	private boolean processCommand(String command) {		
@@ -129,8 +127,7 @@ public class TUIView implements View {
 
 	private void handleChatCommand(Scanner commandScanner) {
 		System.out.print("Enter your message: ");
-		Scanner messageScanner = new Scanner(System.in);
-		client.sendChatMessage(messageScanner.nextLine());
+		client.sendChatMessage(commandScanner.nextLine());
 	}
 
 	private void handleTradeCommand(Scanner commandScanner) {
@@ -302,10 +299,9 @@ public class TUIView implements View {
 	public int readNextInt(int min, int max) {
 		int count = 0;
 		boolean valid = false;
-		Scanner commandScanner = new Scanner(System.in);
 		while (!valid) {
 			try {
-				count = Integer.parseInt(commandScanner.nextLine());
+				count = Integer.parseInt(inputScanner.nextLine());
 				if (min <= count && count <= max) {
 					valid = true;
 				} else {

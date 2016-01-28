@@ -164,7 +164,8 @@ public abstract class Board extends Observable {
 	 * @return True if the moves are legal, false otherwise.
 	 */
 	public boolean checkMoves(List<Move> moves) {
-
+		// TODO: maybe make order irrelevant.
+		
 		Board copy = deepCopy();
 		
 		for (Move m : moves) {

@@ -32,7 +32,7 @@ import qwirkle.View;
 public class QwirkleClient extends Observable implements Observer {
 	
 	public static final String USAGE = "Usage: java " + QwirkleClient.class.toString() 
-								+ " <host> <port> [-naive]";
+								+ " <host> <port> [<playertype>]";
 	
 	public static void main(String[] args) {
 		
@@ -64,12 +64,18 @@ public class QwirkleClient extends Observable implements Observer {
 		
 		if (args.length > 2) {
 			switch (args[2]) {
+				case "-human":
+					playerType = PlayerType.HUMAN;
+					break;
 				case "-naive":
 					playerType = PlayerType.NAIVE;
 					break;
 				case "-smart":
 					playerType = PlayerType.SMART;
 					break;
+				default:
+					System.out.println("Invalid player type!");
+					return;
 			}
 		}
 		
@@ -165,6 +171,10 @@ public class QwirkleClient extends Observable implements Observer {
 	
 	private void processResponse(String response) {
 		try (Scanner scanner = new Scanner(response)) {
+			if (!scanner.hasNext()) {
+				return;
+			}
+			
 			switch (scanner.next()) {
 				case Protocol.SERVER_ACCEPTREQUEST:
 					handleAcceptRequest(scanner);
@@ -202,7 +212,8 @@ public class QwirkleClient extends Observable implements Observer {
 	}
 
 	private void handleAcceptRequest(Scanner scanner) {
-		supportsChat = scanner.nextInt() == 1;
+		// TODO:  parse name + flags
+		// supportsChat = scanner.nextInt() == 1;
 		
 		setChanged();
 		notifyObservers("acceptedrequest");
@@ -247,7 +258,7 @@ public class QwirkleClient extends Observable implements Observer {
 		}
 				
 		for (Player p : game.getPlayers()) {
-			if (p.getName().equals(name)) {
+			if (p.getName().equals(name) && p instanceof RemotePlayer) {
 				RemotePlayer remotePlayer = (RemotePlayer) p;
 				remotePlayer.notifyPlacedStones(game.getBoard(), moves, score);
 				break;
