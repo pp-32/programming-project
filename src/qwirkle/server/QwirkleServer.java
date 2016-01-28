@@ -12,6 +12,7 @@ import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.MoveResult;
 import qwirkle.Player;
+import qwirkle.ScoreComparator;
 
 /**
  * Represents a server running the Qwirkle game.
@@ -200,6 +201,8 @@ public class QwirkleServer extends Thread implements Observer {
 				client.notifyConnectionLost(sender.getClientName());
 			}
 		}
+		
+		currentGames.remove(game);
 	}
 
 	/**
@@ -218,23 +221,20 @@ public class QwirkleServer extends Thread implements Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		if (arg0 instanceof Board) {
-			Board b = (Board) arg0;
-			//System.out.println(b.toString());
-			//System.out.println("Stones in pile: " + b.getStoneCount());
-		} else if (arg0 instanceof Game && arg1 instanceof String) {
+		if (arg0 instanceof Game && arg1 instanceof String) {
 			Game game = (Game) arg0;
 			switch ((String) arg1) {
 				case "gameover":
-					System.out.println("GAME OVER");
+					List<Player> sortedList = new ArrayList<Player>();
+					sortedList.addAll(game.getPlayers());
+					sortedList.sort(new ScoreComparator());
+					
 					for (Player p : game.getPlayers()) {
-						//System.out.println("Player: " + p.getName());
-						//System.out.println("Score: " + p.getScore());
-						//System.out.println("Hand: " + p.getHandSize());
-						//System.out.println();
 						ClientHandler client = getClientByName(p.getName());
-						client.notifyGameOver(game.getPlayers());
+						client.notifyGameOver(sortedList);
 					}
+					
+					currentGames.remove(game);
 					break;
 			}
 		}

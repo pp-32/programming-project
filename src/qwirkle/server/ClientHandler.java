@@ -116,6 +116,7 @@ public class ClientHandler extends Thread {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally { 
 			shutdown();
 		}
     }
@@ -128,16 +129,7 @@ public class ClientHandler extends Thread {
 		try (Scanner scanner = new Scanner(line)) {
 			switch (scanner.next()) {
 				case Protocol.CLIENT_JOINREQUEST:
-					// TODO: set supportsChatMessages.
-					
-					String name = scanner.next();
-					if (server.getClientByName(name) == null) {
-						this.clientName = name; 
-						acceptJoinRequest();
-					} else {
-						sendInvalidCommandError("Username " + name + " already exists!");
-					}
-					
+					handleJoinRequestCommand(scanner);
 					break;
 				case Protocol.CLIENT_GAMEREQUEST:
 					handleGameRequestCommand(scanner);
@@ -156,6 +148,17 @@ public class ClientHandler extends Thread {
 					shutdown();
 					break;
 			}
+		}
+	}
+
+	private void handleJoinRequestCommand(Scanner scanner) {
+		String name = scanner.next(); 
+		if (server.getClientByName(name) == null) {
+			this.clientName = name; 
+			this.supportsChatMessages = scanner.nextInt() == 1;
+			acceptJoinRequest();
+		} else {
+			sendInvalidCommandError("Username " + name + " already exists!");
 		}
 	}
 
@@ -182,10 +185,11 @@ public class ClientHandler extends Thread {
 		}
 
 		MoveResult result = getCurrentPlayer().placeStones(board, moves);
-		//if (!result.isSuccessful()) {
-		//	shutdown();
-		//	return;
-		//}
+		if (!result.isSuccessful()) {
+			sendInvalidCommandError("Invalid or illegal move!");
+			shutdown();
+			return;
+		}
 		
 		List<Stone> newStones = new ArrayList<Stone>();
 		for (int i = 0; i < amount && board.canPickStone(); i++) {
@@ -202,6 +206,12 @@ public class ClientHandler extends Thread {
 	private void handleDoTradeCommand(Scanner scanner) {
 		int amount = scanner.nextInt();
 
+		if (amount < 0 || amount > 6) {
+			sendInvalidCommandError("Invalid amount of stones.");
+			shutdown();
+			return;
+		}
+		
 		Board board = currentGame.getBoard();
 		for (int i = 0; i < amount; i++) {
 			Stone s = Stone.fromScanner(scanner);
@@ -210,9 +220,14 @@ public class ClientHandler extends Thread {
 				scanner.next();
 			}
 			
+			if (!currentPlayer.getStones().contains(s)) {
+				sendInvalidCommandError("Stone " + s + " is not in " + clientName + "'s hand.");
+				shutdown();
+				return;
+			}
+			
 			board.placeStoneInBag(s);
 			currentPlayer.getStones().remove(s);
-			// TODO: replace with performTrade?
 		}
 
 		giveStones(currentGame.getBoard().pickStones(amount));

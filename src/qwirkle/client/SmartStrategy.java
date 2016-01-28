@@ -7,6 +7,7 @@ import java.util.Random;
 import qwirkle.Board;
 import qwirkle.Location;
 import qwirkle.Move;
+import qwirkle.OpenHandPlayer;
 import qwirkle.Stone;
 
 /**
@@ -30,6 +31,7 @@ public class SmartStrategy implements Strategy {
 
 		if (startingMoves.size() == 0) {
 			// no starting points found, perform a trade.
+			System.out.println("startingMoves == 0");
 			player.performTrade(pickRandomStones(player.getStones()));
 		} else {
 			
@@ -66,7 +68,7 @@ public class SmartStrategy implements Strategy {
 		return best;
 	}
 	
-	private static List<Move> findStartingMoves(ComputerPlayer player, Board board) {
+	public static List<Move> findStartingMoves(OpenHandPlayer player, Board board) {
 
 		List<Move> moves = new ArrayList<Move>();
 		if (board.isEmpty()) {
@@ -79,7 +81,7 @@ public class SmartStrategy implements Strategy {
 		return moves;
 	}
 	
-	private static List<Move> findMovesNearLocation(ComputerPlayer player, 
+	private static List<Move> findMovesNearLocation(OpenHandPlayer player, 
 													Board board, 
 													Location location) {
 		
@@ -92,7 +94,7 @@ public class SmartStrategy implements Strategy {
 		return moves;
 	}
 
-	private static List<Move> findMovesForLocation(ComputerPlayer player, 
+	private static List<Move> findMovesForLocation(OpenHandPlayer player, 
 												   Board board,
 												   Location location) {
 		List<Move> moves = new ArrayList<Move>();

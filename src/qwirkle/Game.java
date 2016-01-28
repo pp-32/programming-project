@@ -81,6 +81,19 @@ public class Game extends Observable implements Runnable {
 	}
 		
 	/**
+	 * Gets the player by its name.
+	 * @param name The name of the player.
+	 * @return The player, or null if no player exists with the given name.
+	 */
+	public Player getPlayerByName(String name) {
+		for (Player player : getPlayers()) {
+			if (player.getName().equals(name)) {
+				return player;
+			}
+		}
+		return null;
+	}
+	/**
 	 * Returns true if the game is over. This is the case if a player has used
 	 * up all his/her stones or if the bag is empty and no more moves can be done.
 	 * 

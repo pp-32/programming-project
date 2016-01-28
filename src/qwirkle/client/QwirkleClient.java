@@ -7,9 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -101,6 +104,7 @@ public class QwirkleClient extends Observable implements Observer {
 	private boolean myTurn;
 	private PlayerType playerType;
 	private boolean supportsChat;
+	private boolean isShuttingDown;
 	
 	/**
 	 * Creates a new client.
@@ -116,6 +120,10 @@ public class QwirkleClient extends Observable implements Observer {
 		this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 		this.view = new TUIView(this);
 		this.addObserver(view);
+	}
+
+	public boolean getSupportsChat() {
+		return supportsChat;
 	}
 	
 	/**
@@ -141,16 +149,7 @@ public class QwirkleClient extends Observable implements Observer {
 	public boolean getIsMyTurn() {
 		return myTurn;
 	}
-	
-	/**
-	 * Waits for the server to respond. 
-	 * @return the response of the server.
-	 * @throws IOException 
-	 */
-	private String readResponse() throws IOException {
-		return in.readLine();
-	}
-	
+		
 	/**
 	 * Starts to process all incoming traffic. 
 	 */
@@ -158,14 +157,14 @@ public class QwirkleClient extends Observable implements Observer {
 		new Thread(view).start();
 		try {
 			while (true) {
-				String response = readResponse();
-				// TODO: remove next println:
-				System.out.println("[server]: " + response);
+				String response = in.readLine();
 				processResponse(response);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if (!isShuttingDown) {
+				e.printStackTrace();
+				shutDown();
+			}
 		}
 	}
 	
@@ -189,7 +188,7 @@ public class QwirkleClient extends Observable implements Observer {
 					handleNotifyMoveCommand(scanner);
 					break;
 				case Protocol.SERVER_NOTIFYTRADE:
-					// TODO;
+					handleNotifyTradeCommand(scanner);
 					break;
 				case Protocol.SERVER_MOVEREQUEST:
 					handleMoveRequest(scanner);
@@ -203,8 +202,17 @@ public class QwirkleClient extends Observable implements Observer {
 				case Protocol.SERVER_INVALIDCOMMAND:
 					handleInvalidCommand(scanner);
 					break;
+				case Protocol.SERVER_CONNECTIONLOST:
+					handleConnectionLostCommand(scanner);
+					break;
 			}
 		}
+	}
+
+
+	private void handleConnectionLostCommand(Scanner scanner) {
+		String name = scanner.next();
+		view.notifyConnectionLost(name);
 	}
 
 	private void handleInvalidCommand(Scanner scanner) {
@@ -212,35 +220,39 @@ public class QwirkleClient extends Observable implements Observer {
 	}
 
 	private void handleAcceptRequest(Scanner scanner) {
-		// TODO:  parse name + flags
-		// supportsChat = scanner.nextInt() == 1;
+		clientName = scanner.next();
+		supportsChat = scanner.nextInt() == 1;
 		
 		setChanged();
 		notifyObservers("acceptedrequest");
 	}
 
-	private void handleGameOverCommand(Scanner scanner) {
-		// TODO: replace with view notification.
-		
-		System.out.println("GAME OVER");
-		
+	private void handleGameOverCommand(Scanner scanner) {		
+		List<Player> ranking = new ArrayList<Player>(); 
 		while (scanner.hasNext()) {
 			String name = scanner.next();
 			int score = scanner.nextInt();
 
-			System.out.println("Player: " + name);
-			System.out.println("Score: " + score);
+			Player p = game.getPlayerByName(name);
+			p.setScore(score);
+			ranking.add(p);
 			
 			// ignore next pipe.
 			if (scanner.hasNext()) {
 				scanner.next();
 			}
 		}
+
+		view.notifyGameOver(ranking);
 		
+		setChanged();
+		notifyObservers("gameover");
 	}
 
 	private void handleChatCommand(Scanner scanner) {
-		//
+		String sender = scanner.next();
+		String message = scanner.nextLine().substring(1);
+		view.showChatMessage(sender, message);
 	}
 
 	private void handleNotifyMoveCommand(Scanner scanner) {
@@ -257,13 +269,19 @@ public class QwirkleClient extends Observable implements Observer {
 			}
 		}
 				
-		for (Player p : game.getPlayers()) {
-			if (p.getName().equals(name) && p instanceof RemotePlayer) {
-				RemotePlayer remotePlayer = (RemotePlayer) p;
-				remotePlayer.notifyPlacedStones(game.getBoard(), moves, score);
-				break;
-			}
-		}
+		Player sender = game.getPlayerByName(name);		
+		if (sender instanceof RemotePlayer) { 
+			RemotePlayer remotePlayer = (RemotePlayer) sender;
+			remotePlayer.notifyPlacedStones(game.getBoard(), moves, score);
+		}		
+		view.notifyMove(sender, moves, score);
+	}
+	
+	private void handleNotifyTradeCommand(Scanner scanner) {
+		String name = scanner.next();
+		int stones = scanner.nextInt();
+		Player sender = game.getPlayerByName(name);		
+		view.notifyTrade(sender, stones);
 	}
 
 	private void handleGiveStonesCommand(Scanner scanner) {
@@ -272,7 +290,11 @@ public class QwirkleClient extends Observable implements Observer {
 		
 		for (int i = 0; i < amount; i++) {
 			stones.add(Stone.fromScanner(scanner));
-			game.getBoard().pickStone();
+			
+			if (game.getBoard().canPickStone()) {
+				game.getBoard().pickStone();
+			}
+			
 			if (i < amount - 1) {
 				scanner.next();
 			}
@@ -447,6 +469,7 @@ public class QwirkleClient extends Observable implements Observer {
 	 * Closes the connection with the server.
 	 */
 	public void shutDown() {
+		isShuttingDown = true;
 		try {
 			socket.close();
 		} catch (IOException e) {
