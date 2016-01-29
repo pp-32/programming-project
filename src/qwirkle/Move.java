@@ -52,6 +52,21 @@ public class Move {
 		return getStone().toString() + " -> " + getLocation();
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Move)) {
+			return false;
+		}
+		Move other = (Move) obj;
+		return other.getStone().equals(this.getStone()) 
+			&& other.getLocation().equals(this.getLocation());
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getStone().hashCode() ^ this.getLocation().hashCode();
+	}
+	
 	/**
 	 * Reads a move from a scanner.
 	 * @param scanner The scanner to read from.

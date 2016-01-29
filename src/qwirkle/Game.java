@@ -68,7 +68,7 @@ public class Game extends Observable implements Runnable {
 	/**
 	 * Instructs the game to hand over the turn to the next player.
 	 */
-	private void nextPlayer() {
+	public void nextPlayer() {
 		current = (current + 1) % players.size();
 	}
 	

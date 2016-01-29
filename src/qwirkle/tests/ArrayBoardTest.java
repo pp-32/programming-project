@@ -8,7 +8,10 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import qwirkle.ArrayBoard;
+import qwirkle.Board;
+import qwirkle.Location;
 import qwirkle.Move;
+import qwirkle.Rectangle;
 import qwirkle.Stone;
 import qwirkle.StoneColor;
 import qwirkle.StoneShape;
@@ -22,15 +25,28 @@ public class ArrayBoardTest {
 	private ArrayBoard board;
 	private Stone stone = new Stone(StoneShape.DIAMOND, StoneColor.BLUE);
 	
-	/**
-	 * @throws java.lang.Exception
-	 */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		board = new ArrayBoard();
 		board.placeStone(new Move(stone, 0, 0));
 	}
 
+	@Test
+	public void deepCopyTest() {
+		
+		Board copy = board.deepCopy();
+		Rectangle dimensions = board.getDimensions(); 
+		assertEquals(dimensions, copy.getDimensions());
+		Location topLeft = dimensions.getTopLeft();
+		Location bottomRight = dimensions.getBottomRight();
+		
+		for (int y = topLeft.getY(); y >= bottomRight.getY(); y--) {
+			for (int x = topLeft.getX(); x <= bottomRight.getX(); x++) {
+				assertEquals(board.getField(x, y), copy.getField(x, y));
+			}
+		}
+	}
+	
 	@Test
 	public void placeStoneTest() {
 		assertEquals(stone, board.getField(0, 0));
