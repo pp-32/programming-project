@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import qwirkle.Board;
 import qwirkle.Game;
 import qwirkle.MoveResult;
 import qwirkle.Player;

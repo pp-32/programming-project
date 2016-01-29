@@ -8,6 +8,7 @@ import java.util.Scanner;
  *
  */
 public class Location {
+	
 	private int x;
 	private int y;
 
@@ -25,6 +26,7 @@ public class Location {
 	 * Gets the X-coordinate of the location.
 	 * @return the X-coordinate.
 	 */
+	//@ pure
 	public int getX() {
 		return x;
 	}
@@ -41,6 +43,7 @@ public class Location {
 	 * Gets the Y-coordinate of the location.
 	 * @return the Y-coordinate.
 	 */
+	//@ pure
 	public int getY() {
 		return y;
 	}
@@ -80,6 +83,8 @@ public class Location {
 	 * Creates a deep copy of the location.
 	 * @return The copy.
 	 */
+	//@ ensures this != \result && \result.equals(this);
+	//@ pure
 	public Location deepCopy() {
 		return new Location(getX(), getY());
 	}

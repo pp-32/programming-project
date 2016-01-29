@@ -48,6 +48,8 @@ public class Sequence {
 	 * Gets the moves required to lay the sequence.
 	 * @return The moves.
 	 */
+	//@ ensures \result != null && \result.size() == getLength();
+	//@ pure
 	public List<Move> getMoves() {
 		return moves;		
 	}
@@ -56,6 +58,7 @@ public class Sequence {
 	 * Gets the direction of the sequence.
 	 * @return The direction.
 	 */
+	//@ pure
 	public SequenceDirection getDirection() {
 		return direction;
 	}
@@ -64,6 +67,8 @@ public class Sequence {
 	 * Gets the length of the sequence.
 	 * @return The length.
 	 */
+	//@ ensures \result >= 0;
+	//@ pure
 	public int getLength() {
 		return moves.size();
 	}
@@ -72,6 +77,7 @@ public class Sequence {
 	 * Gets the type of the sequence.
 	 * @return The type.
 	 */
+	//@ pure
 	public SequenceType getType() {
 		if (getLength() <= 1) {
 			return SequenceType.UNKNOWN;
@@ -96,6 +102,7 @@ public class Sequence {
 	 * Determines whether the sequence is valid or not.
 	 * @return True if the sequence is valid, false otherwise.
 	 */
+	//@ pure
 	public boolean isValid() {
 		if (getLength() > 6) {
 			return false;
@@ -134,6 +141,7 @@ public class Sequence {
 	 * @param vector The vector to get the direction from.
 	 * @return The direction.
 	 */
+	//@ requires vector != null;
 	public static SequenceDirection getDirectionFromVector(Location vector) {
 		if (vector.getX() != 0 && vector.getY() == 0) {
 			return SequenceDirection.HORIZONTAL;

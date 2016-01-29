@@ -7,12 +7,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
@@ -34,9 +31,11 @@ import qwirkle.View;
  */
 public class QwirkleClient extends Observable implements Observer {
 	
+	//@ private invariant USAGE != null;
 	public static final String USAGE = "Usage: java " + QwirkleClient.class.toString() 
 								+ " <host> <port> [<playertype>]";
 	
+	//@ requires args != null;
 	public static void main(String[] args) {
 		
 		if (args.length < 2) {
@@ -93,16 +92,21 @@ public class QwirkleClient extends Observable implements Observer {
 		
 		client.run();
 	}
-	
+
+	//@ private invariant socket != null;
 	private Socket socket;
+	//@ private invariant in != null;
 	private BufferedReader in;
+	//@ private invariant out != null;
 	private BufferedWriter out;
-	private Game game;
+	//@ private invariant view != null;
 	private View view;
+	
 	private String clientName;
 	private OpenHandPlayer player;
-	private boolean myTurn;
 	private PlayerType playerType;
+	private Game game;
+	private boolean myTurn;
 	private boolean supportsChat;
 	private boolean isShuttingDown;
 	
@@ -113,6 +117,7 @@ public class QwirkleClient extends Observable implements Observer {
 	 * @param playerType The player type.
 	 * @throws IOException Occurs when the creation of the communication socket fails.
 	 */
+	//@ requires host != null && 0 <= port && port <= 65536;
 	public QwirkleClient(InetAddress host, int port, PlayerType playerType) throws IOException {
 		this.playerType = playerType;
 		this.socket = new Socket(host, port);
@@ -122,6 +127,16 @@ public class QwirkleClient extends Observable implements Observer {
 		this.addObserver(view);
 	}
 
+	/**
+	 * Gets the client's name.
+	 * @return the name, or null if no name was accepted yet.
+	 */
+	//@ pure
+	public String getClientName() {
+		return clientName;
+	}
+	
+	//@ pure
 	public boolean getSupportsChat() {
 		return supportsChat;
 	}
@@ -130,6 +145,7 @@ public class QwirkleClient extends Observable implements Observer {
 	 * Gets the game the client is currently playing.
 	 * @return The game.
 	 */
+	//@ pure
 	public Game getCurrentGame() {
 		return game;
 	}
@@ -138,6 +154,10 @@ public class QwirkleClient extends Observable implements Observer {
 	 * Gets the player the client is currently playing as.
 	 * @return The player.
 	 */
+	//@ requires getCurrentGame() != null;
+	//@ ensures getCurrentGame().getPlayers().contains(\result);
+	//@ ensures \result.getName() == getClientName();
+	//@ pure
 	public OpenHandPlayer getPlayer() {
 		return player;
 	}
@@ -146,6 +166,8 @@ public class QwirkleClient extends Observable implements Observer {
 	 * Determines whether the client should make a move or not.
 	 * @return True if its the client's turn, false otherwise.
 	 */
+	//@ requires getCurrentGame() != null;
+	//@ pure
 	public boolean getIsMyTurn() {
 		return myTurn;
 	}
@@ -168,6 +190,7 @@ public class QwirkleClient extends Observable implements Observer {
 		}
 	}
 	
+	//@ requires response != null;
 	private void processResponse(String response) {
 		try (Scanner scanner = new Scanner(response)) {
 			if (!scanner.hasNext()) {
@@ -209,16 +232,18 @@ public class QwirkleClient extends Observable implements Observer {
 		}
 	}
 
-
+	//@ requires scanner != null;
 	private void handleConnectionLostCommand(Scanner scanner) {
 		String name = scanner.next();
 		view.notifyConnectionLost(name);
 	}
 
+	//@ requires scanner != null;
 	private void handleInvalidCommand(Scanner scanner) {
 		view.showError(scanner.nextLine());
 	}
 
+	//@ requires scanner != null;
 	private void handleAcceptRequest(Scanner scanner) {
 		clientName = scanner.next();
 		supportsChat = scanner.nextInt() == 1;
@@ -227,6 +252,7 @@ public class QwirkleClient extends Observable implements Observer {
 		notifyObservers("acceptedrequest");
 	}
 
+	//@ requires getCurrentGame() != null && scanner != null;
 	private void handleGameOverCommand(Scanner scanner) {		
 		List<Player> ranking = new ArrayList<Player>(); 
 		while (scanner.hasNext()) {
@@ -249,12 +275,14 @@ public class QwirkleClient extends Observable implements Observer {
 		notifyObservers("gameover");
 	}
 
+	//@ requires scanner != null;
 	private void handleChatCommand(Scanner scanner) {
 		String sender = scanner.next();
 		String message = scanner.nextLine().substring(1);
 		view.showChatMessage(sender, message);
 	}
 
+	//@ requires getCurrentGame() != null && scanner != null;
 	private void handleNotifyMoveCommand(Scanner scanner) {
 		List<Move> moves = new ArrayList<Move>();
 		
@@ -276,7 +304,8 @@ public class QwirkleClient extends Observable implements Observer {
 		}		
 		view.notifyMove(sender, moves, score);
 	}
-	
+
+	//@ requires getCurrentGame() != null && scanner != null;
 	private void handleNotifyTradeCommand(Scanner scanner) {
 		String name = scanner.next();
 		int stones = scanner.nextInt();
@@ -284,6 +313,7 @@ public class QwirkleClient extends Observable implements Observer {
 		view.notifyTrade(sender, stones);
 	}
 
+	//@ requires getCurrentGame() != null && scanner != null;
 	private void handleGiveStonesCommand(Scanner scanner) {
 		List<Stone> stones = new ArrayList<Stone>();
 		int amount = scanner.nextInt();
@@ -303,6 +333,8 @@ public class QwirkleClient extends Observable implements Observer {
 		player.giveStones(stones);
 	}
 
+	//@ requires scanner != null;
+	//@ ensures getCurrentGame() != null;
 	private void handleStartGameCommand(Scanner scanner) {
 		List<Player> players = new ArrayList<Player>();
 		while (scanner.hasNext()) {
@@ -344,7 +376,8 @@ public class QwirkleClient extends Observable implements Observer {
 		notifyObservers("gamestarted");
 		
 	}
-	
+
+	//@ requires getCurrentGame() != null && scanner != null;
 	private void handleMoveRequest(Scanner scanner) {
 		myTurn = true;
 		player.makeMove(game.getBoard());
@@ -354,6 +387,8 @@ public class QwirkleClient extends Observable implements Observer {
 	 * Requests to join the server.
 	 * @param playerName The name of the joining player.
 	 */
+	//@ requires playerName != null;
+	//@ ensures getClientName() == playerName;
 	public synchronized void requestJoin(String playerName) {
 		this.clientName = playerName;
 		try {
@@ -369,6 +404,7 @@ public class QwirkleClient extends Observable implements Observer {
 	 * Requests the server to create a game with a given amount of players.
 	 * @param playerCount The number of players. 
 	 */
+	//@ requires 1 <= playerCount && playerCount <= 4;
 	public synchronized void requestGame(int playerCount) {
 		try {
 			out.write(Protocol.CLIENT_GAMEREQUEST + " " + playerCount);
@@ -381,19 +417,22 @@ public class QwirkleClient extends Observable implements Observer {
 	
 	/**
 	 * Requests the server to make a move using the given stones and their placements.
-	 * @param stonePlacements The stones to place.
+	 * @param moves The stones to place.
 	 */
-	public synchronized void setMove(List<Move> stonePlacements) {
+	//@ requires getCurrentGame() != null;
+	//@ requires moves.size() > 0 && getCurrentGame().getBoard().checkMoves(moves);
+	//@ ensures getIsMyTurn() == false;
+	public synchronized void setMove(List<Move> moves) {
 		myTurn = false;
 		
 		try {
 			out.write(Protocol.CLIENT_SETMOVE);
 			out.write(" ");
-			out.write(Integer.toString(stonePlacements.size()));
+			out.write(Integer.toString(moves.size()));
 			out.write(" ");
 			
-			for (int i = 0; i < stonePlacements.size(); i++) {
-				Move move = stonePlacements.get(i);
+			for (int i = 0; i < moves.size(); i++) {
+				Move move = moves.get(i);
 				out.write(Stone.shapeToString(move.getStone().getShape()));
 				out.write(" ");
 				out.write(Stone.colorToString(move.getStone().getColor()));
@@ -402,7 +441,7 @@ public class QwirkleClient extends Observable implements Observer {
 				out.write(" ");
 				out.write(Integer.toString(move.getLocation().getY()));
 				
-				if (i < stonePlacements.size() - 1) {
+				if (i < moves.size() - 1) {
 					out.write(" | ");
 				}
 			}
@@ -418,6 +457,8 @@ public class QwirkleClient extends Observable implements Observer {
 	 * Requests the server to trade the given stones.
 	 * @param stones The stones to trade.
 	 */
+	//@ requires getCurrentGame() != null && stones != null && stones.size() > 0;
+	//@ ensures getIsMyTurn() == false;
 	public synchronized void doTrade(List<Stone> stones) {
 		myTurn = false;
 		
@@ -448,6 +489,7 @@ public class QwirkleClient extends Observable implements Observer {
 	 * Sends a chat message to the server.
 	 * @param message
 	 */
+	//@ requires message != null;
 	public synchronized void sendChatMessage(String message) {
 		if (!supportsChat) {
 			view.showError("Server doesn't support chat messages!");

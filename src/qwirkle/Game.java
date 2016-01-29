@@ -41,6 +41,7 @@ public class Game extends Observable implements Runnable {
 	 * Gets the board of the game.
 	 * @return The board.
 	 */
+	//@ pure
 	public Board getBoard() {
 		return board;
 	}
@@ -49,6 +50,7 @@ public class Game extends Observable implements Runnable {
 	 * Gets the players playing the game.
 	 * @return The players
 	 */
+	//@ pure
 	public List<Player> getPlayers() {
 		return players;
 	}
@@ -76,6 +78,7 @@ public class Game extends Observable implements Runnable {
 	 * Gets the current player that is making a move.
 	 * @return the player.
 	 */
+	//@ pure
 	public Player getCurrentPlayer() {
 		return players.get(current);
 	}
@@ -85,6 +88,7 @@ public class Game extends Observable implements Runnable {
 	 * @param name The name of the player.
 	 * @return The player, or null if no player exists with the given name.
 	 */
+	//@ pure
 	public Player getPlayerByName(String name) {
 		for (Player player : getPlayers()) {
 			if (player.getName().equals(name)) {
@@ -99,6 +103,7 @@ public class Game extends Observable implements Runnable {
 	 * 
 	 * @return true if the game is over
 	 */
+	//@ pure
 	public boolean gameOver() {
 		if (getBoard().canPickStone()) {
 			return false;
@@ -116,6 +121,7 @@ public class Game extends Observable implements Runnable {
 	 * @param player The player to check.
 	 * @return True if the player has won, false otherwise.
 	 */
+	//@ pure
 	public boolean isWinner(Player player) {
 		for (Player other : getPlayers()) {
 			if (other.getScore() > player.getScore()) {

@@ -1,9 +1,7 @@
 package qwirkle.client;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Random;
 import java.util.Scanner;
@@ -18,7 +16,6 @@ import qwirkle.Move;
 import qwirkle.MoveResult;
 import qwirkle.OpenHandPlayer;
 import qwirkle.Player;
-import qwirkle.ScoreComparator;
 import qwirkle.Stone;
 import qwirkle.View;
 

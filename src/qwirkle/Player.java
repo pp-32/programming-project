@@ -9,7 +9,9 @@ import java.util.Observable;
  */
 public abstract class Player extends Observable {
 
+	//@ private invariant name != null;
 	private String name;
+	//@ private invariant score >= 0;
 	private int score;
 
 	/**
@@ -27,6 +29,7 @@ public abstract class Player extends Observable {
 	 * 
 	 * @return the player's name
 	 */
+	//@ pure
 	public String getName() {
 		return name;
 	}
@@ -35,6 +38,7 @@ public abstract class Player extends Observable {
 	 * Gets the current score the player has achieved during the game.
 	 * @return The score.
 	 */
+	//@ pure
 	public int getScore() {
 		return score;
 	}
@@ -53,6 +57,7 @@ public abstract class Player extends Observable {
 	 * Gets the amount of stones the player has.
 	 * @return The amount of stones.
 	 */
+	//@ pure
 	public abstract int getHandSize();
 	
 	/**

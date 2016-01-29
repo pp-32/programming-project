@@ -3,7 +3,8 @@ package qwirkle;
 import java.util.Comparator;
 
 /**
- * 
+ * Represents a player comparator that compares the score of players, 
+ * favoring the player with the highest score.
  * @author Jerre
  *
  */

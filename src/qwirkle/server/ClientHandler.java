@@ -27,17 +27,23 @@ import qwirkle.Stone;
  *
  */
 public class ClientHandler extends Thread {
-	
+
+	//@ private invariant makeMoveLock != null;
 	private Lock makeMoveLock = new ReentrantLock();
+	//@ private invariant moveMade != null;
 	private Condition moveMade = makeMoveLock.newCondition();
-	
+
+	//@ private invariant server != null;
+	private QwirkleServer server;
+	//@ private invariant socket != null;
 	private Socket socket;
+	//@ private invariant in != null;
 	private BufferedReader in;
+	//@ private invariant out != null;
 	private BufferedWriter out;
 	private String clientName;
 	private Game currentGame;
 	private ClientPlayer currentPlayer;
-	private QwirkleServer server;
 	private boolean supportsChatMessages;
 	
 	/**
@@ -56,6 +62,7 @@ public class ClientHandler extends Thread {
 	 * Gets the name of the client.
 	 * @return the name.
 	 */
+	//@ pure
 	public String getClientName() {
 		return clientName;
 	}
@@ -64,6 +71,7 @@ public class ClientHandler extends Thread {
 	 * Gets a value indicating whether the client supports chat messages.
 	 * @return True if the client supports chat messages, false otherwise.
 	 */
+	//@ pure
 	public boolean getSupportsChatMessages() {
 		return supportsChatMessages;
 	}
@@ -72,6 +80,7 @@ public class ClientHandler extends Thread {
 	 * Gets the game the client is currently playing.
 	 * @return the game.
 	 */
+	//@ pure
 	public Game getCurrentGame() {
 		return currentGame;
 	}
@@ -80,6 +89,8 @@ public class ClientHandler extends Thread {
 	 * Sets the game the client is currently playing.
 	 * @param currentGame the game.
 	 */
+	//@ ensures getCurrentGame() == currentGame;
+	//@ pure
 	public void setCurrentGame(Game currentGame) {
 		this.currentGame = currentGame;
 	}
@@ -88,6 +99,7 @@ public class ClientHandler extends Thread {
 	 * Gets the current player the client is currently using.
 	 * @return the player.
 	 */
+	//@ pure
 	public ClientPlayer getCurrentPlayer() {
 		return currentPlayer;
 	}
@@ -96,7 +108,9 @@ public class ClientHandler extends Thread {
 	 * Sets the current player the client is currently using.
 	 * @param currentPlayer
 	 */
-	public void setCurrentPlayer(ClientPlayer  currentPlayer) {
+	//@ ensures getCurrentPlayer() == currentPlayer;
+	//@ pure
+	public void setCurrentPlayer(ClientPlayer currentPlayer) {
 		this.currentPlayer = currentPlayer;
 	}
 
@@ -125,6 +139,7 @@ public class ClientHandler extends Thread {
 	 * Processes a single response from the server. 
 	 * @param line The command of the server.
 	 */
+	//@ requires line != null;
 	private void processCommand(String line) {
 		try (Scanner scanner = new Scanner(line)) {
 			switch (scanner.next()) {
@@ -151,6 +166,7 @@ public class ClientHandler extends Thread {
 		}
 	}
 
+	//@ requires scanner != null;
 	private void handleJoinRequestCommand(Scanner scanner) {
 		String name = scanner.next(); 
 		if (server.getClientByName(name) == null) {
@@ -162,16 +178,19 @@ public class ClientHandler extends Thread {
 		}
 	}
 
+	//@ requires scanner != null;
 	private void handleChatCommand(Scanner scanner) {
 		// TODO: more elegant way of skipping the space.
 		server.broadcastChatMessage(this, scanner.nextLine().substring(1));		
 	}
 
+	//@ requires scanner != null;
 	private void handleGameRequestCommand(Scanner scanner) {
 		int desiredPlayers = scanner.nextInt();
 		server.requestGame(this, desiredPlayers);
 	}
 
+	//@ requires getCurrentGame() != null && scanner != null;
 	private void handleSetMoveCommand(Scanner scanner) {
 		List<Move> moves = new ArrayList<Move>();
 		int amount = scanner.nextInt();
@@ -203,6 +222,7 @@ public class ClientHandler extends Thread {
 		this.moveMade();
 	}
 
+	//@ requires getCurrentGame() != null && scanner != null;
 	private void handleDoTradeCommand(Scanner scanner) {
 		int amount = scanner.nextInt();
 
@@ -254,6 +274,7 @@ public class ClientHandler extends Thread {
 	 * Notifies a game is started with the given players.
 	 * @param names The names of the players the client will be playing against.
 	 */
+	//@ ensures getCurrentGame() != null;
 	public synchronized void startGame(List<String> names) {
 		try {
 			out.write(Protocol.SERVER_STARTGAME);
@@ -274,6 +295,7 @@ public class ClientHandler extends Thread {
 	 * Gives stones to the client.
 	 * @param stones The stones to give.
 	 */
+	//@ requires getCurrentGame() != null && stones != null;
 	public synchronized void giveStones(List<Stone> stones) {
 		
 		currentPlayer.getStones().addAll(stones);
@@ -348,6 +370,8 @@ public class ClientHandler extends Thread {
 	 * @param score The score the player has earned using the move. 
 	 * @param stonePlacements The placements of the stones.
 	 */
+	//@ requires getCurrentGame() != null;
+	//@ requires name != null && score >= 0 && stonePlacements != null;
 	public synchronized void notifyMove(String name, int score, List<Move> stonePlacements) {
 
 		try {
@@ -388,6 +412,8 @@ public class ClientHandler extends Thread {
 	 * @param name The name of the player that traded stones.
 	 * @param stoneCount The amount of stones that were traded.
 	 */
+	//@ requires getCurrentGame() != null;
+	//@ requires name != null && stoneCount > 0;
 	public synchronized void notifyTrade(String name, int stoneCount) {
 		try {
 			out.write(Protocol.SERVER_NOTIFYTRADE);
@@ -407,6 +433,8 @@ public class ClientHandler extends Thread {
 	 * Notifies the client the game is over.
 	 * @param players The list of players in the game. 
 	 */
+	//@ requires getCurrentGame() != null;
+	//@ requires players != null;
 	public synchronized void notifyGameOver(List<Player> players) {
 		try {
 			out.write(Protocol.SERVER_GAMEOVER);
@@ -432,8 +460,9 @@ public class ClientHandler extends Thread {
 	
 	/**
 	 * Sends the client an invalid command was sent or an error occured.
-	 * @param reason The reason of the error that occured
+	 * @param reason The reason of the error that occured.
 	 */
+	//@ requires reason != null;
 	public void sendInvalidCommandError(String reason) {
 		try {
 			out.write(Protocol.SERVER_INVALIDCOMMAND);
@@ -451,6 +480,7 @@ public class ClientHandler extends Thread {
 	 * Notifies the client a specific player disconnected from the game.
 	 * @param name The name of the player that disconnected.
 	 */
+	//@ requires name != null;
 	public synchronized void notifyConnectionLost(String name) {
 		try {
 			out.write(Protocol.SERVER_CONNECTIONLOST);
@@ -469,6 +499,7 @@ public class ClientHandler extends Thread {
 	 * @param sender The sender of the message.
 	 * @param message The message that was sent.
 	 */
+	//@ requires sender != null && message != null;
 	public synchronized void notifyChatMessage(ClientHandler sender, String message) {
 		try {
 			out.write(Protocol.SERVER_CHAT);

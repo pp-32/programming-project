@@ -28,6 +28,7 @@ public abstract class Board extends Observable {
 		StoneColor.YELLOW
 	};
 	
+	//@ private invariant stones != null;
 	private List<Stone> stones; 
 	
 	/**
@@ -48,6 +49,8 @@ public abstract class Board extends Observable {
 	 * Gets the amount of stones in the pile.
 	 * @return The amount of stones.
 	 */
+	//@ ensures \result >= 0;
+	//@ pure
 	public int getStoneCount() {
 		return stones.size();
 	}
@@ -56,23 +59,33 @@ public abstract class Board extends Observable {
 	 * Creates a deep copy of the board.
 	 * @return the copy.
 	 */
+	//@ ensures \result != this && \result.equals(this);
+	//@ pure
 	public abstract Board deepCopy();
 		
 	/**
 	 * Resets the board, clearing all stones from the field.
 	 */
+	//@ ensures getStoneCount() == 108;
+	//@ ensures getDimensions().equals(new Rectangle(0, 0, 0, 0));
+	//@ ensures getOccupiedFields().size() == 0;
+	//@ ensures isEmpty();
 	public abstract void reset();
 	
 	/**
 	 * Gets the current dimensions of the board.
 	 * @return the dimensions.
 	 */
+	//@ ensures \result != null;
+	//@ pure
 	public abstract Rectangle getDimensions();
 	
 	/**
 	 * Gets all occupied fields on the board.
 	 * @return The locations of all occupied fields.
 	 */
+	//@ ensures \result != null;
+	//@ pure
 	public abstract List<Location> getOccupiedFields(); 
 	
 	/**
@@ -81,6 +94,7 @@ public abstract class Board extends Observable {
 	 * @param y The y coordinate of the position.
 	 * @return The stone, or null if the field is empty.
 	 */
+	//@ pure
 	public abstract Stone getField(int x, int y);
 
 	/**
@@ -88,6 +102,8 @@ public abstract class Board extends Observable {
 	 * @param location The position.
 	 * @return The stone, or null if the field is empty.
 	 */
+	//@ requires location != null;
+	//@ pure
 	public Stone getField(Location location) {
 		return getField(location.getX(), location.getY());
 	}
@@ -98,14 +114,28 @@ public abstract class Board extends Observable {
 	 * @param y The y coordinate of the position.
 	 * @return True if the field is empty, false otherwise.
 	 */
+	//@ pure
 	public boolean isEmptyField(int x, int y) {
 		return getField(x, y) == null;
+	}
+
+	/**
+	 * Determines whether a field at the given coordinates is empty or not.
+	 * @param location The location of the field.
+	 * @return True if the field is empty, false otherwise.
+	 */
+	//@ pure
+	public boolean isEmptyField(Location location) {
+		return getField(location) == null;
 	}
 	
 	/**
 	 * Determines whether the board is empty or not.
 	 * @return True if the board is empty, false otherwise.
 	 */
+	//@ ensures isEmptyField(0, 0) ==> true;
+	//@ ensures !isEmptyField(0, 0) ==> false;
+	//@ pure
 	public boolean isEmpty() {
 		return isEmptyField(0, 0);
 	}
@@ -114,8 +144,10 @@ public abstract class Board extends Observable {
 	 * Determines whether a stone can be picked up from the pile.
 	 * @return True if the pile is not empty, false otherwise.
 	 */
+	//@ ensures \result == getStoneCount() > 0;
+	//@ pure
 	public boolean canPickStone() {
-		return stones.size() > 0;
+		return getStoneCount() > 0;
 	}
 
 	/**
@@ -123,14 +155,18 @@ public abstract class Board extends Observable {
 	 * @param amount the amount of stones to pick.
 	 * @return True if the pile is not empty, false otherwise.
 	 */
+	//@ ensures \result == getStoneCount() > amount;
+	//@ pure
 	public boolean canPickStones(int amount) {
-		return stones.size() >= amount;
+		return getStoneCount() > amount;
 	}
 	
 	/**
 	 * Grabs a stone from the pile.
 	 * @return The Stone that was picked up.
 	 */
+	//@ requires canPickStone();
+	//@ ensures \result != null;
 	public Stone pickStone() { 
 		Stone stone = stones.get((int) (Math.random() * stones.size()));
 		stones.remove(stone);
@@ -142,6 +178,8 @@ public abstract class Board extends Observable {
 	 * @param amount The amount of stones to grab.
 	 * @return The stones that were grabbed.
 	 */
+	//@ requires canPickStones(amount);
+	//@ ensures \result != null && \result.size() == amount;
 	public List<Stone> pickStones(int amount) { 
 		List<Stone> pickedStones = new ArrayList<Stone>();
 		for (int i = 0; i < amount; i++) {
@@ -154,6 +192,8 @@ public abstract class Board extends Observable {
 	 * Places a stone in the bag.
 	 * @param stone the stone.
 	 */
+	//@ requires stone != null;
+	//@ ensures getStoneCount() == \old(getStoneCount()) + 1;
 	public void placeStoneInBag(Stone stone) {
 		stones.add(stone);
 	}
@@ -163,6 +203,9 @@ public abstract class Board extends Observable {
 	 * @param moves The moves to check.
 	 * @return True if the moves are legal, false otherwise.
 	 */
+	//@ requires moves != null;
+	//@ ensures \result == (\forall Move m; moves.contains(m) && checkMove(m));
+	//@ pure
 	public boolean checkMoves(List<Move> moves) {
 		// TODO: maybe make order irrelevant.
 		
@@ -185,6 +228,13 @@ public abstract class Board extends Observable {
 	 * @param move The move to check.
 	 * @return True if the move is legal, false otherwise.
 	 */
+	
+	/*@ ensures \result == (\forall SequenceDirection direction; 
+ 	  @						        new Sequence(this.deepCopy(), 
+	  @							         move.getLocation().deepCopy(), 
+	  @							         direction).isValid()
+	  @					    ); 
+	  @ pure */
 	public boolean checkMove(Move move) {
 		int x = move.getLocation().getX();
 		int y = move.getLocation().getY();
@@ -213,12 +263,14 @@ public abstract class Board extends Observable {
 	 * Performs a move to the board.
 	 * @param move The move to apply.
 	 */
+	//@ requires move != null;
 	public abstract void placeStone(Move move);
 
 	/**
      * Performs a list of moves.
      * @param moves The moves to apply.
      */
+	//@ requires moves != null;
 	public void placeStones(List<Move> moves) {
 		for (Move m : moves) {
 			placeStone(m);
@@ -232,6 +284,9 @@ public abstract class Board extends Observable {
 	 * @param moves The moves.
 	 * @return The score.
 	 */
+	//@ requires moves != null;
+	//@ ensures \result >= 0;
+	//@ pure
 	public int calculateScore(List<Move> moves) {
 		// tactic: first place stones, then get length of each individual orthogonal row
 		// and add them to the total score.
@@ -297,7 +352,9 @@ public abstract class Board extends Observable {
 		
 		return score;
 	}
-	
+
+	//@ ensures \result != null;
+	//@ pure
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

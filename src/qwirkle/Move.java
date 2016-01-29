@@ -8,7 +8,11 @@ import java.util.Scanner;
  *
  */
 public class Move {
+	
+	//@ private invariant stone != null;
 	private Stone stone;
+	
+	//@ private invariant location != null;
 	private Location location;
 
 	/**
@@ -35,6 +39,7 @@ public class Move {
 	 * Gets the stone to be placed.
 	 * @return the stone.
 	 */
+	//@ pure
 	public Stone getStone() {
 		return stone;
 	}
@@ -43,6 +48,7 @@ public class Move {
 	 * Gets the location of the stone to be placed.
 	 * @return the location.
 	 */
+	//@ pure
 	public Location getLocation() {
 		return location;
 	}
